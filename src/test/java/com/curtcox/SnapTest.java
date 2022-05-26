@@ -40,7 +40,7 @@ public class SnapTest {
     }
 
     @Test
-    public void listen_should_only_return_the_message_sent_when_topic_matches() {
+    public void listen_should_return_null_when_there_is_a_message_that_does_not_match_topic() {
         String topic = random("topic");
         String message = random("message");
 
@@ -70,6 +70,41 @@ public class SnapTest {
         assertNotNull(packet2);
         assertEquals(topic2,packet2.topic);
         assertEquals(message2,packet2.message);
+    }
+
+    @Test
+    public void listen_with_topic_should_return_1st_message_when_it_matches_topic() {
+        String topic1 = random("topic1");
+        String message1 = random("message1");
+        snap.send(topic1,message1);
+        String topic2 = random("topic2");
+        String message2 = random("message2");
+        snap.send(topic2,message2);
+
+        Packet packet = snap.listen(topic1);
+
+        assertNotNull(packet);
+        assertEquals(topic1,packet.topic);
+        assertEquals(message1,packet.message);
+
+        assertNull(snap.listen(topic1));
+    }
+
+    @Test
+    public void listen_with_topic_should_return_2nd_message_when_it_matches_topic() {
+        String topic1 = random("topic1");
+        String message1 = random("message1");
+        snap.send(topic1,message1);
+        String topic2 = random("topic2");
+        String message2 = random("message2");
+        snap.send(topic2,message2);
+
+        Packet packet = snap.listen(topic2);
+
+        assertNotNull(packet);
+        assertEquals(topic2,packet.topic);
+        assertEquals(message2,packet.message);
+        assertNull(snap.listen(topic2));
     }
 
     String random(String prefix) {

@@ -12,8 +12,14 @@ public final class Snap {
     }
 
     public Packet listen(String topic) {
-        Packet packet = listen();
-        return topic.equals(packet.topic) ? packet : null;
+        for (int i=0; i< packets.size(); i++) {
+            Packet packet = packets.get(i);
+            if (topic.equals(packet.topic)) {
+                packets.remove(i);
+                return packet;
+            }
+        }
+        return null;
     }
 
     public Packet listen() {
