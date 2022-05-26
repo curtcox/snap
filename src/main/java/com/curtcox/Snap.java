@@ -12,11 +12,12 @@ public final class Snap {
     }
 
     public Packet listen(String topic) {
-        return listen();
+        Packet packet = listen();
+        return topic.equals(packet.topic) ? packet : null;
     }
 
     public Packet listen() {
-        return packets.remove(0);
+        return (packets.isEmpty()) ? null : packets.remove(0);
     }
 
 }

@@ -1,13 +1,18 @@
 package com.curtcox;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
 public class SnapTest {
 
+    Snap snap;
 
-    Snap snap = new Snap();
+    @Before
+    public void setUp() {
+        snap = new Snap();
+    }
 
     @Test
     public void send_should_not_produce_error() {
@@ -18,11 +23,31 @@ public class SnapTest {
     public void listen_should_return_the_message_sent() {
         String topic = random("topic");
         String message = random("message");
+
         snap.send(topic,message);
         Packet packet = snap.listen(topic);
+
         assertNotNull(packet);
         assertEquals(topic,packet.topic);
         assertEquals(message,packet.message);
+    }
+
+    @Test
+    public void listen_should_return_null_when_no_messages_sent() {
+        Packet packet = snap.listen();
+
+        assertNull(packet);
+    }
+
+    @Test
+    public void listen_should_only_return_the_message_sent_when_topic_matches() {
+        String topic = random("topic");
+        String message = random("message");
+
+        snap.send(topic,message);
+        Packet packet = snap.listen("different " + topic);
+
+        assertNull(packet);
     }
 
     @Test
