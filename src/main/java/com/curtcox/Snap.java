@@ -1,15 +1,22 @@
 package com.curtcox;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public final class Snap {
 
-    Packet packet;
+    List<Packet> packets = new ArrayList<>();
 
     public void send(String topic, String message) {
-        packet = new Packet(topic,message);
+        packets.add(new Packet(topic,message));
     }
 
     public Packet listen(String topic) {
-        return packet;
+        return listen();
+    }
+
+    public Packet listen() {
+        return packets.remove(0);
     }
 
 }

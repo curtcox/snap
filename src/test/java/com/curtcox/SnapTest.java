@@ -25,6 +25,28 @@ public class SnapTest {
         assertEquals(message,packet.message);
     }
 
+    @Test
+    public void listen_with_no_topic_should_return_messages_sent_to_any_topic() {
+        String topic1 = random("topic1");
+        String message1 = random("message1");
+        snap.send(topic1,message1);
+        String topic2 = random("topic2");
+        String message2 = random("message2");
+        snap.send(topic2,message2);
+
+        Packet packet1 = snap.listen();
+
+        assertNotNull(packet1);
+        assertEquals(topic1,packet1.topic);
+        assertEquals(message1,packet1.message);
+
+        Packet packet2 = snap.listen();
+
+        assertNotNull(packet2);
+        assertEquals(topic2,packet2.topic);
+        assertEquals(message2,packet2.message);
+    }
+
     String random(String prefix) {
         return prefix + System.currentTimeMillis() % 1000;
     }
