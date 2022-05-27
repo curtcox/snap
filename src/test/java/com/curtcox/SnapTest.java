@@ -11,7 +11,7 @@ public class SnapTest {
 
     @Before
     public void setUp() {
-        snap = new Snap();
+        snap = new Snap(new Network());
     }
 
     @Test
