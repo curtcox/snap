@@ -8,10 +8,11 @@ import static org.junit.Assert.*;
 public class SnapTest {
 
     Snap snap;
+    Network network = new Network();
 
     @Before
     public void setUp() {
-        snap = new Snap(new Network());
+        snap = Snap.on(network);
     }
 
     @Test
@@ -120,6 +121,21 @@ public class SnapTest {
         assertEquals(topic2,packet.topic);
         assertEquals(message2,packet.message);
         assertNull(snap.listen(topic2));
+    }
+
+    @Test
+    public void messsages_are_delivered_in_order_when_on_network() {
+        Snap.on(network);
+
+        snap.send("call","1");
+        snap.send("call","2");
+        snap.send("call","3");
+        snap.send("call","4");
+
+        assertEquals("1",snap.listen().message);
+        assertEquals("2",snap.listen().message);
+        assertEquals("3",snap.listen().message);
+        assertEquals("4",snap.listen().message);
     }
 
     String random(String prefix) {

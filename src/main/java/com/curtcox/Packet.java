@@ -10,4 +10,9 @@ public final class Packet {
         this.topic = notNull(topic);
         this.message = notNull(message);
     }
+
+    @Override
+    public String toString() {
+       return topic + " " + message;
+    }
 }

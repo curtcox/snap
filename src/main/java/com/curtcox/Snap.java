@@ -10,7 +10,7 @@ public final class Snap {
     private final Network network;
     private final List<Packet> packets = new ArrayList<>();
 
-    public Snap(Network network) {
+    private Snap(Network network) {
         this.network = notNull(network);
     }
 
@@ -21,9 +21,7 @@ public final class Snap {
     }
 
     public void send(String topic, String message) {
-        Packet packet = new Packet(topic,message);
-        receive(packet);
-        network.send(packet);
+        network.send(new Packet(topic,message));
     }
 
     void receive(Packet packet) {
