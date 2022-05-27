@@ -33,6 +33,21 @@ public class SnapTest {
     }
 
     @Test
+    public void listen_should_only_return_a_message_once_when_topic_specified() {
+        String topic = random("topic");
+        snap.send(topic,random("message"));
+        assertNotNull(snap.listen(topic));
+        assertNull(snap.listen(topic));
+    }
+
+    @Test
+    public void listen_should_only_return_a_message_once_when_no_topic_specified() {
+        snap.send(random("topic"),random("message"));
+        assertNotNull(snap.listen());
+        assertNull(snap.listen());
+    }
+
+    @Test
     public void listen_should_return_null_when_no_messages_sent() {
         Packet packet = snap.listen();
 
