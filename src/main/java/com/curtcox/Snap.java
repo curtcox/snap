@@ -1,46 +1,18 @@
 package com.curtcox;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.curtcox.Check.notNull;
-
+// Potential future API
 public final class Snap {
 
-    private final Network network;
-    private final List<Packet> packets = new ArrayList<>();
-
-    private Snap(Network network) {
-        this.network = notNull(network);
-    }
-
-    public static Snap on(Network network) {
-        Snap snap = new Snap(network);
-        network.add(snap);
-        return snap;
-    }
-
     public void send(String topic, String message) {
-        network.send(new Packet(topic,message));
-    }
-
-    void receive(Packet packet) {
-        packets.add(packet);
+        throw new UnsupportedOperationException();
     }
 
     public Packet listen(String topic) {
-        for (int i=0; i< packets.size(); i++) {
-            Packet packet = packets.get(i);
-            if (topic.equals(packet.topic)) {
-                packets.remove(i);
-                return packet;
-            }
-        }
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     public Packet listen() {
-        return (packets.isEmpty()) ? null : packets.remove(0);
+        throw new UnsupportedOperationException();
     }
 
 }

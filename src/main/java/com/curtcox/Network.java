@@ -5,15 +5,15 @@ import java.util.List;
 
 final class Network {
 
-    private final List<Snap> snaps = new ArrayList<>();
+    private final List<Packet.Receiver> receivers = new ArrayList<>();
 
     public void send(Packet packet) {
-        for (Snap snap : snaps) {
+        for (Packet.Receiver snap : receivers) {
             snap.receive(packet);
         }
     }
 
-    public void add(Snap snap) {
-        snaps.add(snap);
+    public void add(Packet.Receiver snap) {
+        receivers.add(snap);
     }
 }

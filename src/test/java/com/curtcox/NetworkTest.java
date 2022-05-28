@@ -7,8 +7,8 @@ import static org.junit.Assert.*;
 public class NetworkTest {
 
     Network network = new Network();
-    Snap snap1 = Snap.on(network);
-    Snap snap2 = Snap.on(network);
+    Node snap1 = Node.on(network);
+    Node snap2 = Node.on(network);
 
     @Test
     public void can_create() {
