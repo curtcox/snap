@@ -4,8 +4,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
 
-import java.io.*;
-
 import static org.junit.Assert.*;
 
 public class NetworkTest {
@@ -75,35 +73,6 @@ public class NetworkTest {
         Packet packet2 = node2.listen();
         assertEquals("phone",packet2.topic);
         assertEquals("ring",packet2.message);
-    }
-
-    @Test
-    public void messages_can_be_sent_to_and_thru_a_network() throws IOException {
-        Packet packet = new Packet("phone","ring");
-        PipedOutputStream externalInput = new PipedOutputStream();
-        PipedInputStream externalOutput = new PipedInputStream();
-        OutputStreamPacketWriter writer = new OutputStreamPacketWriter(externalInput);
-        InputStreamPacketReader reader = new InputStreamPacketReader(externalOutput);
-
-        PacketRelay relay = new PacketRelay(
-                new InputStreamPacketReader(new PipedInputStream(externalInput)),
-                new OutputStreamPacketWriter(new PipedOutputStream(externalOutput))
-        );
-
-        network.add(relay);
-        writer.write(packet);
-        Packet read = reader.read();
-
-        assertEquals("phone",read.topic);
-        assertEquals("ring",read.message);
-
-        Packet heard1 = node2.listen();
-        assertEquals("phone",heard1.topic);
-        assertEquals("ring",heard1.message);
-
-        Packet heard2 = node2.listen();
-        assertEquals("phone",heard2.topic);
-        assertEquals("ring",heard2.message);
     }
 
 }

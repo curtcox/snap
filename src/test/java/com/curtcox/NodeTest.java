@@ -3,6 +3,7 @@ package com.curtcox;
 import org.junit.Before;
 import org.junit.Test;
 
+import static com.curtcox.Random.random;
 import static org.junit.Assert.*;
 
 public class NodeTest {
@@ -136,10 +137,6 @@ public class NodeTest {
         assertEquals("2", node.listen().message);
         assertEquals("3", node.listen().message);
         assertEquals("4", node.listen().message);
-    }
-
-    String random(String prefix) {
-        return prefix + System.currentTimeMillis() % 1000;
     }
 
 }
