@@ -1,7 +1,7 @@
 package com.curtcox;
 
-public final class Check {
-    public static <T> T notNull(T t) {
+final class Check {
+    static <T> T notNull(T t) {
         if (t==null) {
             throw new NullPointerException();
         }

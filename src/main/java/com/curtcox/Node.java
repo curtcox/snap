@@ -5,9 +5,7 @@ import java.util.List;
 
 import static com.curtcox.Check.notNull;
 
-final class Node
-    implements Packet.Receiver
-{
+final class Node {
 
     private final Network network;
     private final List<Packet> packets = new ArrayList<>();
@@ -16,7 +14,7 @@ final class Node
         this.network = notNull(network);
     }
 
-    public static Node on(Network network) {
+    static Node on(Network network) {
         Node node = new Node(network);
         network.add(node);
         return node;
@@ -26,11 +24,11 @@ final class Node
         network.send(new Packet(topic,message));
     }
 
-    public void receive(Packet packet) {
+    void receive(Packet packet) {
         packets.add(packet);
     }
 
-    public Packet listen(String topic) {
+    Packet listen(String topic) {
         for (int i=0; i< packets.size(); i++) {
             Packet packet = packets.get(i);
             if (topic.equals(packet.topic)) {
@@ -41,7 +39,7 @@ final class Node
         return null;
     }
 
-    public Packet listen() {
+    Packet listen() {
         return (packets.isEmpty()) ? null : packets.remove(0);
     }
 
