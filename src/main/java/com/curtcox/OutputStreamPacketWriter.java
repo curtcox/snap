@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
-import static com.curtcox.Bytes.bytes;
+import static com.curtcox.Bytes.*;
 import static com.curtcox.Check.notNull;
 
 final class OutputStreamPacketWriter implements Packet.Writer {
@@ -25,9 +25,12 @@ final class OutputStreamPacketWriter implements Packet.Writer {
         ).value());
     }
 
-    private byte[] sizePlusValue(String value) {
+    static byte[] sizePlusValue(String value) {
+        int length = value.length();
+        byte hi = (byte) (length / 256);
+        byte lo = (byte) (length % 0xFF);
         return Bytes.from(
-                bytes(0,value.length()).value(),
+                bytes(hi,lo).value(),
                 value.getBytes(StandardCharsets.UTF_8)
         ).value();
     }

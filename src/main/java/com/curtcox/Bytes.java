@@ -35,6 +35,14 @@ final class Bytes {
         return new Bytes(bytes);
     }
 
+    static Bytes bytes(byte... values) {
+        byte[] bytes = new byte[values.length];
+        for (int i=0; i<values.length; i++) {
+            bytes[i] = values[i];
+        }
+        return new Bytes(bytes);
+    }
+
     static Bytes from(byte[]... arrays) {
         int size = 0;
         for (byte[] a : arrays) {
@@ -80,5 +88,10 @@ final class Bytes {
 
     byte[] value() {
         return Arrays.copyOf(bytes,bytes.length);
+    }
+
+    @Override
+    public String toString() {
+        return new String(bytes,StandardCharsets.UTF_8) + " " + Arrays.toString(bytes);
     }
 }

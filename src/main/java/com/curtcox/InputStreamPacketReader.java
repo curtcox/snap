@@ -28,13 +28,16 @@ final class InputStreamPacketReader implements Packet.Reader {
             throw new IOException("Snap packet expected");
         }
         int skip1 = Packet.MAGIC.length;
-        String topic = stringAt(raw,skip1 + 2,raw[skip1+1]);
+        String topic = stringAt(raw,skip1);
         int skip2 = skip1 + 2 + topic.length();
-        String message = stringAt(raw,skip2 + 2,raw[skip2+1]);
+        String message = stringAt(raw,skip2);
         return new Packet(topic, message);
     }
 
-    private String stringAt(byte[] raw, int offset, int length) {
-        return new String(raw, offset, length, StandardCharsets.UTF_8);
+    private String stringAt(byte[] raw, int offset) {
+        int hi = raw[offset] & 0xFF;
+        int lo = raw[offset + 1] & 0xFF;
+        int length = hi * 255 + lo;
+        return new String(raw, offset + 2, length, StandardCharsets.UTF_8);
     }
 }

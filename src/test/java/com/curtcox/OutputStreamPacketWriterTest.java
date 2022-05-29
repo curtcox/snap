@@ -59,13 +59,35 @@ public class OutputStreamPacketWriterTest {
         writer.write(packet);
 
         Bytes bytes = new Bytes(outputStream.toByteArray());
-        assertEquals(bytes,Bytes.from(
+        assertEquals(Bytes.from(
                 Packet.MAGIC.value(),
                 bytes(0,topic.length()).value(),
                 topic.getBytes(StandardCharsets.UTF_8),
                 bytes(0,message.length()).value(),
                 message.getBytes(StandardCharsets.UTF_8)
-        ));
+        ),bytes);
+    }
+
+    @Test
+    public void packets_with_long_topic_and_message() throws IOException {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        OutputStreamPacketWriter writer = new OutputStreamPacketWriter(outputStream);
+
+        Packet packet = packetWithLongTopicAndMessage();
+        String topic = packet.topic;
+        String message = packet.message;
+        writer.write(packet);
+
+        Bytes bytes = new Bytes(outputStream.toByteArray());
+        int expectedLength = Packet.MAGIC.length + topic.length() + message.length() + 4;
+        assertEquals(expectedLength, bytes.length);
+        assertEquals(Bytes.from(
+                Packet.MAGIC.value(),
+                bytes(1,topic.length() % 0xFF).value(),
+                topic.getBytes(StandardCharsets.UTF_8),
+                bytes(1,message.length() % 0xFF).value(),
+                message.getBytes(StandardCharsets.UTF_8)
+        ),bytes);
     }
 
     @Test
@@ -89,6 +111,16 @@ public class OutputStreamPacketWriterTest {
         OutputStreamPacketWriter writer = new OutputStreamPacketWriter(externalInput);
         InputStreamPacketReader reader = new InputStreamPacketReader(externalOutput);
 
+        Packet packet = packetWithLongTopicAndMessage();
+
+        writer.write(packet);
+        Packet read = reader.read();
+
+        assertEquals(packet.topic,read.topic);
+        assertEquals(packet.message,read.message);
+    }
+
+    private Packet packetWithLongTopicAndMessage() {
         String very = "Very, very, very, very, very, very, very, very, very, very, very, very, very, very, very, very,";
         String pad = toString() + new Date() + System.currentTimeMillis();
         String topic = very + very + " long topic or at least greater than 255 characters " + pad;
@@ -96,11 +128,6 @@ public class OutputStreamPacketWriterTest {
         assertTrue(topic.length()>255);
         assertTrue(message.length()>255);
         Packet packet = new Packet(topic,message);
-        writer.write(packet);
-        Packet read = reader.read();
-
-        assertEquals(topic,read.topic);
-        assertEquals(message,read.message);
+        return packet;
     }
-
 }
