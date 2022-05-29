@@ -25,7 +25,7 @@ public class InputStreamPacketReaderTest {
     public void can_read_packet() throws IOException {
         Packet packet = new Packet(topic,message);
         PipedOutputStream externalInput = new PipedOutputStream();
-        PipedInputStream externalOutput = new PipedInputStream();
+        PipedInputStream externalOutput = new PipedInputStream(externalInput);
         OutputStreamPacketWriter writer = new OutputStreamPacketWriter(externalInput);
         InputStreamPacketReader reader = new InputStreamPacketReader(externalOutput);
 

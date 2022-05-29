@@ -1,6 +1,6 @@
 package com.curtcox;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import static com.curtcox.Check.notNull;
@@ -24,11 +24,7 @@ final class Bytes {
     }
 
     static Bytes from(String value) {
-        try {
-            return new Bytes(value.getBytes("UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+        return new Bytes(value.getBytes(StandardCharsets.UTF_8));
     }
 
     static Bytes bytes(int... values) {

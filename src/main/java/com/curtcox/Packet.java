@@ -1,20 +1,12 @@
 package com.curtcox;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 import static com.curtcox.Check.notNull;
 
 final class Packet {
-    public static final Bytes MAGIC;
-
-    static {
-        try {
-            MAGIC = new Bytes("snap".getBytes("UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    public static final Bytes MAGIC = new Bytes("snap".getBytes(StandardCharsets.UTF_8));
 
     public final String topic;
     public final String message;
