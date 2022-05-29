@@ -1,5 +1,6 @@
 package com.curtcox;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +19,14 @@ final class Network {
     }
 
     void add(Packet.IO io) {
+        try {
+            Packet packet = io.read();
+            if (packet!=null) {
+                io.write(packet);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

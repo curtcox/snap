@@ -4,6 +4,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
 
+import java.io.IOException;
+
 import static org.junit.Assert.*;
 
 public class NetworkTest {
@@ -73,6 +75,44 @@ public class NetworkTest {
         Packet packet2 = node2.listen();
         assertEquals("phone",packet2.topic);
         assertEquals("ring",packet2.message);
+    }
+
+    class IO implements Packet.IO {
+
+        Packet toRead;
+        Packet written;
+        boolean wrote;
+        @Override
+        public Packet read() throws IOException {
+            return toRead;
+        }
+
+        @Override
+        public void write(Packet packet) throws IOException {
+            written = packet;
+            wrote = true;
+        }
+    }
+
+    @Test
+    public void no_packets_are_written_to_IO_when_there_are_no_packets_to_read() {
+        IO io = new IO();
+
+        network.add(io);
+
+        assertFalse(io.wrote);
+        assertNull(io.written);
+    }
+
+    @Test
+    public void packet_is_written_to_IO_when_there_is_a_packets_to_read() {
+        IO io = new IO();
+        Packet packet = new Packet("room","on");
+        io.toRead = packet;
+
+        network.add(io);
+
+        assertEquals(packet,io.written);
     }
 
 }
