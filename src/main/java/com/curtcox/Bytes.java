@@ -8,22 +8,22 @@ import static com.curtcox.Check.notNull;
 /**
  * An immutable byte array.
  */
-public final class Bytes {
+final class Bytes {
 
     private final byte[] bytes;
 
-    public final int length;
+    final int length;
 
-    public Bytes(byte[] bytes) {
+    Bytes(byte[] bytes) {
         this.bytes = notNull(bytes);
         this.length = bytes.length;
     }
 
-    public Bytes() {
+    Bytes() {
         this(new byte[0]);
     }
 
-    public static Bytes from(String value) {
+    static Bytes from(String value) {
         try {
             return new Bytes(value.getBytes("UTF-8"));
         } catch (UnsupportedEncodingException e) {
@@ -31,7 +31,15 @@ public final class Bytes {
         }
     }
 
-    public static Bytes from(byte[]... arrays) {
+    static Bytes bytes(int... values) {
+        byte[] bytes = new byte[values.length];
+        for (int i=0; i<values.length; i++) {
+            bytes[i] = (byte) values[i];
+        }
+        return new Bytes(bytes);
+    }
+
+    static Bytes from(byte[]... arrays) {
         int size = 0;
         for (byte[] a : arrays) {
             size = size + a.length;
@@ -47,11 +55,11 @@ public final class Bytes {
         return new Bytes(out);
     }
 
-    public byte at(int i) {
+    byte at(int i) {
         return bytes[i];
     }
 
-    public boolean startsWith(Bytes prefix) {
+    boolean startsWith(Bytes prefix) {
         if (prefix.bytes.length > bytes.length) {
             return false;
         }
@@ -74,7 +82,7 @@ public final class Bytes {
         return bytes.length == 0 ? 0 : bytes[0] * bytes.length;
     }
 
-    public byte[] value() {
+    byte[] value() {
         return Arrays.copyOf(bytes,bytes.length);
     }
 }

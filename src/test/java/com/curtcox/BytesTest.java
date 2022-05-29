@@ -2,6 +2,7 @@ package com.curtcox;
 
 import org.junit.Test;
 
+import static com.curtcox.Bytes.bytes;
 import static com.curtcox.TestUtil.assertEqualBytes;
 import static org.junit.Assert.*;
 
@@ -28,14 +29,6 @@ public class BytesTest {
     public void startsWith_false_when_bytes_do_not_start_with_given_bytes() {
         assertFalse(bytes(0,1,2,3,4).startsWith(bytes(0,1,9)));
         assertFalse(bytes(3,1,4).startsWith(bytes(3,1,1)));
-    }
-
-    private Bytes bytes(int... values) {
-        byte[] bytes = new byte[values.length];
-        for (int i=0; i<values.length; i++) {
-            bytes[i] = (byte) values[i];
-        }
-        return new Bytes(bytes);
     }
 
     @Test
