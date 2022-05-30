@@ -10,11 +10,12 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 
 import static com.curtcox.Random.random;
+import static com.curtcox.TestUtil.shortDelay;
 import static org.junit.Assert.*;
 
 public class NetworkIntegrationTest {
 
-    Network network = new Network();
+    Network network = Network.newPolling();
     Node node1 = Node.on(network);
     Node node2 = Node.on(network);
 
@@ -43,12 +44,15 @@ public class NetworkIntegrationTest {
     @Test
     public void messages_can_be_sent_thru_a_network() throws IOException {
         externalWriter.write(packet);
+
+        shortDelay();
         assertPacket(externalReader.read());
     }
 
     @Test
     public void messages_can_be_sent_to_a_network() throws IOException {
         externalWriter.write(packet);
+        shortDelay();
 
         assertPacket(node1.listen());
         assertPacket(node2.listen());

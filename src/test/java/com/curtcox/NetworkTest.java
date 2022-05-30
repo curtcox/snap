@@ -6,11 +6,12 @@ import org.junit.rules.Timeout;
 
 import java.io.IOException;
 
+import static com.curtcox.TestUtil.shortDelay;
 import static org.junit.Assert.*;
 
 public class NetworkTest {
 
-    Network network = new Network();
+    Network network = Network.newPolling();
     Node node1 = Node.on(network);
     Node node2 = Node.on(network);
 
@@ -21,7 +22,7 @@ public class NetworkTest {
 
     @Test
     public void can_create() {
-        assertNotNull(new Network());
+        assertNotNull(Network.newPolling());
     }
 
     @Test
@@ -111,6 +112,18 @@ public class NetworkTest {
 
         network.add(io);
 
+        shortDelay();
+        assertEquals(packet,io.written);
+    }
+
+    @Test
+    public void packet_is_written_to_IO_even_if_no_packet_is_initially_available() {
+        network.add(io);
+
+        Packet packet = new Packet("room","on");
+        io.toRead = packet;
+
+        shortDelay();
         assertEquals(packet,io.written);
     }
 
@@ -121,6 +134,7 @@ public class NetworkTest {
 
         network.add(io);
 
+        shortDelay();
         Packet packet1 = node1.listen();
         Packet packet2 = node2.listen();
         assertEquals("room", packet1.topic);

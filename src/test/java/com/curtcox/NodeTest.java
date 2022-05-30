@@ -9,7 +9,7 @@ import static org.junit.Assert.*;
 public class NodeTest {
 
     Node node;
-    Network network = new Network();
+    Network network = Network.newPolling();
 
     @Before
     public void setUp() {
