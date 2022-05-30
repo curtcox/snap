@@ -14,6 +14,8 @@ public class NetworkTest {
     Node node1 = Node.on(network);
     Node node2 = Node.on(network);
 
+    IO io = new IO();
+
     @Rule
     public Timeout globalTimeout = Timeout.seconds(2);
 
@@ -96,8 +98,6 @@ public class NetworkTest {
 
     @Test
     public void no_packets_are_written_to_IO_when_there_are_no_packets_to_read() {
-        IO io = new IO();
-
         network.add(io);
 
         assertFalse(io.wrote);
@@ -106,13 +106,27 @@ public class NetworkTest {
 
     @Test
     public void packet_is_written_to_IO_when_there_is_a_packets_to_read() {
-        IO io = new IO();
         Packet packet = new Packet("room","on");
         io.toRead = packet;
 
         network.add(io);
 
         assertEquals(packet,io.written);
+    }
+
+    @Test
+    public void messages_from_IO_are_delived_to_nodes() {
+        Packet packet = new Packet("room","on");
+        io.toRead = packet;
+
+        network.add(io);
+
+        Packet packet1 = node1.listen();
+        Packet packet2 = node2.listen();
+        assertEquals("room", packet1.topic);
+        assertEquals("room", packet2.topic);
+        assertEquals("on", packet1.message);
+        assertEquals("on", packet2.message);
     }
 
 }

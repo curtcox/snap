@@ -7,10 +7,18 @@ import java.util.List;
 final class Network {
 
     private final List<Node> nodes = new ArrayList<>();
+    private final List<Packet.IO> ios = new ArrayList<>();
 
     void send(Packet packet) {
         for (Node node : nodes) {
             node.receive(packet);
+        }
+        for (Packet.IO io: ios) {
+            try {
+                io.write(packet);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -19,10 +27,11 @@ final class Network {
     }
 
     void add(Packet.IO io) {
+        ios.add(io);
         try {
             Packet packet = io.read();
             if (packet!=null) {
-                io.write(packet);
+                send(packet);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
