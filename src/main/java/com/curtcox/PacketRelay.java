@@ -16,11 +16,11 @@ final class PacketRelay implements Packet.IO {
 
     @Override
     public Packet read() throws IOException {
-        return null;
+        return input.read();
     }
 
     @Override
     public void write(Packet packet) throws IOException {
-
+        output.write(packet);
     }
 }

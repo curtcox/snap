@@ -6,4 +6,7 @@ final class Random {
         return prefix + System.currentTimeMillis() % 1000;
     }
 
+    static Packet packet() {
+        return new Packet(random("topic"),random("message"));
+    }
 }
