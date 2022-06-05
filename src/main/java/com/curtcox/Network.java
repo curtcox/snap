@@ -54,13 +54,20 @@ final class Network {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     void send(Packet packet) {
+        sendToNodes(packet);
+        sendToIos(packet);
+    }
+
+    private void sendToNodes(Packet packet) {
         for (Node node : nodes) {
             node.receive(packet);
         }
+    }
+
+    private void sendToIos(Packet packet) {
         for (Packet.IO io: ios) {
             try {
                 io.write(packet);
@@ -78,4 +85,7 @@ final class Network {
         ios.add(io);
     }
 
+    private void info(String message) {
+        System.out.println(message);
+    }
 }

@@ -6,7 +6,9 @@ import org.junit.Test;
 import static com.curtcox.Random.random;
 import static org.junit.Assert.*;
 
-public class NodeTest {
+public class SnapTest {
+
+    Snap snap;
 
     Node node;
     Network network = Network.newPolling();
@@ -14,11 +16,17 @@ public class NodeTest {
     @Before
     public void setUp() {
         node = Node.on(network);
+        snap = new Snap(node);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void requires_node() {
+        assertNotNull(new Snap(null));
     }
 
     @Test
     public void write_should_not_produce_error() {
-        node.write(new Packet("schmopic","smessage"));
+        snap.send("schmopic","smessage");
     }
 
     @Test
@@ -26,8 +34,8 @@ public class NodeTest {
         String topic = random("topic");
         String message = random("message");
 
-        node.write(new Packet(topic,message));
-        Packet packet = node.read(topic);
+        snap.send(topic,message);
+        Packet packet = snap.listen(topic);
 
         assertNotNull(packet);
         assertEquals(topic,packet.topic);
@@ -37,21 +45,21 @@ public class NodeTest {
     @Test
     public void read_should_only_return_a_message_once_when_topic_specified() {
         String topic = random("topic");
-        node.write(new Packet(topic,random("message")));
-        assertNotNull(node.read(topic));
-        assertNull(node.read(topic));
+        snap.send(topic,random("message"));
+        assertNotNull(snap.listen(topic));
+        assertNull(snap.listen(topic));
     }
 
     @Test
     public void read_should_only_return_a_message_once_when_no_topic_specified() {
-        node.write(new Packet(random("topic"),random("message")));
-        assertNotNull(node.read());
-        assertNull(node.read());
+        snap.send(random("topic"),random("message"));
+        assertNotNull(snap.listen());
+        assertNull(snap.listen());
     }
 
     @Test
     public void read_should_return_null_when_no_messages_sent() {
-        Packet packet = node.read();
+        Packet packet = snap.listen();
 
         assertNull(packet);
     }
@@ -61,8 +69,8 @@ public class NodeTest {
         String topic = random("topic");
         String message = random("message");
 
-        node.write(new Packet(topic,message));
-        Packet packet = node.read("different " + topic);
+        snap.send(topic,message);
+        Packet packet = snap.listen("different " + topic);
 
         assertNull(packet);
     }
@@ -71,18 +79,18 @@ public class NodeTest {
     public void read_with_no_topic_should_return_messages_sent_to_any_topic() {
         String topic1 = random("topic1");
         String message1 = random("message1");
-        node.write(new Packet(topic1,message1));
+        snap.send(topic1,message1);
         String topic2 = random("topic2");
         String message2 = random("message2");
-        node.write(new Packet(topic2,message2));
+        snap.send(topic2,message2);
 
-        Packet packet1 = node.read();
+        Packet packet1 = snap.listen();
 
         assertNotNull(packet1);
         assertEquals(topic1,packet1.topic);
         assertEquals(message1,packet1.message);
 
-        Packet packet2 = node.read();
+        Packet packet2 = snap.listen();
 
         assertNotNull(packet2);
         assertEquals(topic2,packet2.topic);
@@ -93,50 +101,50 @@ public class NodeTest {
     public void read_with_topic_should_return_1st_message_when_it_matches_topic() {
         String topic1 = random("topic1");
         String message1 = random("message1");
-        node.write(new Packet(topic1,message1));
+        snap.send(topic1,message1);
         String topic2 = random("topic2");
         String message2 = random("message2");
-        node.write(new Packet(topic2,message2));
+        snap.send(topic2,message2);
 
-        Packet packet = node.read(topic1);
+        Packet packet = snap.listen(topic1);
 
         assertNotNull(packet);
         assertEquals(topic1,packet.topic);
         assertEquals(message1,packet.message);
 
-        assertNull(node.read(topic1));
+        assertNull(snap.listen(topic1));
     }
 
     @Test
     public void read_with_topic_should_return_2nd_message_when_it_matches_topic() {
         String topic1 = random("topic1");
         String message1 = random("message1");
-        node.write(new Packet(topic1,message1));
+        snap.send(topic1,message1);
         String topic2 = random("topic2");
         String message2 = random("message2");
-        node.write(new Packet(topic2,message2));
+        snap.send(topic2,message2);
 
-        Packet packet = node.read(topic2);
+        Packet packet = snap.listen(topic2);
 
         assertNotNull(packet);
         assertEquals(topic2,packet.topic);
         assertEquals(message2,packet.message);
-        assertNull(node.read(topic2));
+        assertNull(snap.listen(topic2));
     }
 
     @Test
     public void messsages_are_delivered_in_order_when_on_network() {
         Node.on(network);
 
-        node.write(new Packet("call","1"));
-        node.write(new Packet("call","2"));
-        node.write(new Packet("call","3"));
-        node.write(new Packet("call","4"));
+        snap.send("call","1");
+        snap.send("call","2");
+        snap.send("call","3");
+        snap.send("call","4");
 
-        assertEquals("1", node.read().message);
-        assertEquals("2", node.read().message);
-        assertEquals("3", node.read().message);
-        assertEquals("4", node.read().message);
+        assertEquals("1", snap.listen().message);
+        assertEquals("2", snap.listen().message);
+        assertEquals("3", snap.listen().message);
+        assertEquals("4", snap.listen().message);
     }
 
 }

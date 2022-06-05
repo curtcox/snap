@@ -54,8 +54,8 @@ public class NetworkIntegrationTest {
         write_a_packet_to_the_network();
 
         externalReader.read();
-        assertPacket(node1.listen());
-        assertPacket(node2.listen());
+        assertPacket(node1.read());
+        assertPacket(node2.read());
     }
 
     private void write_a_packet_to_the_network() throws IOException {

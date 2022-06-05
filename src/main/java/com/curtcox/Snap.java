@@ -1,18 +1,26 @@
 package com.curtcox;
 
+import static com.curtcox.Check.notNull;
+
 // Potential future API
 public final class Snap {
 
+    final Node node;
+
+    Snap(Node node) {
+        this.node = notNull(node);
+    }
+
     public void send(String topic, String message) {
-        throw new UnsupportedOperationException();
+        node.write(new Packet(topic,message));
     }
 
     public Packet listen(String topic) {
-        throw new UnsupportedOperationException();
+        return node.read(topic);
     }
 
     public Packet listen() {
-        throw new UnsupportedOperationException();
+        return node.read();
     }
 
 }

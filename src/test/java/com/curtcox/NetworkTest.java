@@ -4,8 +4,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
 
-import java.io.IOException;
-
 import static com.curtcox.TestUtil.shortDelay;
 import static org.junit.Assert.*;
 
@@ -27,55 +25,55 @@ public class NetworkTest {
 
     @Test
     public void there_are_no_messages_to_listen_to_before_any_are_sent() {
-        assertNull(node1.listen());
-        assertNull(node2.listen());
+        assertNull(node1.read());
+        assertNull(node2.read());
     }
 
     @Test
     public void messages_can_be_sent_over_a_network() {
-        node1.send("phone","ring");
-        Packet packet = node2.listen();
-        assertEquals("phone",packet.topic);
-        assertEquals("ring",packet.message);
+        Packet packet = Random.packet();
+        node1.write(packet);
+        Packet read = node2.read();
+        assertEquals(packet,read);
     }
 
     @Test
     public void messages_are_delivered_in_order_locally() {
-        node1.send("call","Mom");
-        node1.send("call","Dad");
+        node1.write(new Packet("call","Mom"));
+        node1.write(new Packet("call","Dad"));
 
-        assertEquals("Mom", node1.listen().message);
-        assertEquals("Dad", node1.listen().message);
+        assertEquals("Mom", node1.read().message);
+        assertEquals("Dad", node1.read().message);
     }
 
     @Test
     public void messages_are_delivered_in_order_over_network() {
-        node1.send("call","Mom");
-        node1.send("call","Dad");
+        node1.write(new Packet("call","Mom"));
+        node1.write(new Packet("call","Dad"));
 
-        assertEquals("Mom", node2.listen().message);
-        assertEquals("Dad", node2.listen().message);
+        assertEquals("Mom", node2.read().message);
+        assertEquals("Dad", node2.read().message);
     }
 
     @Test
     public void messages_can_be_read_only_once_at_each_point() {
-        node1.send("phone","ring");
+        node1.write(new Packet("phone","ring"));
 
-        assertNotNull(node1.listen());
-        assertNotNull(node2.listen());
-        assertNull(node1.listen());
-        assertNull(node2.listen());
+        assertNotNull(node1.read());
+        assertNotNull(node2.read());
+        assertNull(node1.read());
+        assertNull(node2.read());
     }
 
     @Test
     public void messages_can_be_read_at_multiple_points() {
-        node1.send("phone","ring");
+        node1.write(new Packet("phone","ring"));
 
-        Packet packet1 = node1.listen();
+        Packet packet1 = node1.read();
         assertEquals("phone",packet1.topic);
         assertEquals("ring",packet1.message);
 
-        Packet packet2 = node2.listen();
+        Packet packet2 = node2.read();
         assertEquals("phone",packet2.topic);
         assertEquals("ring",packet2.message);
     }
@@ -86,12 +84,12 @@ public class NetworkTest {
         Packet written;
         boolean wrote;
         @Override
-        public Packet read() throws IOException {
+        public Packet read() {
             return toRead;
         }
 
         @Override
-        public void write(Packet packet) throws IOException {
+        public void write(Packet packet) {
             written = packet;
             wrote = true;
         }
@@ -135,8 +133,8 @@ public class NetworkTest {
         network.add(io);
 
         shortDelay();
-        Packet packet1 = node1.listen();
-        Packet packet2 = node2.listen();
+        Packet packet1 = node1.read();
+        Packet packet2 = node2.read();
         assertEquals("room", packet1.topic);
         assertEquals("room", packet2.topic);
         assertEquals("on", packet1.message);
