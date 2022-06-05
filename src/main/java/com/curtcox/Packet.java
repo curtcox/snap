@@ -30,6 +30,15 @@ final class Packet {
         this.message = notNull(message);
     }
 
+    public boolean equals(Object o) {
+        Packet that  = (Packet) o;
+        return topic.equals(that.topic) && message.equals(that.message);
+    }
+
+    public int hashCode() {
+        return topic.hashCode() ^ message.hashCode();
+    }
+
     @Override
     public String toString() {
        return topic + " " + message;
