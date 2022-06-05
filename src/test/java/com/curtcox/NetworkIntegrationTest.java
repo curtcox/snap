@@ -23,14 +23,15 @@ public class NetworkIntegrationTest {
     String message = random("message");
 
     Packet packet = new Packet(topic,message);
-    PipedOutputStream externalInput = new PipedOutputStream();
-    PipedInputStream externalOutput = new PipedInputStream();
-    OutputStreamPacketWriter externalWriter = new OutputStreamPacketWriter(externalInput);
-    InputStreamPacketReader externalReader = new InputStreamPacketReader(externalOutput);
-
+    OutputStreamPacketWriter externalWriter;
+    InputStreamPacketReader externalReader;
 
     @Before
     public void setUp() throws IOException {
+        PipedOutputStream externalInput = new PipedOutputStream();
+        PipedInputStream externalOutput = new PipedInputStream();
+        externalWriter = new OutputStreamPacketWriter(externalInput);
+        externalReader = new InputStreamPacketReader(externalOutput);
         PacketRelay relay = new PacketRelay(
                 new InputStreamPacketReader(new PipedInputStream(externalInput)),
                 new OutputStreamPacketWriter(new PipedOutputStream(externalOutput))
@@ -39,23 +40,27 @@ public class NetworkIntegrationTest {
     }
 
     @Rule
-    public Timeout globalTimeout = Timeout.seconds(2);
+    public Timeout globalTimeout = Timeout.seconds(3);
 
     @Test
     public void messages_can_be_sent_thru_a_network() throws IOException {
-        externalWriter.write(packet);
+        write_a_packet_to_the_network();
 
-        shortDelay();
         assertPacket(externalReader.read());
     }
 
     @Test
     public void messages_can_be_sent_to_a_network() throws IOException {
-        externalWriter.write(packet);
-        shortDelay();
+        write_a_packet_to_the_network();
 
+        externalReader.read();
         assertPacket(node1.listen());
         assertPacket(node2.listen());
+    }
+
+    private void write_a_packet_to_the_network() throws IOException {
+        externalWriter.write(packet);
+        shortDelay();
     }
 
     private void assertPacket(Packet packet) {
