@@ -6,6 +6,7 @@ import org.junit.rules.Timeout;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 import static com.curtcox.Random.random;
 import static com.curtcox.TestUtil.shortDelay;
@@ -45,6 +46,21 @@ public class SimpleNetworkIntegrationTest {
         assertPacket(node2.read());
         assertPacket(node3.read());
         assertPacket(node4.read());
+    }
+
+    @Test
+    public void messages_can_be_read_from_a_reader_writer_thru_a_network() throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        PacketReaderWriter readerWriter = PacketReaderWriter.from(new ByteArrayInputStream(new byte[0]),out);
+        network.add(readerWriter);
+        write_a_packet_to_reader_writer();
+
+        assertPacket(node1.read());
+        assertPacket(node2.read());
+        assertPacket(node3.read());
+        assertPacket(node4.read());
+        InputStreamPacketReader reader = new InputStreamPacketReader(new ByteArrayInputStream(out.toByteArray()));
+        assertPacket(reader.read());
     }
 
     private void write_a_packet_to_reader_writer() {
