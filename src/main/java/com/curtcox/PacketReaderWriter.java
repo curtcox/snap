@@ -4,12 +4,12 @@ import java.io.IOException;
 
 import static com.curtcox.Check.notNull;
 
-final class PacketRelay implements Packet.IO {
+final class PacketReaderWriter implements Packet.IO {
 
     final Packet.Reader input;
     final Packet.Writer output;
 
-    PacketRelay(Packet.Reader input, Packet.Writer output) {
+    PacketReaderWriter(Packet.Reader input, Packet.Writer output) {
         this.input = notNull(input);
         this.output = notNull(output);
     }

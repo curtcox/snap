@@ -6,16 +6,14 @@ import org.junit.Test;
 import org.junit.rules.Timeout;
 
 import java.io.IOException;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
 
 import static com.curtcox.Random.random;
 import static com.curtcox.TestUtil.shortDelay;
 import static org.junit.Assert.*;
 
-public class NetworkIntegrationTest {
+public class SimpleNetworkIntegrationTest {
 
-    Network network = Network.newPolling();
+    SimpleNetwork network = SimpleNetwork.newPolling();
     Node node1 = Node.on(network);
     Node node2 = Node.on(network);
 
@@ -23,21 +21,9 @@ public class NetworkIntegrationTest {
     String message = random("message");
 
     Packet packet = new Packet(topic,message);
-    OutputStreamPacketWriter externalWriter;
-    InputStreamPacketReader externalReader;
 
-    @Before
-    public void setUp() throws IOException {
-        PipedOutputStream externalInput = new PipedOutputStream();
-        PipedInputStream externalOutput = new PipedInputStream();
-        externalWriter = new OutputStreamPacketWriter(externalInput);
-        externalReader = new InputStreamPacketReader(externalOutput);
-        PacketRelay relay = new PacketRelay(
-                new InputStreamPacketReader(new PipedInputStream(externalInput)),
-                new OutputStreamPacketWriter(new PipedOutputStream(externalOutput))
-        );
-        network.add(relay);
-    }
+    Node bridge1 = Node.on(network);
+    Node bridge2 = Node.on(network);
 
     @Rule
     public Timeout globalTimeout = Timeout.seconds(3);
@@ -46,20 +32,20 @@ public class NetworkIntegrationTest {
     public void messages_can_be_sent_thru_a_network() throws IOException {
         write_a_packet_to_the_network();
 
-        assertPacket(externalReader.read());
+        assertPacket(bridge2.read());
     }
 
     @Test
     public void messages_can_be_sent_to_a_network() throws IOException {
         write_a_packet_to_the_network();
 
-        externalReader.read();
+        bridge2.read();
         assertPacket(node1.read());
         assertPacket(node2.read());
     }
 
     private void write_a_packet_to_the_network() throws IOException {
-        externalWriter.write(packet);
+        bridge1.write(packet);
         shortDelay();
     }
 

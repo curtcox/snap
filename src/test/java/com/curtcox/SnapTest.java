@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static com.curtcox.Random.random;
+import static com.curtcox.TestUtil.shortDelay;
 import static org.junit.Assert.*;
 
 public class SnapTest {
@@ -11,7 +12,7 @@ public class SnapTest {
     Snap snap;
 
     Node node;
-    Network network = Network.newPolling();
+    ReflectorNetwork network = new ReflectorNetwork();
 
     @Before
     public void setUp() {
@@ -35,6 +36,7 @@ public class SnapTest {
         String message = random("message");
 
         snap.send(topic,message);
+        shortDelay();
         Packet packet = snap.listen(topic);
 
         assertNotNull(packet);
@@ -46,6 +48,7 @@ public class SnapTest {
     public void read_should_only_return_a_message_once_when_topic_specified() {
         String topic = random("topic");
         snap.send(topic,random("message"));
+        shortDelay();
         assertNotNull(snap.listen(topic));
         assertNull(snap.listen(topic));
     }
@@ -53,6 +56,7 @@ public class SnapTest {
     @Test
     public void read_should_only_return_a_message_once_when_no_topic_specified() {
         snap.send(random("topic"),random("message"));
+        shortDelay();
         assertNotNull(snap.listen());
         assertNull(snap.listen());
     }
@@ -83,6 +87,7 @@ public class SnapTest {
         String topic2 = random("topic2");
         String message2 = random("message2");
         snap.send(topic2,message2);
+        shortDelay();
 
         Packet packet1 = snap.listen();
 
@@ -105,6 +110,7 @@ public class SnapTest {
         String topic2 = random("topic2");
         String message2 = random("message2");
         snap.send(topic2,message2);
+        shortDelay();
 
         Packet packet = snap.listen(topic1);
 
@@ -123,6 +129,7 @@ public class SnapTest {
         String topic2 = random("topic2");
         String message2 = random("message2");
         snap.send(topic2,message2);
+        shortDelay();
 
         Packet packet = snap.listen(topic2);
 
@@ -140,6 +147,7 @@ public class SnapTest {
         snap.send("call","2");
         snap.send("call","3");
         snap.send("call","4");
+        shortDelay();
 
         assertEquals("1", snap.listen().message);
         assertEquals("2", snap.listen().message);

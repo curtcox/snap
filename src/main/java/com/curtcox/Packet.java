@@ -11,10 +11,6 @@ final class Packet {
     public final String topic;
     public final String message;
 
-    interface Receiver {
-        void receive(Packet packet);
-    }
-
     interface Reader {
         Packet read() throws IOException;
     }
@@ -24,6 +20,15 @@ final class Packet {
     }
 
     interface IO extends Reader, Writer {}
+
+    /**
+     * Something that accepts things that packets can be written to and from.
+     * Networks actively execute methods on the IOs they are given in contrast to the IOs which have no
+     * threads or executors.
+     */
+    interface Network {
+        void add(IO io);
+    }
 
     public Packet(String topic, String message) {
         this.topic = notNull(topic);

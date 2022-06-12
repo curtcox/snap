@@ -1,19 +1,27 @@
 package com.curtcox;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import static com.curtcox.Random.random;
+import static com.curtcox.TestUtil.shortDelay;
 import static org.junit.Assert.*;
 
 public class NodeTest {
 
     Node node;
-    Network network = Network.newPolling();
+
+    ReflectorNetwork network = new ReflectorNetwork();
 
     @Before
     public void setUp() {
         node = Node.on(network);
+    }
+
+    @After
+    public void tearDown() {
+        network.shutdown();
     }
 
     @Test
@@ -27,6 +35,7 @@ public class NodeTest {
         String message = random("message");
 
         node.write(new Packet(topic,message));
+        shortDelay();
         Packet packet = node.read(topic);
 
         assertNotNull(packet);
@@ -38,19 +47,23 @@ public class NodeTest {
     public void read_should_only_return_a_message_once_when_topic_specified() {
         String topic = random("topic");
         node.write(new Packet(topic,random("message")));
+        shortDelay();
         assertNotNull(node.read(topic));
         assertNull(node.read(topic));
     }
 
     @Test
-    public void read_should_only_return_a_message_once_when_no_topic_specified() {
+    public void read_should_return_a_message_once_when_no_topic_specified() {
         node.write(new Packet(random("topic"),random("message")));
+        shortDelay();
+
         assertNotNull(node.read());
         assertNull(node.read());
     }
 
     @Test
     public void read_should_return_null_when_no_messages_sent() {
+        shortDelay();
         Packet packet = node.read();
 
         assertNull(packet);
@@ -62,6 +75,7 @@ public class NodeTest {
         String message = random("message");
 
         node.write(new Packet(topic,message));
+        shortDelay();
         Packet packet = node.read("different " + topic);
 
         assertNull(packet);
@@ -75,6 +89,7 @@ public class NodeTest {
         String topic2 = random("topic2");
         String message2 = random("message2");
         node.write(new Packet(topic2,message2));
+        shortDelay();
 
         Packet packet1 = node.read();
 
@@ -97,6 +112,7 @@ public class NodeTest {
         String topic2 = random("topic2");
         String message2 = random("message2");
         node.write(new Packet(topic2,message2));
+        shortDelay();
 
         Packet packet = node.read(topic1);
 
@@ -115,6 +131,7 @@ public class NodeTest {
         String topic2 = random("topic2");
         String message2 = random("message2");
         node.write(new Packet(topic2,message2));
+        shortDelay();
 
         Packet packet = node.read(topic2);
 
@@ -132,11 +149,21 @@ public class NodeTest {
         node.write(new Packet("call","2"));
         node.write(new Packet("call","3"));
         node.write(new Packet("call","4"));
+        shortDelay();
 
         assertEquals("1", node.read().message);
         assertEquals("2", node.read().message);
         assertEquals("3", node.read().message);
         assertEquals("4", node.read().message);
+    }
+
+    @Test
+    public void messages_can_be_read_only_once() {
+        node.write(new Packet("phone","ring"));
+        shortDelay();
+
+        assertNotNull(node.read());
+        assertNull(node.read());
     }
 
 }

@@ -12,17 +12,17 @@ public class PacketRelayTest {
 
     ByteArrayInputStream inputStream;
     ByteArrayOutputStream outputStream;
-    PacketRelay relay;
+    PacketReaderWriter relay;
 
     @Test(expected = NullPointerException.class)
     public void requires_inputs() {
-        assertNotNull(new PacketRelay(null,null));
+        assertNotNull(new PacketReaderWriter(null,null));
     }
 
-    private PacketRelay createRelay(byte[] bytes) {
+    private PacketReaderWriter createRelay(byte[] bytes) {
         inputStream = new ByteArrayInputStream(bytes);
         outputStream = new ByteArrayOutputStream();
-        relay = new PacketRelay(new InputStreamPacketReader(inputStream),new OutputStreamPacketWriter(outputStream));
+        relay = new PacketReaderWriter(new InputStreamPacketReader(inputStream),new OutputStreamPacketWriter(outputStream));
         return relay;
     }
 
