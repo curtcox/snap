@@ -1,5 +1,6 @@
 package com.curtcox;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
@@ -48,4 +49,16 @@ final class Packet {
     public String toString() {
        return topic + " " + message;
     }
+
+    Bytes asBytes() {
+        try {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            OutputStreamPacketWriter writer = new OutputStreamPacketWriter(outputStream);
+            writer.write(this);
+            return new Bytes(outputStream.toByteArray());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }

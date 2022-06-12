@@ -1,5 +1,6 @@
 package com.curtcox;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
@@ -34,4 +35,5 @@ final class OutputStreamPacketWriter implements Packet.Writer {
                 value.getBytes(StandardCharsets.UTF_8)
         ).value();
     }
+
 }
