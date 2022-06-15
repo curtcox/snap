@@ -1,7 +1,6 @@
 package com.curtcox;
 
 import java.io.IOException;
-import java.util.concurrent.*;
 
 import static com.curtcox.Check.notNull;
 
@@ -10,14 +9,14 @@ import static com.curtcox.Check.notNull;
  */
 final class ReflectorNetwork implements Packet.Network {
 
-    private final ExecutorService executor;
+    private final Runner runner;
 
     ReflectorNetwork() {
-        this(Executors.newSingleThreadExecutor());
+        this(Runner.of());
     }
 
-    private ReflectorNetwork(ExecutorService executor) {
-        this.executor = notNull(executor);
+    private ReflectorNetwork(Runner runner) {
+        this.runner = notNull(runner);
     }
 
     @Override
@@ -26,13 +25,7 @@ final class ReflectorNetwork implements Packet.Network {
     }
 
     private void scheduleNextReflection(final Packet.IO io) {
-         executor.execute(new Runnable() {
-             @Override
-             public void run() {
-                 reflect(io);
-                 scheduleNextReflection(io);
-             }
-         });
+         runner.periodically(() -> reflect(io));
     }
 
     void reflect(Packet.IO io) {
@@ -46,7 +39,4 @@ final class ReflectorNetwork implements Packet.Network {
         }
     }
 
-    void shutdown() {
-        executor.shutdown();
-    }
 }

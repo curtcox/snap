@@ -2,7 +2,6 @@ package com.curtcox;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.*;
 
 import static com.curtcox.Check.notNull;
 
@@ -10,14 +9,14 @@ final class SimpleNetwork implements Packet.Network {
 
     private final List<Packet.IO> ios = new ArrayList<>();
 
-    private final ExecutorService executor;
+    private final Runner runner;
 
-    private SimpleNetwork(ExecutorService executor) {
-        this.executor = notNull(executor);
+    private SimpleNetwork(Runner executor) {
+        this.runner = notNull(executor);
     }
 
     private SimpleNetwork() {
-        this(Executors.newSingleThreadExecutor());
+        this(Runner.of());
     }
 
     static SimpleNetwork newPolling() {
@@ -27,17 +26,13 @@ final class SimpleNetwork implements Packet.Network {
     }
 
     private void queuePoll() {
-        executor.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            exchange();
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                        queuePoll();
-                    }
-                });
+        runner.periodically(() -> {
+            try {
+                exchange();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     synchronized private void exchange() throws IOException {

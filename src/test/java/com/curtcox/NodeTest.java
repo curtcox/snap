@@ -19,11 +19,6 @@ public class NodeTest {
         node = Node.on(network);
     }
 
-    @After
-    public void tearDown() {
-        network.shutdown();
-    }
-
     @Test
     public void write_should_not_produce_error() {
         node.write(new Packet("schmopic","smessage"));

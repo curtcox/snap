@@ -12,7 +12,7 @@ final class Node {
     private final List<Packet> fromOther = packets();
 
     private static List<Packet> packets() {
-        return Collections.synchronizedList(new ArrayList<Packet>());
+        return Collections.synchronizedList(new ArrayList<>());
     }
 
     static Node on(Packet.Network network) {
