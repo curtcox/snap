@@ -28,7 +28,7 @@ public final class TestUtil {
 
     static void shortDelay() {
         try {
-            Thread.sleep(250);
+            Thread.sleep(330);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
