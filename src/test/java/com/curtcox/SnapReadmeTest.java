@@ -21,4 +21,13 @@ public class SnapReadmeTest {
         assertTrue(identity.contains(snap1.host()));
         assertEquals(snap1.user() + "@" + snap1.host(),identity);
     }
+
+    @Test
+    public void whoami_returns_the_name_given() {
+        String expected = Random.random("name");
+        snap1.setName(expected);
+        String actual = snap1.whoami();
+        assertEquals(expected,actual);
+    }
+
 }

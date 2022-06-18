@@ -9,6 +9,7 @@ import static com.curtcox.Check.notNull;
 public final class Snap {
 
     final Node node;
+    private String name;
 
     Snap(Node node) {
         this.node = notNull(node);
@@ -27,6 +28,13 @@ public final class Snap {
     }
 
     public String whoami() {
+        if (name==null) {
+            return defaultName();
+        }
+        return name;
+    }
+
+    private String defaultName() {
         return user() + "@" + host();
     }
 
@@ -42,4 +50,7 @@ public final class Snap {
         }
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
 }
