@@ -3,14 +3,17 @@ Simple Network Announcement Protocol
 
 ## Usage
 
+### Summary
+snap [ send | listen | listen-ping |listen-all | ping | whoami | interactive | awt | swing ]
+
 To send an announcement from the command line:
 ```
-snap --send --topic "topic name" --message "message to send on the topic"
+snap send --topic "topic name" --message "message to send on the topic"
 ```
 
 To listen for messages on a topic:
 ```
-snap --listen "topic name"
+snap listen "topic name"
 ```
 
 Which will listen indefinitely and return topic responses as they are received:
@@ -25,7 +28,7 @@ time 2022/03/31 14:49:34.2088
 
 You can specify a timeout:
 ```
-snap --listen "topic name" --timeout 100s
+snap listen "topic name" --timeout 100s
 ```
 
 ### Wildcards
@@ -36,7 +39,7 @@ and thus match multiple topic names.
 ### Finding Listeners
 To find all current listeners send a ping request.
 ```
-snap --ping
+snap ping
 ```
 
 Which will request that all current listeners identify themselves.
@@ -47,6 +50,28 @@ If not specified, the topic being listened to defaults to * and the timeout defa
 
 Ping requests aren't displayed by --listen, but can be displayed using either --listen-ping (for just ping requests)
 or --listen-all (for ping requests and normal announcements).
+
+### Names and Security
+All operations are done with a client name which can be specified.
+```
+snap listen --name "someone else"
+```
+
+The unspecified client name can be queried.
+```
+snap whoami
+```
+
+### Interactive mode
+```
+>snap interactive
+>whoami
+rufus
+>ping
+pluto 15ms
+socrates 22ms
+pinta 30ms
+```
 
 ### Defaults
 
