@@ -1,15 +1,19 @@
 package com.curtcox.shell;
 
+import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 
+/**
+ * An AWT based shell that can provide a text based UI for a CommandRunner.
+ */
 final class AwtShell {
 
     final Frame frame = new Frame();
     final TextArea area = new TextArea();
+
+    final Timer timer = new Timer(100, e -> pollRunner());
+
 
     final CommandRunner runner;
 
@@ -22,6 +26,11 @@ final class AwtShell {
         addAreaListener();
         layout();
         show();
+        startTimer();
+    }
+
+    private void startTimer() {
+        timer.start();
     }
 
     private void addAreaListener() {
@@ -40,6 +49,13 @@ final class AwtShell {
 
     private void executeLastLine() {
         outputResult(execute(lastLine()));
+    }
+
+    private void pollRunner() {
+        String output = runner.more();
+        if (output!=null) {
+            outputResult(output);
+        }
     }
 
     private String lastLine() {
@@ -73,6 +89,7 @@ final class AwtShell {
     private void addWindowListener() {
         frame.addWindowListener(new WindowAdapter() {
                                     public void windowClosing(WindowEvent we) {
+                                        timer.stop();
                                         frame.dispose();
                                     }
                                 }
