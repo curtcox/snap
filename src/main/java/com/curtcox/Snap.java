@@ -1,5 +1,8 @@
 package com.curtcox;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import static com.curtcox.Check.notNull;
 
 // Potential future API
@@ -21,6 +24,22 @@ public final class Snap {
 
     public Packet listen() {
         return node.read();
+    }
+
+    public String whoami() {
+        return user() + "@" + host();
+    }
+
+    String user() {
+        return System.getProperty("user.name");
+    }
+
+    String host() {
+        try {
+            return InetAddress.getLocalHost().getHostName();
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }
