@@ -12,7 +12,7 @@ import java.awt.event.WindowEvent;
  */
 final class SwingShell {
 
-    final JFrame frame = new JFrame();
+    final JFrame frame = new JFrame("Snap");
     final JTextArea area = new JTextArea();
 
     final Timer timer = new Timer(100, e -> pollRunner());

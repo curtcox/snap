@@ -9,7 +9,7 @@ import java.awt.event.*;
  */
 final class AwtShell {
 
-    final Frame frame = new Frame();
+    final Frame frame = new Frame("Snap");
     final TextArea area = new TextArea();
 
     final Timer timer = new Timer(100, e -> pollRunner());
