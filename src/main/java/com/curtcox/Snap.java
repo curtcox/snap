@@ -2,6 +2,7 @@ package com.curtcox;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.*;
 
 import static com.curtcox.Check.notNull;
 
@@ -23,9 +24,10 @@ public final class Snap {
         return node.read(topic);
     }
 
-    public Packet listen() {
+    public Iterator<Packet> listen() {
         return node.read();
     }
+
 
     public String whoami() {
         if (name==null) {
@@ -52,5 +54,9 @@ public final class Snap {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void ping() {
+
     }
 }

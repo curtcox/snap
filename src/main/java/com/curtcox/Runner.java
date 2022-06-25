@@ -2,31 +2,30 @@ package com.curtcox;
 
 import java.util.concurrent.*;
 
+import static com.curtcox.Clock.tick;
+
 /**
- * For periodically running a Runnable on an ExecutorService until it shuts down.
+ * For periodically running a Runnable on an ScheduledExecutorService until it shuts down.
  */
 final class Runner {
 
-    private final ExecutorService executorService;
+    private final ScheduledExecutorService scheduler;
 
-    Runner(ExecutorService executorService) {
-        this.executorService = executorService;
+    Runner(ScheduledExecutorService scheduler) {
+        this.scheduler = scheduler;
     }
 
     public static Runner of() {
-        return new Runner(Executors.newSingleThreadExecutor());
+        return new Runner(Executors.newScheduledThreadPool(1));
     }
 
     void periodically(Runnable command) {
-        executeAndReschedule(command);
+        scheduler.scheduleAtFixedRate(command,tick,tick,TimeUnit.MILLISECONDS);
     }
 
-    private void executeAndReschedule(final Runnable command) {
-        if (!executorService.isShutdown()) {
-            executorService.execute(command);
-            executorService.execute(() -> executeAndReschedule(command));
-        }
-    }
 
+    public void stop() {
+        scheduler.shutdown();
+    }
 
 }

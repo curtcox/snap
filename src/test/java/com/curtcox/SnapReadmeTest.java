@@ -30,4 +30,9 @@ public class SnapReadmeTest {
         assertEquals(expected,actual);
     }
 
+    @Test
+    public void ping_returns_whoami_names() {
+        snap1.ping();
+        snap1.listen();
+    }
 }

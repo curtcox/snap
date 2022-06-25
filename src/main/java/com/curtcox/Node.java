@@ -1,19 +1,13 @@
 package com.curtcox;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static com.curtcox.Check.notNull;
 
 final class Node {
 
-    private final List<Packet> fromNetwork = packets();
-    private final List<Packet> fromOther = packets();
-
-    private static List<Packet> packets() {
-        return Collections.synchronizedList(new ArrayList<>());
-    }
+    private final PacketList fromNetwork = new PacketList();
+    private final PacketList fromOther = new PacketList();
 
     static Node on(Packet.Network network) {
         final Node node = new Node();
@@ -28,30 +22,21 @@ final class Node {
         };
     }
 
-    private void receive(Packet packet) {
-        fromNetwork.add(notNull(packet));
-    }
+    private void receive(Packet packet) { fromNetwork.add(packet); }
 
     void write(Packet packet) {
         fromOther.add(notNull(packet));
     }
 
     Packet read(String topic) {
-        for (int i = 0; i< fromNetwork.size(); i++) {
-            Packet packet = fromNetwork.get(i);
-            if (topic.equals(packet.topic)) {
-                fromNetwork.remove(i);
-                return packet;
-            }
-        }
-        return null;
+        return fromNetwork.read(topic);
     }
 
-    Packet read() {
-        return (fromNetwork.isEmpty()) ? null : fromNetwork.remove(0);
+    Iterator<Packet> read() {
+        return fromNetwork.read();
     }
     Packet take() {
-        return (fromOther.isEmpty()) ? null : fromOther.remove(0);
+        return fromOther.take();
     }
 
 }

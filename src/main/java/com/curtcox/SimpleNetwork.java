@@ -15,12 +15,12 @@ final class SimpleNetwork implements Packet.Network {
         this.runner = notNull(executor);
     }
 
-    private SimpleNetwork() {
-        this(Runner.of());
+    static SimpleNetwork newPolling() {
+        return newPolling(Runner.of());
     }
 
-    static SimpleNetwork newPolling() {
-        SimpleNetwork network = new SimpleNetwork();
+    static SimpleNetwork newPolling(Runner runner) {
+        SimpleNetwork network = new SimpleNetwork(runner);
         network.queuePoll();
         return network;
     }

@@ -1,11 +1,13 @@
 package com.curtcox;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Iterator;
+
 import static com.curtcox.Random.random;
-import static com.curtcox.TestUtil.shortDelay;
+import static com.curtcox.TestUtil.consume;
+import static com.curtcox.TestUtil.tick;
 import static org.junit.Assert.*;
 
 public class NodeTest {
@@ -30,7 +32,7 @@ public class NodeTest {
         String message = random("message");
 
         node.write(new Packet(topic,message));
-        shortDelay();
+        tick(2);
         Packet packet = node.read(topic);
 
         assertNotNull(packet);
@@ -42,7 +44,7 @@ public class NodeTest {
     public void read_should_only_return_a_message_once_when_topic_specified() {
         String topic = random("topic");
         node.write(new Packet(topic,random("message")));
-        shortDelay();
+        tick(2);
         assertNotNull(node.read(topic));
         assertNull(node.read(topic));
     }
@@ -50,18 +52,20 @@ public class NodeTest {
     @Test
     public void read_should_return_a_message_once_when_no_topic_specified() {
         node.write(new Packet(random("topic"),random("message")));
-        shortDelay();
+        tick(2);
 
-        assertNotNull(node.read());
-        assertNull(node.read());
+        Iterator<Packet> iterator = node.read();
+        assertNotNull(iterator.next());
+        iterator.remove();
+        assertFalse(iterator.hasNext());
     }
 
     @Test
-    public void read_should_return_null_when_no_messages_sent() {
-        shortDelay();
-        Packet packet = node.read();
+    public void read_should_return_empty_iterator_when_no_messages_sent() {
+        tick();
+        Iterator<Packet> packets = node.read();
 
-        assertNull(packet);
+        assertFalse(packets.hasNext());
     }
 
     @Test
@@ -70,7 +74,7 @@ public class NodeTest {
         String message = random("message");
 
         node.write(new Packet(topic,message));
-        shortDelay();
+        tick();
         Packet packet = node.read("different " + topic);
 
         assertNull(packet);
@@ -84,15 +88,15 @@ public class NodeTest {
         String topic2 = random("topic2");
         String message2 = random("message2");
         node.write(new Packet(topic2,message2));
-        shortDelay();
+        tick(3);
 
-        Packet packet1 = node.read();
+        Packet packet1 = consume(node);
 
         assertNotNull(packet1);
         assertEquals(topic1,packet1.topic);
         assertEquals(message1,packet1.message);
 
-        Packet packet2 = node.read();
+        Packet packet2 = consume(node);
 
         assertNotNull(packet2);
         assertEquals(topic2,packet2.topic);
@@ -107,7 +111,7 @@ public class NodeTest {
         String topic2 = random("topic2");
         String message2 = random("message2");
         node.write(new Packet(topic2,message2));
-        shortDelay();
+        tick(2);
 
         Packet packet = node.read(topic1);
 
@@ -126,7 +130,7 @@ public class NodeTest {
         String topic2 = random("topic2");
         String message2 = random("message2");
         node.write(new Packet(topic2,message2));
-        shortDelay();
+        tick(3);
 
         Packet packet = node.read(topic2);
 
@@ -144,21 +148,21 @@ public class NodeTest {
         node.write(new Packet("call","2"));
         node.write(new Packet("call","3"));
         node.write(new Packet("call","4"));
-        shortDelay();
+        tick(5);
 
-        assertEquals("1", node.read().message);
-        assertEquals("2", node.read().message);
-        assertEquals("3", node.read().message);
-        assertEquals("4", node.read().message);
+        assertEquals("1", consume(node).message);
+        assertEquals("2", consume(node).message);
+        assertEquals("3", consume(node).message);
+        assertEquals("4", consume(node).message);
     }
 
     @Test
     public void messages_can_be_read_only_once() {
         node.write(new Packet("phone","ring"));
-        shortDelay();
+        tick(2);
 
-        assertNotNull(node.read());
-        assertNull(node.read());
+        assertNotNull(consume(node));
+        assertFalse(node.read().hasNext());
     }
 
 }

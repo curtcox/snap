@@ -1,5 +1,8 @@
 package com.curtcox;
 
+import java.util.Iterator;
+
+import static com.curtcox.Clock.tick;
 import static org.junit.Assert.assertEquals;
 
 public final class TestUtil {
@@ -26,12 +29,30 @@ public final class TestUtil {
         assertEqualBytes(new Bytes(a),b);
     }
 
-    static void shortDelay() {
+    static void tick() {
+        tick(1);
+    }
+
+    static void tick(int count) {
         try {
-            Thread.sleep(330);
+            Thread.sleep(tick *  count);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    static Packet consume(Node node) {
+        Iterator<Packet> iterator = node.read();
+        Packet packet = iterator.next();
+        iterator.remove();
+        return packet;
+    }
+
+    static Packet consume(Snap snap) {
+        Iterator<Packet> iterator = snap.listen();
+        Packet packet = iterator.next();
+        iterator.remove();
+        return packet;
     }
 
 }

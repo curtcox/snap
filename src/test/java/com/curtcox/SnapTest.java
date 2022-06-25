@@ -3,8 +3,11 @@ package com.curtcox;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Iterator;
+
 import static com.curtcox.Random.random;
-import static com.curtcox.TestUtil.shortDelay;
+import static com.curtcox.TestUtil.consume;
+import static com.curtcox.TestUtil.tick;
 import static org.junit.Assert.*;
 
 public class SnapTest {
@@ -36,7 +39,7 @@ public class SnapTest {
         String message = random("message");
 
         snap.send(topic,message);
-        shortDelay();
+        tick(2);
         Packet packet = snap.listen(topic);
 
         assertNotNull(packet);
@@ -48,7 +51,7 @@ public class SnapTest {
     public void read_should_only_return_a_message_once_when_topic_specified() {
         String topic = random("topic");
         snap.send(topic,random("message"));
-        shortDelay();
+        tick(2);
         assertNotNull(snap.listen(topic));
         assertNull(snap.listen(topic));
     }
@@ -56,16 +59,14 @@ public class SnapTest {
     @Test
     public void read_should_only_return_a_message_once_when_no_topic_specified() {
         snap.send(random("topic"),random("message"));
-        shortDelay();
-        assertNotNull(snap.listen());
-        assertNull(snap.listen());
+        tick(2);
+        assertNotNull(consume(snap));
+        assertFalse(snap.listen().hasNext());
     }
 
     @Test
     public void read_should_return_null_when_no_messages_sent() {
-        Packet packet = snap.listen();
-
-        assertNull(packet);
+        assertFalse(snap.listen().hasNext());
     }
 
     @Test
@@ -87,15 +88,17 @@ public class SnapTest {
         String topic2 = random("topic2");
         String message2 = random("message2");
         snap.send(topic2,message2);
-        shortDelay();
+        tick(3);
 
-        Packet packet1 = snap.listen();
+        Iterator<Packet> packets = snap.listen();
+
+        Packet packet1 = packets.next();
 
         assertNotNull(packet1);
         assertEquals(topic1,packet1.topic);
         assertEquals(message1,packet1.message);
 
-        Packet packet2 = snap.listen();
+        Packet packet2 = packets.next();
 
         assertNotNull(packet2);
         assertEquals(topic2,packet2.topic);
@@ -110,7 +113,7 @@ public class SnapTest {
         String topic2 = random("topic2");
         String message2 = random("message2");
         snap.send(topic2,message2);
-        shortDelay();
+        tick(2);
 
         Packet packet = snap.listen(topic1);
 
@@ -129,7 +132,7 @@ public class SnapTest {
         String topic2 = random("topic2");
         String message2 = random("message2");
         snap.send(topic2,message2);
-        shortDelay();
+        tick(3);
 
         Packet packet = snap.listen(topic2);
 
@@ -147,12 +150,14 @@ public class SnapTest {
         snap.send("call","2");
         snap.send("call","3");
         snap.send("call","4");
-        shortDelay();
+        tick(5);
 
-        assertEquals("1", snap.listen().message);
-        assertEquals("2", snap.listen().message);
-        assertEquals("3", snap.listen().message);
-        assertEquals("4", snap.listen().message);
+        Iterator<Packet> packets = snap.listen();
+
+        assertEquals("1", packets.next().message);
+        assertEquals("2", packets.next().message);
+        assertEquals("3", packets.next().message);
+        assertEquals("4", packets.next().message);
     }
 
 }
