@@ -3,7 +3,6 @@ package com.curtcox;
 import org.junit.Test;
 
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 
 import static org.junit.Assert.*;
 
@@ -11,8 +10,9 @@ public class PacketListTest {
 
     PacketList list = new PacketList();
 
-    Packet packet = new Packet("1","1");
-    Packet packet2 = new Packet("2","2");
+    Packet packet = new Packet("one","1");
+    Packet packet2 = new Packet("two","2");
+    Packet packet3 = new Packet("three","3");
 
     @Test
     public void can_create() {
@@ -32,11 +32,58 @@ public class PacketListTest {
     }
 
     @Test
+    public void take_is_null_after_only_packet_is_taken_via_iterator_remove() {
+        list.add(packet);
+        Iterator<Packet> iterator = list.read();
+        assertEquals(packet, iterator.next());
+        iterator.remove();
+        assertNull(list.take());
+    }
+
+    @Test
     public void take_is_null_after_both_packets_are_taken() {
         list.add(packet);
         list.add(packet2);
         assertEquals(packet,list.take());
         assertEquals(packet2,list.take());
+        assertNull(list.take());
+    }
+
+    @Test
+    public void take_is_null_after_3_packets_are_taken() {
+        list.add(packet);
+        list.add(packet2);
+        list.add(packet3);
+        assertEquals(packet,list.take());
+        assertEquals(packet2,list.take());
+        assertEquals(packet3,list.take());
+        assertNull(list.take());
+    }
+
+    @Test
+    public void take_is_null_after_both_packets_are_taken_via_iterator_remove() {
+        list.add(packet);
+        list.add(packet2);
+        Iterator<Packet> iterator = list.read();
+        assertEquals(packet,iterator.next());
+        iterator.remove();
+        assertEquals(packet2,iterator.next());
+        iterator.remove();
+        assertNull(list.take());
+    }
+
+    @Test
+    public void take_is_null_after_3_packets_are_taken_via_iterator_remove() {
+        list.add(packet);
+        list.add(packet2);
+        list.add(packet3);
+        Iterator<Packet> iterator = list.read();
+        assertEquals(packet,iterator.next());
+        iterator.remove();
+        assertEquals(packet2,iterator.next());
+        iterator.remove();
+        assertEquals(packet3,iterator.next());
+        iterator.remove();
         assertNull(list.take());
     }
 
@@ -47,9 +94,9 @@ public class PacketListTest {
         assertFalse(iterator.hasNext());
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void iterator_with_no_packets_next_throws_exception() {
-        list.read().next();
+        assertNull(list.read().next());
     }
 
     @Test
@@ -120,12 +167,12 @@ public class PacketListTest {
         assertFalse(iterator.hasNext());
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void iterator_with_one_packet_that_is_taken_before_it_is_read_throws_exception() {
         list.add(packet);
         Iterator<Packet> iterator = list.read();
         assertEquals(packet,list.take());
-        iterator.next();
+        assertNull(iterator.next());
     }
 
     @Test
