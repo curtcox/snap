@@ -33,7 +33,7 @@ public class NodeTest {
 
         node.write(new Packet(topic,message));
         tick(2);
-        Packet packet = node.read(topic);
+        Packet packet = node.read(topic).next();
 
         assertNotNull(packet);
         assertEquals(topic,packet.topic);
@@ -75,7 +75,7 @@ public class NodeTest {
 
         node.write(new Packet(topic,message));
         tick();
-        Packet packet = node.read("different " + topic);
+        Packet packet = node.read("different " + topic).next();
 
         assertNull(packet);
     }
@@ -113,7 +113,7 @@ public class NodeTest {
         node.write(new Packet(topic2,message2));
         tick(2);
 
-        Packet packet = node.read(topic1);
+        Packet packet = node.read(topic1).next();
 
         assertNotNull(packet);
         assertEquals(topic1,packet.topic);
@@ -132,7 +132,7 @@ public class NodeTest {
         node.write(new Packet(topic2,message2));
         tick(3);
 
-        Packet packet = node.read(topic2);
+        Packet packet = node.read(topic2).next();
 
         assertNotNull(packet);
         assertEquals(topic2,packet.topic);

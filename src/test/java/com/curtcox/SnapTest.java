@@ -40,7 +40,7 @@ public class SnapTest {
 
         snap.send(topic,message);
         tick(2);
-        Packet packet = snap.listen(topic);
+        Packet packet = snap.listen(topic).next();
 
         assertNotNull(packet);
         assertEquals(topic,packet.topic);
@@ -75,7 +75,7 @@ public class SnapTest {
         String message = random("message");
 
         snap.send(topic,message);
-        Packet packet = snap.listen("different " + topic);
+        Packet packet = snap.listen("different " + topic).next();
 
         assertNull(packet);
     }
@@ -115,7 +115,7 @@ public class SnapTest {
         snap.send(topic2,message2);
         tick(2);
 
-        Packet packet = snap.listen(topic1);
+        Packet packet = snap.listen(topic1).next();
 
         assertNotNull(packet);
         assertEquals(topic1,packet.topic);
@@ -134,7 +134,7 @@ public class SnapTest {
         snap.send(topic2,message2);
         tick(3);
 
-        Packet packet = snap.listen(topic2);
+        Packet packet = snap.listen(topic2).next();
 
         assertNotNull(packet);
         assertEquals(topic2,packet.topic);

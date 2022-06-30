@@ -28,7 +28,15 @@ final class Packet {
      * threads or executors.
      */
     interface Network {
+        /**
+         * Add an IO to this network.
+         * The IO methods will be invoked by network threads.
+         */
         void add(IO io);
+    }
+
+    interface Filter {
+        boolean passes(Packet packet);
     }
 
     public Packet(String topic, String message) {
