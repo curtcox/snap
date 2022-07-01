@@ -37,11 +37,11 @@ final class Node {
         fromOther.add(notNull(packet));
     }
 
-    Iterator<Packet> read(String topic) {
+    Packet.Reader read(String topic) {
         return fromNetwork.read(topic);
     }
 
-    Iterator<Packet> read() {
+    Packet.Reader read() {
         return fromNetwork.read();
     }
 

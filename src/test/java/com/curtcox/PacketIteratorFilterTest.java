@@ -17,31 +17,35 @@ public class PacketIteratorFilterTest {
     @Test
     public void empty() {
         PacketIteratorFilter filter = new PacketIteratorFilter(iterator(), filter(""));
-        assertFalse(filter.hasNext());
-        assertNull(filter.next());
+        assertNull(filter.read());
+//        assertNull(filter.next());
     }
 
     @Test
     public void one_not_matching() {
         PacketIteratorFilter filter = new PacketIteratorFilter(iterator("this"), filter("that"));
-        assertFalse(filter.hasNext());
-        assertNull(filter.next());
+        assertNull(filter.read());
+//        assertNull(filter.next());
     }
 
     @Test
     public void one_matching() {
         PacketIteratorFilter filter = new PacketIteratorFilter(iterator("one"), filter("one"));
-        assertTrue(filter.hasNext());
-        assertEquals("one",filter.next().topic);
-        assertFalse(filter.hasNext());
-        assertNull(filter.next());
+        //assertTrue(filter.hasNext());
+        assertEquals("one",filter.read().topic);
+        //assertFalse(filter.hasNext());
+        assertNull(filter.read());
     }
 
     private Packet.Filter filter(String text) {
         return packet -> packet.topic.contains(text);
     }
 
-    private Iterator<Packet> iterator(String... topics) {
-        return Arrays.stream(topics).map((t)->new Packet(t,"")).iterator();
+    private Packet.Reader iterator(String... topics) {
+        FakeIO io = new FakeIO();
+        for (String topic : topics) {
+            io.add(new Packet(topic,""));
+        }
+        return io;
     }
 }

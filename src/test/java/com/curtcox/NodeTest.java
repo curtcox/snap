@@ -3,6 +3,7 @@ package com.curtcox;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.Iterator;
 
 import static com.curtcox.Random.random;
@@ -27,13 +28,13 @@ public class NodeTest {
     }
 
     @Test
-    public void read_should_return_the_message_sent() {
+    public void read_should_return_the_message_sent() throws IOException {
         String topic = random("topic");
         String message = random("message");
 
         node.write(new Packet(topic,message));
         tick(2);
-        Packet packet = node.read(topic).next();
+        Packet packet = node.read(topic).read();
 
         assertNotNull(packet);
         assertEquals(topic,packet.topic);
@@ -41,50 +42,48 @@ public class NodeTest {
     }
 
     @Test
-    public void read_should_only_return_a_message_once_when_topic_specified() {
+    public void read_should_only_return_a_message_once_when_topic_specified() throws IOException {
         String topic = random("topic");
         Packet packet = new Packet(topic,random("message"));
         node.write(packet);
         tick(2);
-        Iterator<Packet> iterator = node.read(topic);
-        assertEquals(packet,iterator.next());
-        iterator.remove();
-        assertFalse(node.read(topic).hasNext());
+        Packet.Reader iterator = node.read(topic);
+        assertEquals(packet,iterator.read());
+        assertNull(node.read(topic).read());
     }
 
     @Test
-    public void read_should_return_a_message_once_when_no_topic_specified() {
+    public void read_should_return_a_message_once_when_no_topic_specified() throws IOException {
         node.write(new Packet(random("topic"),random("message")));
         tick(2);
 
-        Iterator<Packet> iterator = node.read();
-        assertNotNull(iterator.next());
-        iterator.remove();
-        assertFalse(iterator.hasNext());
+        Packet.Reader iterator = node.read();
+        assertNotNull(iterator.read());
+        assertNull(iterator.read());
     }
 
     @Test
-    public void read_should_return_empty_iterator_when_no_messages_sent() {
+    public void read_should_return_empty_iterator_when_no_messages_sent() throws IOException {
         tick();
-        Iterator<Packet> packets = node.read();
+        Packet.Reader packets = node.read();
 
-        assertFalse(packets.hasNext());
+        assertNull(packets.read());
     }
 
     @Test
-    public void read_should_return_null_when_there_is_a_message_that_does_not_match_topic() {
+    public void read_should_return_null_when_there_is_a_message_that_does_not_match_topic() throws IOException {
         String topic = random("topic");
         String message = random("message");
 
         node.write(new Packet(topic,message));
         tick();
-        Packet packet = node.read("different " + topic).next();
+        Packet packet = node.read("different " + topic).read();
 
         assertNull(packet);
     }
 
     @Test
-    public void read_with_no_topic_should_return_messages_sent_to_any_topic() {
+    public void read_with_no_topic_should_return_messages_sent_to_any_topic() throws IOException {
         String topic1 = random("topic1");
         String message1 = random("message1");
         node.write(new Packet(topic1,message1));
@@ -107,7 +106,7 @@ public class NodeTest {
     }
 
     @Test
-    public void read_with_topic_should_return_1st_message_when_it_matches_topic() {
+    public void read_with_topic_should_return_1st_message_when_it_matches_topic() throws IOException {
         String topic1 = random("topic1");
         String message1 = random("message1");
         node.write(new Packet(topic1,message1));
@@ -116,19 +115,18 @@ public class NodeTest {
         node.write(new Packet(topic2,message2));
         tick(2);
 
-        Iterator<Packet> iterator = node.read(topic1);
-        Packet packet = iterator.next();
-        iterator.remove();
+        Packet.Reader iterator = node.read(topic1);
+        Packet packet = iterator.read();
 
         assertNotNull(packet);
         assertEquals(topic1,packet.topic);
         assertEquals(message1,packet.message);
 
-        assertFalse(node.read(topic1).hasNext());
+        assertNull(node.read(topic1).read());
     }
 
     @Test
-    public void read_with_topic_should_return_2nd_message_when_it_matches_topic() {
+    public void read_with_topic_should_return_2nd_message_when_it_matches_topic() throws IOException {
         String topic1 = random("topic1");
         String message1 = random("message1");
         node.write(new Packet(topic1,message1));
@@ -137,18 +135,17 @@ public class NodeTest {
         node.write(new Packet(topic2,message2));
         tick(3);
 
-        Iterator<Packet> iterator = node.read(topic2);
-        Packet packet = iterator.next();
-        iterator.remove();
+        Packet.Reader iterator = node.read(topic2);
+        Packet packet = iterator.read();
 
         assertNotNull(packet);
         assertEquals(topic2,packet.topic);
         assertEquals(message2,packet.message);
-        assertFalse(node.read(topic2).hasNext());
+        assertNull(node.read(topic2).read());
     }
 
     @Test
-    public void messsages_are_delivered_in_order_when_on_network() {
+    public void messsages_are_delivered_in_order_when_on_network() throws IOException {
         Node.on(network);
 
         node.write(new Packet("call","1"));
@@ -164,12 +161,12 @@ public class NodeTest {
     }
 
     @Test
-    public void messages_can_be_read_only_once() {
+    public void messages_can_be_read_only_once() throws IOException {
         node.write(new Packet("phone","ring"));
         tick(2);
 
         assertNotNull(consume(node));
-        assertFalse(node.read().hasNext());
+        assertNull(node.read().read());
     }
 
 }

@@ -2,6 +2,9 @@ package com.curtcox;
 
 import org.junit.Test;
 
+import java.io.IOException;
+import java.util.Iterator;
+
 import static org.junit.Assert.*;
 
 // Direct tests for things in the Readme.
@@ -31,8 +34,10 @@ public class SnapReadmeTest {
     }
 
     @Test
-    public void ping_returns_whoami_names() {
+    public void ping_returns_whoami_names() throws IOException {
         snap1.ping();
-        snap1.listen();
+        Packet.Reader iterator = snap1.listen();
+
+        iterator.read();
     }
 }

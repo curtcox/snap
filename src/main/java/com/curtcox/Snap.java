@@ -20,11 +20,11 @@ public final class Snap {
         node.write(new Packet(topic,message));
     }
 
-    public Iterator<Packet> listen(String topic) {
+    public Packet.Reader listen(String topic) {
         return node.read(topic);
     }
 
-    public Iterator<Packet> listen() {
+    public Packet.Reader listen() {
         return node.read();
     }
 

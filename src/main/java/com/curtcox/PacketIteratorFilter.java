@@ -1,29 +1,30 @@
 package com.curtcox;
 
+import java.io.IOException;
 import java.util.*;
 
 import static com.curtcox.Check.notNull;
 
-final class PacketIteratorFilter implements Iterator<Packet> {
+final class PacketIteratorFilter implements Packet.Reader {
 
-    private final Iterator<Packet> inner;
+    private final Packet.Reader inner;
     private final Packet.Filter filter;
 
     private Packet next;
 
-    public PacketIteratorFilter(Iterator<Packet> inner,Packet.Filter filter) {
+    public PacketIteratorFilter(Packet.Reader inner,Packet.Filter filter) {
         this.inner = notNull(inner);
         this.filter = notNull(filter);
     }
 
-    @Override
-    public boolean hasNext() {
-        return next != null ? true : findNext() != null;
-    }
+//    @Override
+//    public boolean hasNext() {
+//        return next != null ? true : findNext() != null;
+//    }
 
     private Packet findNext() {
-        while (next==null && inner.hasNext()) {
-            Packet candidate = inner.next();
+        while (next==null) {
+            Packet candidate = readPacket();
             if (filter.passes(candidate)) {
                 next = candidate;
                 return next;
@@ -32,8 +33,16 @@ final class PacketIteratorFilter implements Iterator<Packet> {
         return null;
     }
 
+    private Packet readPacket() {
+        try {
+            return inner.read();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
-    public Packet next() {
+    public Packet read() {
         if (next == null) {
             findNext();
         }
@@ -42,9 +51,9 @@ final class PacketIteratorFilter implements Iterator<Packet> {
         return prior;
     }
 
-    @Override
-    public void remove() {
-        inner.remove();
-    }
+//    @Override
+//    public void remove() {
+//        inner.remove();
+//    }
 
 }

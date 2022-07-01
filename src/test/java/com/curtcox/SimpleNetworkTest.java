@@ -4,6 +4,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
 
+import java.io.IOException;
 import java.util.Iterator;
 
 import static com.curtcox.TestUtil.consume;
@@ -28,52 +29,52 @@ public class SimpleNetworkTest {
     }
 
     @Test
-    public void there_are_no_messages_to_listen_to_before_any_are_sent() {
-        assertFalse(node1.read().hasNext());
-        assertFalse(node2.read().hasNext());
+    public void there_are_no_messages_to_listen_to_before_any_are_sent() throws IOException {
+        assertNull(node1.read().read());
+        assertNull(node2.read().read());
     }
 
     @Test
-    public void messages_can_be_sent_over_a_network() {
+    public void messages_can_be_sent_over_a_network() throws IOException {
         Packet packet = Random.packet();
         node1.write(packet);
         tick(2);
 
-        Packet read = node2.read().next();
+        Packet read = node2.read().read();
         assertEquals(packet,read);
     }
 
     @Test
-    public void messages_are_delivered_in_order_over_network() {
+    public void messages_are_delivered_in_order_over_network() throws IOException {
         node1.write(new Packet("call","Mom"));
         node1.write(new Packet("call","Dad"));
         tick(3);
-        Iterator<Packet> packets = node2.read();
+        Packet.Reader packets = node2.read();
 
-        assertEquals("Mom", packets.next().message);
-        assertEquals("Dad", packets.next().message);
+        assertEquals("Mom", packets.read().message);
+        assertEquals("Dad", packets.read().message);
     }
 
     @Test
-    public void messages_can_be_read_only_once_by_receiver() {
+    public void messages_can_be_read_only_once_by_receiver() throws IOException {
         node1.write(new Packet("phone","ring"));
         tick(2);
 
         assertNotNull(consume(node2));
-        assertFalse(node2.read().hasNext());
+        assertNull(node2.read().read());
     }
 
     @Test
-    public void messages_can_be_read_at_multiple_points() {
+    public void messages_can_be_read_at_multiple_points() throws IOException {
         Node node3 = Node.on(network);
         node1.write(new Packet("phone","ring"));
         tick(2);
 
-        Packet packet2 = node2.read().next();
+        Packet packet2 = node2.read().read();
         assertEquals("phone",packet2.topic);
         assertEquals("ring",packet2.message);
 
-        Packet packet3 = node3.read().next();
+        Packet packet3 = node3.read().read();
         assertEquals("phone",packet3.topic);
         assertEquals("ring",packet3.message);
     }
@@ -115,7 +116,7 @@ public class SimpleNetworkTest {
     }
 
     @Test
-    public void messages_from_IO_are_delived_to_nodes() {
+    public void messages_from_IO_are_delived_to_nodes() throws IOException {
         Packet packet = new Packet("room","on");
         io1.add(packet);
 

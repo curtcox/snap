@@ -3,6 +3,7 @@ package com.curtcox;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.Iterator;
 
 import static com.curtcox.Random.random;
@@ -34,13 +35,13 @@ public class SnapTest {
     }
 
     @Test
-    public void read_should_return_the_message_sent() {
+    public void read_should_return_the_message_sent() throws IOException {
         String topic = random("topic");
         String message = random("message");
 
         snap.send(topic,message);
         tick(2);
-        Packet packet = snap.listen(topic).next();
+        Packet packet = snap.listen(topic).read();
 
         assertNotNull(packet);
         assertEquals(topic,packet.topic);
@@ -48,43 +49,42 @@ public class SnapTest {
     }
 
     @Test
-    public void read_should_only_return_a_message_once_when_topic_specified() {
+    public void read_should_only_return_a_message_once_when_topic_specified() throws IOException {
         String topic = random("topic");
         snap.send(topic,random("message"));
         tick(2);
-        Iterator<Packet> iterator1 = snap.listen(topic);
-        assertNotNull(iterator1.next());
-        iterator1.remove();
-        Iterator<Packet> iterator2 = snap.listen(topic);
-        assertFalse(iterator2.hasNext());
+        Packet.Reader iterator1 = snap.listen(topic);
+        assertNotNull(iterator1.read());
+        Packet.Reader iterator2 = snap.listen(topic);
+        assertNull(iterator2.read());
     }
 
     @Test
-    public void read_should_only_return_a_message_once_when_no_topic_specified() {
+    public void read_should_only_return_a_message_once_when_no_topic_specified() throws IOException {
         snap.send(random("topic"),random("message"));
         tick(2);
         assertNotNull(consume(snap));
-        assertFalse(snap.listen().hasNext());
+        assertNull(snap.listen().read());
     }
 
     @Test
-    public void read_should_return_null_when_no_messages_sent() {
-        assertFalse(snap.listen().hasNext());
+    public void read_should_return_null_when_no_messages_sent() throws IOException {
+        assertNull(snap.listen().read());
     }
 
     @Test
-    public void read_should_return_null_when_there_is_a_message_that_does_not_match_topic() {
+    public void read_should_return_null_when_there_is_a_message_that_does_not_match_topic() throws IOException {
         String topic = random("topic");
         String message = random("message");
 
         snap.send(topic,message);
-        Packet packet = snap.listen("different " + topic).next();
+        Packet packet = snap.listen("different " + topic).read();
 
         assertNull(packet);
     }
 
     @Test
-    public void read_with_no_topic_should_return_messages_sent_to_any_topic() {
+    public void read_with_no_topic_should_return_messages_sent_to_any_topic() throws IOException {
         String topic1 = random("topic1");
         String message1 = random("message1");
         snap.send(topic1,message1);
@@ -93,15 +93,15 @@ public class SnapTest {
         snap.send(topic2,message2);
         tick(3);
 
-        Iterator<Packet> packets = snap.listen();
+        Packet.Reader packets = snap.listen();
 
-        Packet packet1 = packets.next();
+        Packet packet1 = packets.read();
 
         assertNotNull(packet1);
         assertEquals(topic1,packet1.topic);
         assertEquals(message1,packet1.message);
 
-        Packet packet2 = packets.next();
+        Packet packet2 = packets.read();
 
         assertNotNull(packet2);
         assertEquals(topic2,packet2.topic);
@@ -109,7 +109,7 @@ public class SnapTest {
     }
 
     @Test
-    public void read_with_topic_should_return_1st_message_when_it_matches_topic() {
+    public void read_with_topic_should_return_1st_message_when_it_matches_topic() throws IOException {
         String topic1 = random("topic1");
         String message1 = random("message1");
         snap.send(topic1,message1);
@@ -118,19 +118,18 @@ public class SnapTest {
         snap.send(topic2,message2);
         tick(2);
 
-        Iterator<Packet> iterator = snap.listen(topic1);
-        Packet packet = iterator.next();
-        iterator.remove();
+        Packet.Reader iterator = snap.listen(topic1);
+        Packet packet = iterator.read();
 
         assertNotNull(packet);
         assertEquals(topic1,packet.topic);
         assertEquals(message1,packet.message);
 
-        assertFalse(snap.listen(topic1).hasNext());
+        assertNull(snap.listen(topic1).read());
     }
 
     @Test
-    public void read_with_topic_should_return_2nd_message_when_it_matches_topic() {
+    public void read_with_topic_should_return_2nd_message_when_it_matches_topic() throws IOException {
         String topic1 = random("topic1");
         String message1 = random("message1");
         snap.send(topic1,message1);
@@ -139,18 +138,17 @@ public class SnapTest {
         snap.send(topic2,message2);
         tick(3);
 
-        Iterator<Packet> iterator = snap.listen(topic2);
-        Packet packet = iterator.next();
-        iterator.remove();
+        Packet.Reader iterator = snap.listen(topic2);
+        Packet packet = iterator.read();
 
         assertNotNull(packet);
         assertEquals(topic2,packet.topic);
         assertEquals(message2,packet.message);
-        assertFalse(snap.listen(topic2).hasNext());
+        assertNull(snap.listen(topic2).read());
     }
 
     @Test
-    public void messsages_are_delivered_in_order_when_on_network() {
+    public void messsages_are_delivered_in_order_when_on_network() throws IOException {
         Node.on(network);
 
         snap.send("call","1");
@@ -159,12 +157,12 @@ public class SnapTest {
         snap.send("call","4");
         tick(5);
 
-        Iterator<Packet> packets = snap.listen();
+        Packet.Reader packets = snap.listen();
 
-        assertEquals("1", packets.next().message);
-        assertEquals("2", packets.next().message);
-        assertEquals("3", packets.next().message);
-        assertEquals("4", packets.next().message);
+        assertEquals("1", packets.read().message);
+        assertEquals("2", packets.read().message);
+        assertEquals("3", packets.read().message);
+        assertEquals("4", packets.read().message);
     }
 
 }

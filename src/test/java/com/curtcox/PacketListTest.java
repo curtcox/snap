@@ -2,6 +2,7 @@ package com.curtcox;
 
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.Iterator;
 
 import static org.junit.Assert.*;
@@ -32,11 +33,10 @@ public class PacketListTest {
     }
 
     @Test
-    public void take_is_null_after_only_packet_is_taken_via_iterator_remove() {
+    public void take_is_null_after_only_packet_is_taken_via_iterator_remove() throws IOException {
         list.add(packet);
-        Iterator<Packet> iterator = list.read();
-        assertEquals(packet, iterator.next());
-        iterator.remove();
+        Packet.Reader iterator = list.read();
+        assertEquals(packet, iterator.read());
         assertNull(list.take());
     }
 
@@ -61,130 +61,119 @@ public class PacketListTest {
     }
 
     @Test
-    public void take_is_null_after_both_packets_are_taken_via_iterator_remove() {
+    public void take_is_null_after_both_packets_are_taken_via_iterator_remove() throws IOException {
         list.add(packet);
         list.add(packet2);
-        Iterator<Packet> iterator = list.read();
-        assertEquals(packet,iterator.next());
-        iterator.remove();
-        assertEquals(packet2,iterator.next());
-        iterator.remove();
+        Packet.Reader iterator = list.read();
+        assertEquals(packet,iterator.read());
+        assertEquals(packet2,iterator.read());
         assertNull(list.take());
     }
 
     @Test
-    public void take_is_null_after_3_packets_are_taken_via_iterator_remove() {
+    public void take_is_null_after_3_packets_are_taken_via_iterator_remove() throws IOException {
         list.add(packet);
         list.add(packet2);
         list.add(packet3);
-        Iterator<Packet> iterator = list.read();
-        assertEquals(packet,iterator.next());
-        iterator.remove();
-        assertEquals(packet2,iterator.next());
-        iterator.remove();
-        assertEquals(packet3,iterator.next());
-        iterator.remove();
+        Packet.Reader iterator = list.read();
+        assertEquals(packet,iterator.read());
+        assertEquals(packet2,iterator.read());
+        assertEquals(packet3,iterator.read());
         assertNull(list.take());
     }
 
     @Test
-    public void iterator_with_no_packets_hasNext_is_false() {
-        Iterator<Packet> iterator = list.read();
+    public void iterator_with_no_packets_hasNext_is_false() throws IOException {
+        Packet.Reader iterator = list.read();
 
-        assertFalse(iterator.hasNext());
+        assertNull(iterator.read());
     }
 
     @Test
-    public void iterator_with_no_packets_next_throws_exception() {
-        assertNull(list.read().next());
+    public void iterator_with_no_packets_next_throws_exception() throws IOException {
+        assertNull(list.read().read());
     }
 
     @Test
-    public void iterator_with_one_packet() {
+    public void iterator_with_one_packet() throws IOException {
         list.add(packet);
 
-        Iterator<Packet> iterator = list.read();
+        Packet.Reader iterator = list.read();
 
-        assertTrue(iterator.hasNext());
-        assertEquals(packet,iterator.next());
+        assertEquals(packet,iterator.read());
     }
 
     @Test
-    public void reading_iteration_with_one_packet_does_not_remove_packet_from_the_list() {
+    public void reading_iteration_with_one_packet_does_not_remove_packet_from_the_list() throws IOException {
         list.add(packet);
 
-        list.read().next();
-        Iterator<Packet> iterator = list.read();
+        list.read().read();
+        Packet.Reader iterator = list.read();
 
-        assertTrue(iterator.hasNext());
-        assertEquals(packet,iterator.next());
+        assertEquals(packet,iterator.read());
     }
 
     @Test
-    public void taking_one_packet_removes_it_from_the_list() {
+    public void taking_one_packet_removes_it_from_the_list() throws IOException {
         list.add(packet);
 
-        Iterator<Packet> iterator = list.read();
+        Packet.Reader iterator = list.read();
 
         assertEquals(packet,list.take());
-        assertFalse(iterator.hasNext());
-        assertFalse(list.read().hasNext());
+        assertNull(list.read().read());
     }
 
     @Test
-    public void taking_two_packets_removes_them_from_the_list() {
+    public void taking_two_packets_removes_them_from_the_list() throws IOException {
         list.add(packet);
         list.add(packet2);
 
-        Iterator<Packet> iterator = list.read();
+        Packet.Reader iterator = list.read();
 
         assertEquals(packet,list.take());
         assertEquals(packet2,list.take());
-        assertFalse(iterator.hasNext());
-        assertFalse(list.read().hasNext());
+        assertNull(iterator.read());
+        assertNull(list.read().read());
     }
 
     @Test
-    public void iterator_with_two_packets() {
+    public void iterator_with_two_packets() throws IOException {
         list.add(packet);
         list.add(packet2);
 
-        Iterator<Packet> iterator = list.read();
+        Packet.Reader iterator = list.read();
 
-        assertTrue(iterator.hasNext());
-        assertEquals(packet,iterator.next());
-        assertTrue(iterator.hasNext());
-        assertEquals(packet2,iterator.next());
+        assertEquals(packet,iterator.read());
+        assertEquals(packet2,iterator.read());
     }
 
     @Test
-    public void iterator_with_one_packet_that_is_taken_before_it_is_read_indicates_no_next() {
+    public void iterator_with_one_packet_that_is_taken_before_it_is_read_indicates_no_next() throws IOException {
         list.add(packet);
 
-        Iterator<Packet> iterator = list.read();
+        Packet.Reader iterator = list.read();
 
         assertEquals(packet,list.take());
-        assertFalse(iterator.hasNext());
+        assertNull(iterator.read());
     }
 
     @Test
-    public void iterator_with_one_packet_that_is_taken_before_it_is_read_throws_exception() {
+    public void iterator_with_one_packet_that_is_taken_before_it_is_read_throws_exception() throws IOException {
         list.add(packet);
-        Iterator<Packet> iterator = list.read();
+        Packet.Reader iterator = list.read();
         assertEquals(packet,list.take());
-        assertNull(iterator.next());
+        assertNull(iterator.read());
     }
 
     @Test
-    public void iterator_with_two_packets_where_one_is_taken_before_it_is_read() {
+    public void iterator_with_two_packets_where_one_is_taken_before_it_is_read() throws IOException {
         list.add(packet);
         list.add(packet2);
 
-        Iterator<Packet> iterator = list.read();
-        assertTrue(iterator.hasNext());
-        assertEquals(packet,iterator.next());
+        Packet.Reader iterator = list.read();
+        assertEquals(packet,iterator.read());
         assertEquals(packet,list.take());
-        assertFalse(iterator.hasNext());
+        assertNull(iterator.read());
     }
 
     @Test
@@ -197,33 +186,30 @@ public class PacketListTest {
     }
 
     @Test
-    public void iterator_with_two_packets_where_both_are_taken_before_they_are_read() {
+    public void iterator_with_two_packets_where_both_are_taken_before_they_are_read() throws IOException {
         list.add(packet);
         list.add(packet2);
 
-        Iterator<Packet> iterator = list.read();
+        Packet.Reader iterator = list.read();
         assertEquals(packet,list.take());
         assertEquals(packet2,list.take());
-        assertFalse(iterator.hasNext());
+        assertNull(iterator.read());
     }
 
     @Test
-    public void empty_iterator_returns_packet_added_after_creation() {
-        Iterator<Packet> iterator = list.read();
+    public void empty_iterator_returns_packet_added_after_creation() throws IOException {
+        Packet.Reader iterator = list.read();
         list.add(packet);
-        assertTrue(iterator.hasNext());
-        assertEquals(packet,iterator.next());
+        assertEquals(packet,iterator.read());
     }
 
     @Test
-    public void iterator_with_packet_returns_packet_added_after_creation() {
+    public void iterator_with_packet_returns_packet_added_after_creation() throws IOException {
         list.add(packet);
-        Iterator<Packet> iterator = list.read();
+        Packet.Reader iterator = list.read();
         list.add(packet2);
-        assertTrue(iterator.hasNext());
-        assertEquals(packet,iterator.next());
-        assertTrue(iterator.hasNext());
-        assertEquals(packet2,iterator.next());
+        assertEquals(packet,iterator.read());
+        assertEquals(packet2,iterator.read());
     }
 
 }

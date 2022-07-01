@@ -1,5 +1,6 @@
 package com.curtcox;
 
+import java.io.IOException;
 import java.util.Iterator;
 
 import static com.curtcox.Clock.tick;
@@ -41,18 +42,14 @@ public final class TestUtil {
         }
     }
 
-    static Packet consume(Node node) {
-        Iterator<Packet> iterator = node.read();
-        Packet packet = iterator.next();
-        iterator.remove();
-        return packet;
+    static Packet consume(Node node) throws IOException {
+        Packet.Reader iterator = node.read();
+        return iterator.read();
     }
 
-    static Packet consume(Snap snap) {
-        Iterator<Packet> iterator = snap.listen();
-        Packet packet = iterator.next();
-        iterator.remove();
-        return packet;
+    static Packet consume(Snap snap) throws IOException {
+        Packet.Reader iterator = snap.listen();
+        return iterator.read();
     }
 
 }

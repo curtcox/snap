@@ -6,8 +6,8 @@ import java.util.*;
  * A list of packets that can be accessed by multiple threads concurrently.
  * This is to support different threads concurrently adding and removing packets.
  * A given packet may be seen multiple times via different mechanisms, but will no longer be returned once it is
- * either taken or removed via an iterator. In other words, a packet can only be consumed once.
- * Iterators will return null instead of throwing NoSuchElementException when the element that would have been returned
+ * either taken or removed via a Packet.Reader. In other words, a packet can only be consumed once.
+ * Readers will return null when the element that would have been returned
  * is consumed via a different method (possibly on a different thread).
  */
 final class PacketList {
@@ -15,18 +15,18 @@ final class PacketList {
     private final ConcurrentPacketList list = new ConcurrentPacketList();
 
     // other
-    Iterator<Packet> read() {
-        return new Iterator<Packet>() {
+    Packet.Reader read() {
+        return new Packet.Reader() {
 
             Packet lastRead = null;
 
-            @Override
-            public boolean hasNext() {
-                return lastRead==null ? !list.isEmpty() : list.areMoreAfter(lastRead);
-            }
+//            @Override
+//            public boolean hasNext() {
+//                return lastRead==null ? !list.isEmpty() : list.areMoreAfter(lastRead);
+//            }
 
             @Override
-            public Packet next() {
+            public Packet read() {
                 if (list.isEmpty()) {
                     return null;
                 }
@@ -34,19 +34,19 @@ final class PacketList {
                 return lastRead;
             }
 
-            @Override
-            public void remove() {
-                Packet toRemove = lastRead;
-                lastRead = list.before(toRemove);
-                list.remove(toRemove);
-            }
+//            @Override
+//            public void remove() {
+//                Packet toRemove = lastRead;
+//                lastRead = list.before(toRemove);
+//                list.remove(toRemove);
+//            }
 
         };
     }
 
 
     // other
-    Iterator<Packet> read(String topic) {
+    Packet.Reader read(String topic) {
         return new PacketIteratorFilter(read(),new TopicPacketFilter(topic));
     }
 
