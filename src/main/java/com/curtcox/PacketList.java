@@ -1,7 +1,5 @@
 package com.curtcox;
 
-import java.util.*;
-
 /**
  * A list of packets that can be accessed by multiple threads concurrently.
  * This is to support different threads concurrently adding and removing packets.

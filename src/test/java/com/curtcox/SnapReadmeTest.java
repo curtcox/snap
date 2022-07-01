@@ -3,7 +3,6 @@ package com.curtcox;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.Iterator;
 
 import static org.junit.Assert.*;
 

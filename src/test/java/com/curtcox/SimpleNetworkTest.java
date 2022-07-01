@@ -5,7 +5,6 @@ import org.junit.Test;
 import org.junit.rules.Timeout;
 
 import java.io.IOException;
-import java.util.Iterator;
 
 import static com.curtcox.TestUtil.consume;
 import static com.curtcox.TestUtil.tick;

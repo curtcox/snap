@@ -1,7 +1,6 @@
 package com.curtcox;
 
 import java.io.IOException;
-import java.util.Iterator;
 
 import static com.curtcox.Clock.tick;
 import static org.junit.Assert.assertEquals;

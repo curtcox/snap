@@ -1,8 +1,6 @@
 package com.curtcox;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.*;
+import java.net.*;
 
 import static com.curtcox.Check.notNull;
 

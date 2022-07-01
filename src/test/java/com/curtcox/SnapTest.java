@@ -4,7 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.Iterator;
 
 import static com.curtcox.Random.random;
 import static com.curtcox.TestUtil.consume;

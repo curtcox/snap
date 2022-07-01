@@ -4,7 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.Iterator;
 
 import static com.curtcox.Random.random;
 import static com.curtcox.TestUtil.consume;
@@ -47,8 +46,8 @@ public class NodeTest {
         Packet packet = new Packet(topic,random("message"));
         node.write(packet);
         tick(2);
-        Packet.Reader iterator = node.read(topic);
-        assertEquals(packet,iterator.read());
+        Packet.Reader reader = node.read(topic);
+        assertEquals(packet,reader.read());
         assertNull(node.read(topic).read());
     }
 
@@ -57,13 +56,13 @@ public class NodeTest {
         node.write(new Packet(random("topic"),random("message")));
         tick(2);
 
-        Packet.Reader iterator = node.read();
-        assertNotNull(iterator.read());
-        assertNull(iterator.read());
+        Packet.Reader reader = node.read();
+        assertNotNull(reader.read());
+        assertNull(reader.read());
     }
 
     @Test
-    public void read_should_return_empty_iterator_when_no_messages_sent() throws IOException {
+    public void read_should_return_empty_reader_when_no_messages_sent() throws IOException {
         tick();
         Packet.Reader packets = node.read();
 
@@ -115,8 +114,8 @@ public class NodeTest {
         node.write(new Packet(topic2,message2));
         tick(2);
 
-        Packet.Reader iterator = node.read(topic1);
-        Packet packet = iterator.read();
+        Packet.Reader reader = node.read(topic1);
+        Packet packet = reader.read();
 
         assertNotNull(packet);
         assertEquals(topic1,packet.topic);
@@ -135,8 +134,8 @@ public class NodeTest {
         node.write(new Packet(topic2,message2));
         tick(3);
 
-        Packet.Reader iterator = node.read(topic2);
-        Packet packet = iterator.read();
+        Packet.Reader reader = node.read(topic2);
+        Packet packet = reader.read();
 
         assertNotNull(packet);
         assertEquals(topic2,packet.topic);
