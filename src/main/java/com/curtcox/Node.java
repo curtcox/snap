@@ -1,7 +1,5 @@
 package com.curtcox;
 
-import java.util.*;
-
 import static com.curtcox.Check.notNull;
 
 /**

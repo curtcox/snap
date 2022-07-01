@@ -12,7 +12,13 @@ final class Packet {
     public final String topic;
     public final String message;
 
+    /**
+     * For reading one or more packets.
+     */
     interface Reader {
+        /**
+         * Immediately return a packet or null if there is none.
+         */
         Packet read() throws IOException;
     }
 

@@ -2,6 +2,9 @@ package com.curtcox;
 
 import java.util.*;
 
+/**
+ * A mutable list of packets that can be accessed by multiple threads concurrently.
+ */
 final class ConcurrentPacketList {
     private final List<Packet> list = new ArrayList<>();
 
