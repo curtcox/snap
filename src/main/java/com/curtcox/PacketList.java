@@ -16,38 +16,13 @@ final class PacketList {
 
     // other
     Packet.Reader read() {
-        return new Packet.Reader() {
-
-            Packet lastRead = null;
-
-//            @Override
-//            public boolean hasNext() {
-//                return lastRead==null ? !list.isEmpty() : list.areMoreAfter(lastRead);
-//            }
-
-            @Override
-            public Packet read() {
-                if (list.isEmpty()) {
-                    return null;
-                }
-                lastRead = lastRead==null ? list.first() : list.after(lastRead);
-                return lastRead;
-            }
-
-//            @Override
-//            public void remove() {
-//                Packet toRemove = lastRead;
-//                lastRead = list.before(toRemove);
-//                list.remove(toRemove);
-//            }
-
-        };
+        return () -> list.isEmpty() ? null : list.removeFirst();
     }
 
 
     // other
     Packet.Reader read(String topic) {
-        return new PacketIteratorFilter(read(),new TopicPacketFilter(topic));
+        return () -> list.isEmpty() ? null : list.removeFirstMatching(new TopicPacketFilter(topic));
     }
 
     // network

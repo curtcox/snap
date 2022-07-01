@@ -104,16 +104,6 @@ public class PacketListTest {
     }
 
     @Test
-    public void reading_iteration_with_one_packet_does_not_remove_packet_from_the_list() throws IOException {
-        list.add(packet);
-
-        list.read().read();
-        Packet.Reader iterator = list.read();
-
-        assertEquals(packet,iterator.read());
-    }
-
-    @Test
     public void taking_one_packet_removes_it_from_the_list() throws IOException {
         list.add(packet);
 
@@ -166,18 +156,7 @@ public class PacketListTest {
     }
 
     @Test
-    public void iterator_with_two_packets_where_one_is_taken_before_it_is_read() throws IOException {
-        list.add(packet);
-        list.add(packet2);
-
-        Packet.Reader iterator = list.read();
-        assertEquals(packet,iterator.read());
-        assertEquals(packet,list.take());
-        assertNull(iterator.read());
-    }
-
-    @Test
-    public void iterator_with_two_packets_where_one_is_taken_before_it_is_read2() {
+    public void iterator_with_two_packets_where_both_are_taken() {
         list.add(packet);
         list.add(packet2);
 

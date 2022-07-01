@@ -43,13 +43,11 @@ public final class TestUtil {
     }
 
     static Packet consume(Node node) throws IOException {
-        Packet.Reader iterator = node.read();
-        return iterator.read();
+        return node.read().read();
     }
 
     static Packet consume(Snap snap) throws IOException {
-        Packet.Reader iterator = snap.listen();
-        return iterator.read();
+        return snap.listen().read();
     }
 
 }
