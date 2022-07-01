@@ -1,12 +1,16 @@
 package com.curtcox;
 
-final class TopicPacketFilter implements Packet.Filter {
-    TopicPacketFilter(String topic) {
+import static com.curtcox.Check.notNull;
 
+final class TopicPacketFilter implements Packet.Filter {
+    private final String topic;
+
+    TopicPacketFilter(String topic) {
+        this.topic = notNull(topic);
     }
 
     @Override
     public boolean passes(Packet packet) {
-        return false;
+        return topic.equals(packet.topic);
     }
 }

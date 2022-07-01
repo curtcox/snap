@@ -43,10 +43,13 @@ public class NodeTest {
     @Test
     public void read_should_only_return_a_message_once_when_topic_specified() {
         String topic = random("topic");
-        node.write(new Packet(topic,random("message")));
+        Packet packet = new Packet(topic,random("message"));
+        node.write(packet);
         tick(2);
-        assertNotNull(node.read(topic));
-        assertNull(node.read(topic));
+        Iterator<Packet> iterator = node.read(topic);
+        assertEquals(packet,iterator.next());
+        iterator.remove();
+        assertFalse(node.read(topic).hasNext());
     }
 
     @Test
@@ -113,13 +116,15 @@ public class NodeTest {
         node.write(new Packet(topic2,message2));
         tick(2);
 
-        Packet packet = node.read(topic1).next();
+        Iterator<Packet> iterator = node.read(topic1);
+        Packet packet = iterator.next();
+        iterator.remove();
 
         assertNotNull(packet);
         assertEquals(topic1,packet.topic);
         assertEquals(message1,packet.message);
 
-        assertNull(node.read(topic1));
+        assertFalse(node.read(topic1).hasNext());
     }
 
     @Test
@@ -132,12 +137,14 @@ public class NodeTest {
         node.write(new Packet(topic2,message2));
         tick(3);
 
-        Packet packet = node.read(topic2).next();
+        Iterator<Packet> iterator = node.read(topic2);
+        Packet packet = iterator.next();
+        iterator.remove();
 
         assertNotNull(packet);
         assertEquals(topic2,packet.topic);
         assertEquals(message2,packet.message);
-        assertNull(node.read(topic2));
+        assertFalse(node.read(topic2).hasNext());
     }
 
     @Test

@@ -10,8 +10,6 @@ import java.util.*;
  * Iterators will return null instead of throwing NoSuchElementException when the element that would have been returned
  * is consumed via a different method (possibly on a different thread).
  */
-// TODO Why does PacketList need to support concurrent modification?
-// TODO Add thread safety tests.
 final class PacketList {
 
     private final ConcurrentPacketList list = new ConcurrentPacketList();

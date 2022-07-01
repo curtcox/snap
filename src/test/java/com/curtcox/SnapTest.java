@@ -52,8 +52,11 @@ public class SnapTest {
         String topic = random("topic");
         snap.send(topic,random("message"));
         tick(2);
-        assertNotNull(snap.listen(topic));
-        assertNull(snap.listen(topic));
+        Iterator<Packet> iterator1 = snap.listen(topic);
+        assertNotNull(iterator1.next());
+        iterator1.remove();
+        Iterator<Packet> iterator2 = snap.listen(topic);
+        assertFalse(iterator2.hasNext());
     }
 
     @Test
@@ -115,13 +118,15 @@ public class SnapTest {
         snap.send(topic2,message2);
         tick(2);
 
-        Packet packet = snap.listen(topic1).next();
+        Iterator<Packet> iterator = snap.listen(topic1);
+        Packet packet = iterator.next();
+        iterator.remove();
 
         assertNotNull(packet);
         assertEquals(topic1,packet.topic);
         assertEquals(message1,packet.message);
 
-        assertNull(snap.listen(topic1));
+        assertFalse(snap.listen(topic1).hasNext());
     }
 
     @Test
@@ -134,12 +139,14 @@ public class SnapTest {
         snap.send(topic2,message2);
         tick(3);
 
-        Packet packet = snap.listen(topic2).next();
+        Iterator<Packet> iterator = snap.listen(topic2);
+        Packet packet = iterator.next();
+        iterator.remove();
 
         assertNotNull(packet);
         assertEquals(topic2,packet.topic);
         assertEquals(message2,packet.message);
-        assertNull(snap.listen(topic2));
+        assertFalse(snap.listen(topic2).hasNext());
     }
 
     @Test
