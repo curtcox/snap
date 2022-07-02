@@ -10,9 +10,9 @@ public class PacketListTest {
 
     PacketList list = new PacketList();
 
-    Packet packet = new Packet("one","1");
-    Packet packet2 = new Packet("two","2");
-    Packet packet3 = new Packet("three","3");
+    Packet packet = new Packet("A","one","1");
+    Packet packet2 = new Packet("B","two","2");
+    Packet packet3 = new Packet("C","three","3");
 
     @Test
     public void can_create() {

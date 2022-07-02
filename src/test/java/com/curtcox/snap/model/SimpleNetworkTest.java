@@ -6,8 +6,8 @@ import org.junit.rules.Timeout;
 
 import java.io.IOException;
 
+import static com.curtcox.snap.model.Clock.tick;
 import static com.curtcox.snap.model.TestUtil.consume;
-import static com.curtcox.snap.model.TestUtil.tick;
 import static org.junit.Assert.*;
 
 public class SimpleNetworkTest {
@@ -45,8 +45,8 @@ public class SimpleNetworkTest {
 
     @Test
     public void messages_are_delivered_in_order_over_network() throws IOException {
-        node1.write(new Packet("call","Mom"));
-        node1.write(new Packet("call","Dad"));
+        node1.write(new Packet("D","call","Mom"));
+        node1.write(new Packet("C","call","Dad"));
         tick(3);
         Packet.Reader packets = node2.read();
 
@@ -56,7 +56,7 @@ public class SimpleNetworkTest {
 
     @Test
     public void messages_can_be_read_only_once_by_receiver() throws IOException {
-        node1.write(new Packet("phone","ring"));
+        node1.write(new Packet("me","phone","ring"));
         tick(2);
 
         assertNotNull(consume(node2));
@@ -66,14 +66,16 @@ public class SimpleNetworkTest {
     @Test
     public void messages_can_be_read_at_multiple_points() throws IOException {
         Node node3 = Node.on(network);
-        node1.write(new Packet("phone","ring"));
+        node1.write(new Packet("me","phone","ring"));
         tick(2);
 
         Packet packet2 = node2.read().read();
+        assertEquals("me",packet2.sender);
         assertEquals("phone",packet2.topic);
         assertEquals("ring",packet2.message);
 
         Packet packet3 = node3.read().read();
+        assertEquals("me",packet3.sender);
         assertEquals("phone",packet3.topic);
         assertEquals("ring",packet3.message);
     }
@@ -90,7 +92,7 @@ public class SimpleNetworkTest {
 
     @Test
     public void packet_is_written_to_IO_when_there_is_a_packet_to_read() {
-        Packet packet = new Packet("room","on");
+        Packet packet = new Packet("me","room","on");
         io1.add(packet);
 
         network.add(io1);
@@ -106,7 +108,7 @@ public class SimpleNetworkTest {
         network.add(io1);
         network.add(io2);
 
-        Packet packet = new Packet("room","on");
+        Packet packet = new Packet("me","room","on");
         io1.add(packet);
 
         tick(2);
@@ -116,7 +118,7 @@ public class SimpleNetworkTest {
 
     @Test
     public void messages_from_IO_are_delived_to_nodes() throws IOException {
-        Packet packet = new Packet("room","on");
+        Packet packet = new Packet("me","room","on");
         io1.add(packet);
 
         network.add(io1);
@@ -126,6 +128,8 @@ public class SimpleNetworkTest {
 
         Packet packet1 = consume(node1);
         Packet packet2 = consume(node2);
+        assertEquals("me", packet1.sender);
+        assertEquals("me", packet2.sender);
         assertEquals("room", packet1.topic);
         assertEquals("room", packet2.topic);
         assertEquals("on", packet1.message);

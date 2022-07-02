@@ -3,6 +3,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 
+import static com.curtcox.snap.model.Clock.tick;
 import static org.junit.Assert.*;
 
 // Direct tests for things in the Readme.
@@ -34,8 +35,10 @@ public class SnapReadmeTest {
     @Test
     public void ping_returns_whoami_names() throws IOException {
         snap1.ping();
-        Packet.Reader reader = snap1.listen();
+        tick();
 
-        reader.read();
+        Packet packet = snap1.listen().read();
+
+        assertEquals(snap2.whoami(),packet.sender);
     }
 }

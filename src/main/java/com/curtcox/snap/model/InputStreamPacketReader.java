@@ -28,10 +28,12 @@ final class InputStreamPacketReader implements Packet.Reader {
             throw new IOException("Snap packet expected");
         }
         int skip1 = Packet.MAGIC.length;
-        String topic = stringAt(raw,skip1);
-        int skip2 = skip1 + 2 + topic.length();
-        String message = stringAt(raw,skip2);
-        return new Packet(topic, message);
+        String sender = stringAt(raw,skip1);
+        int skip2 = skip1 + 2 + sender.length();
+        String topic = stringAt(raw,skip2);
+        int skip3 = skip2 + 2 + topic.length();
+        String message = stringAt(raw,skip3);
+        return new Packet(sender,topic,message);
     }
 
     private String stringAt(byte[] raw, int offset) {

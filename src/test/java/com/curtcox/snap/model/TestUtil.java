@@ -29,18 +29,6 @@ public final class TestUtil {
         assertEqualBytes(new Bytes(a),b);
     }
 
-    static void tick() {
-        tick(1);
-    }
-
-    static void tick(int count) {
-        try {
-            Thread.sleep(tick *  count);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     static Packet consume(Node node) throws IOException {
         return node.read().read();
     }

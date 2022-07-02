@@ -19,8 +19,9 @@ public class OutputStreamPacketWriterTest {
 
     String topic = random("topic");
     String message = random("message");
+    String sender = random("sender");
 
-    Packet packet = new Packet(topic,message);
+    Packet packet = new Packet(sender,topic,message);
 
     @Rule
     public Timeout globalTimeout = Timeout.seconds(2);
@@ -125,9 +126,10 @@ public class OutputStreamPacketWriterTest {
         String pad = toString() + new Date() + System.currentTimeMillis();
         String topic = very + very + " long topic or at least greater than 255 characters " + pad;
         String message = very + very + " long message or at least greater than 255 characters" + pad;
+        String sender = very + very + " long sender or at least greater than 255 characters" + pad;
         assertTrue(topic.length()>255);
         assertTrue(message.length()>255);
-        Packet packet = new Packet(topic,message);
+        Packet packet = new Packet(sender,topic,message);
         return packet;
     }
 }

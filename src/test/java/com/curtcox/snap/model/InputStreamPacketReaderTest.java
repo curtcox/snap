@@ -18,13 +18,14 @@ public class InputStreamPacketReaderTest {
 
     String topic = random("topic");
     String message = random("message");
+    String sender = random("sender");
 
     @Rule
     public Timeout globalTimeout = Timeout.seconds(2);
 
     @Test
     public void can_read_packet() throws IOException {
-        Packet packet = new Packet(topic,message);
+        Packet packet = new Packet(sender,topic,message);
         PipedOutputStream externalInput = new PipedOutputStream();
         PipedInputStream externalOutput = new PipedInputStream(externalInput);
         OutputStreamPacketWriter writer = new OutputStreamPacketWriter(externalInput);

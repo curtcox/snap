@@ -15,6 +15,7 @@ public final class Packet {
 
     public final String topic;
     public final String message;
+    public final String sender;
 
     /**
      * For reading one or more packets.
@@ -62,7 +63,8 @@ public final class Packet {
         boolean passes(Packet packet);
     }
 
-    public Packet(String topic, String message) {
+    public Packet(String sender,String topic, String message) {
+        this.sender = notNull(sender);
         this.topic = notNull(topic);
         this.message = notNull(message);
     }

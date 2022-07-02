@@ -9,8 +9,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import static com.curtcox.snap.model.Clock.tick;
 import static com.curtcox.snap.model.Random.random;
-import static com.curtcox.snap.model.TestUtil.tick;
 import static org.junit.Assert.*;
 
 public class SimpleNetworkIntegrationTest {
@@ -25,7 +25,9 @@ public class SimpleNetworkIntegrationTest {
     String topic = random("topic");
     String message = random("message");
 
-    Packet packet = new Packet(topic,message);
+    String sender = random("sender");
+
+    Packet packet = new Packet(sender,topic,message);
 
     @Rule
     public Timeout globalTimeout = Timeout.seconds(3);
