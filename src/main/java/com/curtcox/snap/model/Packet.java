@@ -16,6 +16,7 @@ public final class Packet {
     public final String topic;
     public final String message;
     public final String sender;
+    public final long timestamp;
 
     /**
      * For reading one or more packets.
@@ -64,6 +65,7 @@ public final class Packet {
     }
 
     public Packet(String sender,String topic, String message) {
+        this.timestamp = System.currentTimeMillis();
         this.sender = notNull(sender);
         this.topic = notNull(topic);
         this.message = notNull(message);
