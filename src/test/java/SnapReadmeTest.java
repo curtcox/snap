@@ -1,5 +1,4 @@
-package com.curtcox.snap.model;
-
+import com.curtcox.snap.model.*;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -9,10 +8,10 @@ import static org.junit.Assert.*;
 // Direct tests for things in the Readme.
 public class SnapReadmeTest {
 
-    final SimpleNetwork network = SimpleNetwork.newPolling();
+    final Packet.Network network = Snap.newNetwork(Packet.Network.Type.memory);
 
-    final Snap snap1 = new Snap(Node.on(network));
-    final Snap snap2 = new Snap(Node.on(network));
+    final Snap snap1 = Snap.on(network);
+    final Snap snap2 = Snap.on(network);
 
 //    snap [ send | listen | listen-ping |listen-all | ping | whoami | interactive | awt | swing ]
 
@@ -35,8 +34,8 @@ public class SnapReadmeTest {
     @Test
     public void ping_returns_whoami_names() throws IOException {
         snap1.ping();
-        Packet.Reader iterator = snap1.listen();
+        Packet.Reader reader = snap1.listen();
 
-        iterator.read();
+        reader.read();
     }
 }

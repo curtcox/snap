@@ -18,6 +18,14 @@ public final class Snap {
         return null;
     }
 
+    public static Packet.Network newNetwork(Packet.Network.Type type) {
+        return SimpleNetwork.newPolling();
+    }
+
+    public static Snap on(Packet.Network network) {
+        return new Snap(Node.on(network));
+    }
+
     public void send(String topic, String message) {
         node.write(new Packet(topic,message));
     }
@@ -42,11 +50,11 @@ public final class Snap {
         return user() + "@" + host();
     }
 
-    String user() {
+    public String user() {
         return System.getProperty("user.name");
     }
 
-    String host() {
+    public String host() {
         try {
             return InetAddress.getLocalHost().getHostName();
         } catch (UnknownHostException e) {

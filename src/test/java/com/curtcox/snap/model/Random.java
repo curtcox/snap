@@ -1,8 +1,8 @@
 package com.curtcox.snap.model;
 
-final class Random {
+public final class Random {
 
-    static String random(String prefix) {
+    public static String random(String prefix) {
         return prefix + " " + System.nanoTime() % 1000;
     }
 

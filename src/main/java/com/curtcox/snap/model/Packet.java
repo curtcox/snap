@@ -6,7 +6,11 @@ import java.nio.charset.StandardCharsets;
 
 import static com.curtcox.snap.util.Check.notNull;
 
-final class Packet {
+/**
+ * An immutable bundle of data that can be sent over networks from place to place.
+ * This file contains low-level interfaces for dealing with packets.
+ */
+public final class Packet {
     public static final Bytes MAGIC = new Bytes("snap".getBytes(StandardCharsets.UTF_8));
 
     public final String topic;
@@ -15,25 +19,35 @@ final class Packet {
     /**
      * For reading one or more packets.
      */
-    interface Reader {
+    public interface Reader {
         /**
          * Immediately return a packet or null if there is none.
          */
         Packet read() throws IOException;
     }
 
-    interface Writer {
+    /**
+     * For writing one or more packets.
+     */
+    public interface Writer {
         void write(Packet packet) throws IOException;
     }
 
-    interface IO extends Reader, Writer {}
+    public interface IO extends Reader, Writer {}
 
     /**
      * Something that accepts things that packets can be written to and from.
      * Networks actively execute methods on the IOs they are given in contrast to the IOs which have no
      * threads or executors.
      */
-    interface Network {
+    public interface Network {
+
+        enum Type {
+            /**
+             * Just within the memory of this JVM.
+             */
+            memory
+        }
         /**
          * Add an IO to this network.
          * The IO methods will be invoked by network threads.
@@ -41,6 +55,9 @@ final class Packet {
         void add(IO io);
     }
 
+    /**
+     * For filtering packets.
+     */
     interface Filter {
         boolean passes(Packet packet);
     }
