@@ -6,11 +6,10 @@
 
   <groupId>com.curtcox</groupId>
   <artifactId>snap</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>0.0.7-SNAPSHOT</version>
 
   <name>snap</name>
-  <!-- FIXME change it to the project's website -->
-  <url>http://www.example.com</url>
+  <url>https://github.com/curtcox/snap</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -79,6 +78,17 @@
                   <source>8</source>
                   <target>8</target>
               </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <configuration>
+              <archive>
+                <manifest>
+                  <mainClass>com.curtcox.snap.Main</mainClass>
+                </manifest>
+              </archive>
+            </configuration>
           </plugin>
       </plugins>
   </build>
