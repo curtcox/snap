@@ -7,6 +7,7 @@ import static com.curtcox.snap.util.Check.notNull;
 
 /**
  * An immutable byte array.
+ * Bytes are hostile to comparison to other classes.
  */
 final class Bytes {
 
@@ -25,6 +26,14 @@ final class Bytes {
 
     static Bytes from(String value) {
         return new Bytes(value.getBytes(StandardCharsets.UTF_8));
+    }
+    static Bytes from(long value) {
+        byte[] result = new byte[Long.BYTES];
+        for (int i = Long.BYTES - 1; i >= 0; i--) {
+            result[i] = (byte)(value & 0xFF);
+            value >>= Byte.SIZE;
+        }
+        return new Bytes(result);
     }
 
     static Bytes bytes(int... values) {

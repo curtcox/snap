@@ -9,9 +9,14 @@ import static com.curtcox.snap.util.Check.notNull;
 /**
  * An immutable bundle of data that can be sent over networks from place to place.
  * This file contains low-level interfaces for dealing with packets.
+ * Packets are hostile to comparison to other classes.
  */
 public final class Packet {
     public static final Bytes MAGIC = new Bytes("snap".getBytes(StandardCharsets.UTF_8));
+    /**
+     * See https://en.wikipedia.org/wiki/Maximum_transmission_unit
+     */
+    public static final int MAX_SIZE = 2304;
 
     public final String topic;
     public final String message;
@@ -65,19 +70,35 @@ public final class Packet {
     }
 
     public Packet(String sender,String topic, String message) {
-        this.timestamp = System.currentTimeMillis();
+        this(sender,topic,message,now());
+    }
+
+    public Packet(String sender,String topic, String message, long timestamp) {
+        this.timestamp = timestamp;
         this.sender = notNull(sender);
         this.topic = notNull(topic);
         this.message = notNull(message);
+        checkSize();
+    }
+
+    private void checkSize() {
+        int size = asBytes().length;
+        if (size > MAX_SIZE) {
+            throw new IllegalArgumentException("Packet would be too big. " + size + " > " + MAX_SIZE);
+        }
+    }
+
+    private static long now() {
+        return System.currentTimeMillis();
     }
 
     public boolean equals(Object o) {
         Packet that  = (Packet) o;
-        return topic.equals(that.topic) && message.equals(that.message);
+        return topic.equals(that.topic) && message.equals(that.message) && sender.equals(that.sender) && timestamp == that.timestamp;
     }
 
     public int hashCode() {
-        return topic.hashCode() ^ message.hashCode();
+        return topic.hashCode() ^ message.hashCode() ^ sender.hashCode() ^ Long.hashCode(timestamp);
     }
 
     @Override

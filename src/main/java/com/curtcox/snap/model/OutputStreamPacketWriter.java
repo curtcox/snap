@@ -15,12 +15,12 @@ final class OutputStreamPacketWriter implements Packet.Writer {
     }
 
     public void write(Packet packet) throws IOException {
-        String topic = packet.topic;
-        String message = packet.message;
         output.write(Bytes.from(
                 Packet.MAGIC.value(),
-                sizePlusValue(topic),
-                sizePlusValue(message)
+                longToBytes(packet.timestamp),
+                sizePlusValue(packet.sender),
+                sizePlusValue(packet.topic),
+                sizePlusValue(packet.message)
         ).value());
     }
 
@@ -34,4 +34,12 @@ final class OutputStreamPacketWriter implements Packet.Writer {
         ).value();
     }
 
+    static byte[] longToBytes(long l) {
+        byte[] result = new byte[Long.BYTES];
+        for (int i = Long.BYTES - 1; i >= 0; i--) {
+            result[i] = (byte)(l & 0xFF);
+            l >>= Byte.SIZE;
+        }
+        return result;
+    }
 }

@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 
-import static com.curtcox.snap.model.Bytes.bytes;
+import static com.curtcox.snap.model.Bytes.*;
 import static com.curtcox.snap.model.OutputStreamPacketWriter.sizePlusValue;
 import static com.curtcox.snap.model.Random.random;
 import static org.junit.Assert.*;
@@ -19,13 +19,14 @@ public class InputStreamPacketReaderTest {
     String topic = random("topic");
     String message = random("message");
     String sender = random("sender");
+    long timestamp = System.currentTimeMillis();
 
     @Rule
     public Timeout globalTimeout = Timeout.seconds(2);
 
     @Test
     public void can_read_packet() throws IOException {
-        Packet packet = new Packet(sender,topic,message);
+        Packet packet = new Packet(sender,topic,message,timestamp);
         PipedOutputStream externalInput = new PipedOutputStream();
         PipedInputStream externalOutput = new PipedInputStream(externalInput);
         OutputStreamPacketWriter writer = new OutputStreamPacketWriter(externalInput);
@@ -34,6 +35,8 @@ public class InputStreamPacketReaderTest {
         writer.write(packet);
         Packet read = reader.read();
 
+        assertEquals(timestamp,read.timestamp);
+        assertEquals(sender,read.sender);
         assertEquals(topic,read.topic);
         assertEquals(message,read.message);
     }
@@ -56,24 +59,30 @@ public class InputStreamPacketReaderTest {
     public void read_short_topic_and_message() throws IOException {
         Packet packet = read(Bytes.from(
                 Packet.MAGIC.value(),
+                from(timestamp).value(),
+                bytes(sizePlusValue(sender)).value(),
                 bytes(sizePlusValue(topic)).value(),
                 bytes(sizePlusValue(message)).value()
         ));
+        assertEquals(timestamp,packet.timestamp);
+        assertEquals(sender,packet.sender);
         assertEquals(topic,packet.topic);
         assertEquals(message,packet.message);
     }
 
     @Test
     public void read_empty_topic_and_message() throws IOException {
-        String topic = "";
-        String message = "";
         Packet packet = read(Bytes.from(
                 Packet.MAGIC.value(),
-                bytes(sizePlusValue(topic)).value(),
-                bytes(sizePlusValue(message)).value()
+                bytes(new byte[Long.BYTES]).value(),
+                bytes(sizePlusValue("")).value(),
+                bytes(sizePlusValue("")).value(),
+                bytes(sizePlusValue("")).value()
         ));
-        assertEquals(topic,packet.topic);
-        assertEquals(message,packet.message);
+        assertEquals(0L,packet.timestamp);
+        assertEquals("",packet.sender);
+        assertEquals("",packet.topic);
+        assertEquals("",packet.message);
     }
 
     @Test
@@ -87,8 +96,18 @@ public class InputStreamPacketReaderTest {
     }
 
     @Test
+    public void read_long_topic_and_message_3() throws IOException {
+        assertBigPacket(3);
+    }
+
+    @Test
+    public void read_long_topic_and_message_8() throws IOException {
+        assertBigPacket(8);
+    }
+
+    @Test
     public void read_long_topic_and_message_x() throws IOException {
-        for (int i=0; i<10; i++) {
+        for (int i=0; i<8; i++) {
             assertBigPacket(i);
         }
     }
@@ -99,16 +118,22 @@ public class InputStreamPacketReaderTest {
         for (int i=0; i<count; i++) {
             pad = pad + dots;
         }
+        String sender = "T" + pad + "O";
         String topic = "X" + pad + "X";
         String message = "Y" + pad + "Y";
+        long timestamp = System.currentTimeMillis();
         Bytes bytes = Bytes.from(
                 Packet.MAGIC.value(),
+                from(timestamp).value(),
+                bytes(sizePlusValue(sender)).value(),
                 bytes(sizePlusValue(topic)).value(),
                 bytes(sizePlusValue(message)).value()
         );
-        int expectedLength = Packet.MAGIC.length + topic.length() + message.length() + 4;
+        int expectedLength = Packet.MAGIC.length + Long.BYTES + sender.length() + topic.length() + message.length() + (3 * 2);
         assertEquals(expectedLength,bytes.length);
         Packet packet = read(bytes);
+        assertEquals(timestamp,packet.timestamp);
+        assertEquals(sender,packet.sender);
         assertEquals(topic,packet.topic);
         assertEquals(message,packet.message);
     }
