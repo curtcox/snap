@@ -10,8 +10,7 @@ import static com.curtcox.snap.util.Check.notNull;
 final class InputStreamPacketReader implements Packet.Reader {
 
     final InputStream input;
-    // https://en.wikipedia.org/wiki/Maximum_transmission_unit
-    final byte[] buffer = new byte[2304];
+    final byte[] buffer = new byte[Packet.MAX_SIZE];
 
     InputStreamPacketReader(InputStream input) {
         this.input = notNull(input);

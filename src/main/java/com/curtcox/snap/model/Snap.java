@@ -27,7 +27,7 @@ public final class Snap {
     }
 
     public void send(String topic, String message) {
-        node.write(new Packet(name,topic,message));
+        node.write(new Packet(whoami(),topic,message));
     }
 
     public Packet.Reader listen(String topic) {

@@ -120,7 +120,7 @@ public class NodeTest {
         Packet packet = reader.read();
 
         assertNotNull(packet);
-        assertEquals(sender1,packet.topic);
+        assertEquals(sender1,packet.sender);
         assertEquals(topic1,packet.topic);
         assertEquals(message1,packet.message);
 
