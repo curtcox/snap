@@ -1,5 +1,6 @@
 package com.curtcox.snap.model;
 
+import java.io.IOException;
 import java.net.*;
 
 import static com.curtcox.snap.util.Check.notNull;
@@ -8,14 +9,22 @@ import static com.curtcox.snap.util.Check.notNull;
 public final class Snap {
 
     final Node node;
+
+    final Runner runner;
     private String name;
 
-    Snap(Node node) {
+    private static final String PING = "ping";
+    private static final String REQUEST = "request";
+    private static final String RESPONSE = "response";
+
+    private Snap(Node node, Runner runner) {
         this.node = notNull(node);
+        this.runner = notNull(runner);
     }
 
     public static Snap newInstance() {
-        return null;
+        throw new RuntimeException();
+        //return null;
     }
 
     public static Packet.Network newNetwork(Packet.Network.Type type) {
@@ -23,7 +32,28 @@ public final class Snap {
     }
 
     public static Snap on(Packet.Network network) {
-        return new Snap(Node.on(network));
+        return Snap.of(Node.on(network),Runner.of());
+    }
+
+    public static Snap of(Node node, Runner runner) {
+        Snap snap = new Snap(node,runner);
+        runner.periodically(() -> snap.respondToPingRequests());
+        return snap;
+    }
+
+    private void respondToPingRequests() {
+        try {
+            Packet.Reader reader = node.read(packet -> packet.topic.equals(PING) && packet.message.startsWith(REQUEST));
+            for (Packet packet = reader.read(); packet !=null; packet = reader.read()) {
+                respondTo(packet);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void respondTo(Packet packet) {
+        send(PING,RESPONSE);
     }
 
     public void send(String topic, String message) {
@@ -31,7 +61,7 @@ public final class Snap {
     }
 
     public Packet.Reader listen(String topic) {
-        return node.read(topic);
+        return node.read(new TopicPacketFilter(topic));
     }
 
     public Packet.Reader listen() {
@@ -66,7 +96,8 @@ public final class Snap {
         this.name = name;
     }
 
-    public void ping() {
-
+    public Packet.Reader ping() {
+        send(PING,REQUEST);
+        return node.read(packet -> packet.topic.equals(PING) && packet.message.startsWith(RESPONSE));
     }
 }

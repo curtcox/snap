@@ -32,7 +32,7 @@ public class NodeTest {
 
         node.write(packet);
         tick(2);
-        Packet read = node.read(packet.topic).read();
+        Packet read = node.read(new TopicPacketFilter(packet.topic)).read();
 
         assertNotNull(packet);
         assertEquals(packet.sender,read.sender);
@@ -46,9 +46,10 @@ public class NodeTest {
         String topic = packet.topic;
         node.write(packet);
         tick(2);
-        Packet.Reader reader = node.read(topic);
+        Packet.Filter filter = new TopicPacketFilter(topic);
+        Packet.Reader reader = node.read(filter);
         assertEquals(packet,reader.read());
-        assertNull(node.read(topic).read());
+        assertNull(node.read(filter).read());
     }
 
     @Test
@@ -75,7 +76,7 @@ public class NodeTest {
 
         node.write(packet);
         tick();
-        Packet read = node.read("different " + packet.topic).read();
+        Packet read = node.read(new TopicPacketFilter("different " + packet.topic)).read();
 
         assertNull(read);
     }
@@ -116,7 +117,7 @@ public class NodeTest {
         node.write(Random.packet());
         tick(2);
 
-        Packet.Reader reader = node.read(topic1);
+        Packet.Reader reader = node.read(new TopicPacketFilter(topic1));
         Packet packet = reader.read();
 
         assertNotNull(packet);
@@ -124,7 +125,7 @@ public class NodeTest {
         assertEquals(topic1,packet.topic);
         assertEquals(message1,packet.message);
 
-        assertNull(node.read(topic1).read());
+        assertNull(node.read(new TopicPacketFilter(topic1)).read());
     }
 
     @Test
@@ -136,14 +137,14 @@ public class NodeTest {
         node.write(new Packet(sender2,topic2,message2));
         tick(3);
 
-        Packet.Reader reader = node.read(topic2);
+        Packet.Reader reader = node.read(new TopicPacketFilter(topic2));
         Packet packet = reader.read();
 
         assertNotNull(packet);
         assertEquals(sender2,packet.sender);
         assertEquals(topic2,packet.topic);
         assertEquals(message2,packet.message);
-        assertNull(node.read(topic2).read());
+        assertNull(node.read(new TopicPacketFilter(topic2)).read());
     }
 
     @Test

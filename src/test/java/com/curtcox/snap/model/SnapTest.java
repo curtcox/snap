@@ -15,17 +15,25 @@ public class SnapTest {
     Snap snap;
 
     Node node;
+
+    Runner runner = Runner.of();
+
     ReflectorNetwork network = new ReflectorNetwork();
 
     @Before
     public void setUp() {
         node = Node.on(network);
-        snap = new Snap(node);
+        snap = Snap.of(node,runner);
     }
 
     @Test(expected = NullPointerException.class)
     public void requires_node() {
-        assertNotNull(new Snap(null));
+        assertNotNull(Snap.of(null,Runner.of()));
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void requires_runner() {
+        assertNotNull(Snap.of(Node.on(network),null));
     }
 
     @Test
@@ -162,6 +170,49 @@ public class SnapTest {
         assertEquals("2", packets.read().message);
         assertEquals("3", packets.read().message);
         assertEquals("4", packets.read().message);
+    }
+
+
+    @Test
+    public void ping_sends_ping_request() throws Exception {
+        SimpleNetwork network = SimpleNetwork.newPolling();
+        Snap snap1 = Snap.on(network);
+        Snap snap2 = Snap.on(network);
+
+        snap1.ping();
+        tick(1);
+
+        Packet packet = snap2.listen().read();
+        assertNotNull(packet);
+        assertEquals("ping",packet.topic);
+        assertTrue(packet.message.startsWith("request"));
+    }
+
+    @Test
+    public void snap_returns_ping_response_on_reflector_network() throws Exception {
+        Node.on(network);
+
+        Packet.Reader reader = snap.ping();
+        tick(3);
+
+        Packet response = reader.read();
+        assertNotNull(response);
+        assertEquals("ping",response.topic);
+        assertTrue(response.message.startsWith("response"));
+    }
+
+    @Test
+    public void ping_sends_ping_request_on_simple_network() throws Exception {
+        SimpleNetwork network = SimpleNetwork.newPolling();
+        Snap.on(network);
+
+        Packet.Reader responses = Snap.on(network).ping();
+        tick(3);
+
+        Packet packet = responses.read();
+        assertNotNull(packet);
+        assertEquals("ping",packet.topic);
+        assertTrue(packet.message.startsWith("response"));
     }
 
 }

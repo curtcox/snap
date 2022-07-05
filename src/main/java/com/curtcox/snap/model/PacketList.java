@@ -19,8 +19,8 @@ final class PacketList {
 
 
     // other
-    Packet.Reader read(String topic) {
-        return () -> list.isEmpty() ? null : list.removeFirstMatching(new TopicPacketFilter(topic));
+    Packet.Reader read(Packet.Filter filter) {
+        return () -> list.isEmpty() ? null : list.removeFirstMatching(filter);
     }
 
     // network

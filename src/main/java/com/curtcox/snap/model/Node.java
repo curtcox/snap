@@ -35,8 +35,8 @@ final class Node {
         fromOther.add(notNull(packet));
     }
 
-    Packet.Reader read(String topic) {
-        return fromNetwork.read(topic);
+    Packet.Reader read(Packet.Filter filter) {
+        return fromNetwork.read(filter);
     }
 
     Packet.Reader read() {
