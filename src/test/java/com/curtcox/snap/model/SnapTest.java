@@ -172,22 +172,6 @@ public class SnapTest {
         assertEquals("4", packets.read().message);
     }
 
-
-    @Test
-    public void ping_sends_ping_request() throws Exception {
-        SimpleNetwork network = SimpleNetwork.newPolling();
-        Snap snap1 = Snap.on(network);
-        Snap snap2 = Snap.on(network);
-
-        snap1.ping();
-        tick(1);
-
-        Packet packet = snap2.listen().read();
-        assertNotNull(packet);
-        assertEquals("ping",packet.topic);
-        assertTrue(packet.message.startsWith("request"));
-    }
-
     @Test
     public void snap_returns_ping_response_on_reflector_network() throws Exception {
         Node.on(network);
@@ -197,22 +181,42 @@ public class SnapTest {
 
         Packet response = reader.read();
         assertNotNull(response);
-        assertEquals("ping",response.topic);
-        assertTrue(response.message.startsWith("response"));
+        assertEquals(Snap.PING,response.topic);
+        assertTrue(response.message.startsWith(Snap.RESPONSE));
+        assertEquals(snap.whoami(),response.sender);
     }
 
     @Test
-    public void ping_sends_ping_request_on_simple_network() throws Exception {
+    public void ping_returns_ping_responses_on_simple_network() throws Exception {
         SimpleNetwork network = SimpleNetwork.newPolling();
-        Snap.on(network);
+        Snap responder = Snap.on(network);
+        String responderName = random("responder");
+        responder.setName(responderName);
 
         Packet.Reader responses = Snap.on(network).ping();
         tick(3);
 
         Packet packet = responses.read();
         assertNotNull(packet);
-        assertEquals("ping",packet.topic);
-        assertTrue(packet.message.startsWith("response"));
+        assertEquals(Snap.PING,packet.topic);
+        assertTrue(packet.message.startsWith(Snap.RESPONSE));
+        assertEquals(responderName,packet.sender);
+    }
+
+    @Test
+    public void ping_request_can_be_read_by_other_nodes() throws Exception {
+        SimpleNetwork network = SimpleNetwork.newPolling();
+        Snap snap1 = Snap.on(network);
+        Snap snap2 = Snap.on(network);
+
+        snap1.ping();
+        tick(3);
+
+        Packet packet = snap2.listen().read();
+        assertNotNull(packet);
+        assertEquals(Snap.PING,packet.topic);
+        assertTrue(packet.message.startsWith(Snap.REQUEST));
+        assertEquals(snap1.whoami(),packet.sender);
     }
 
 }

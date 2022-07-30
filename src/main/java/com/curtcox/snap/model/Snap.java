@@ -13,9 +13,9 @@ public final class Snap {
     final Runner runner;
     private String name;
 
-    private static final String PING = "ping";
-    private static final String REQUEST = "request";
-    private static final String RESPONSE = "response";
+    static final String PING = "ping";
+    static final String REQUEST = "request";
+    static final String RESPONSE = "response";
 
     private Snap(Node node, Runner runner) {
         this.node = notNull(node);

@@ -34,8 +34,18 @@ public class SnapReadmeTest {
 
     @Test
     public void ping_returns_whoami_names() throws IOException {
+        Packet.Reader reader = snap1.ping();
+        tick(3);
+
+        Packet packet = reader.read();
+
+        assertEquals(snap2.whoami(),packet.sender);
+    }
+
+    @Test
+    public void listening_after_ping_returns_whoami_names() throws IOException {
         snap1.ping();
-        tick();
+        tick(3);
 
         Packet packet = snap1.listen().read();
 

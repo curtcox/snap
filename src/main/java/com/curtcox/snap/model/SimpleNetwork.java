@@ -5,6 +5,9 @@ import java.util.*;
 
 import static com.curtcox.snap.util.Check.notNull;
 
+/**
+ * An in-memory network.
+ */
 final class SimpleNetwork implements Packet.Network {
 
     private final List<Packet.IO> ios = new ArrayList<>();
