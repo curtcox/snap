@@ -51,7 +51,7 @@ If not specified, the topic being listened to defaults to * and the timeout defa
 Ping requests aren't displayed by --listen, but can be displayed using either --listen-ping (for just ping requests)
 or --listen-all (for ping requests and normal announcements).
 
-### Names and Security
+### Names
 All operations are done with a client name which can be specified.
 ```
 snap listen --name "someone else"
@@ -62,15 +62,19 @@ The unspecified client name can be queried.
 snap whoami
 ```
 
+### Security
+This application assumes the network it is running on is completely free of bad actors.
+Security is intentionally being deferred until there is something that might need securing.
+
 ### Interactive mode
 ```
 >snap interactive
 >whoami
 rufus
 >ping
-pluto 15ms
-socrates 22ms
-pinta 30ms
+pluto 15ms listening to /nasa/mission/announce
+socrates 22ms listening to *
+pinta 30ms listening to /noaa/forecast/atlantic
 ```
 
 ### Defaults
