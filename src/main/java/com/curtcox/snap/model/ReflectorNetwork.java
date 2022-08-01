@@ -30,7 +30,7 @@ final class ReflectorNetwork implements Packet.Network {
 
     void reflect(Packet.IO io) {
         try {
-            Packet packet = io.read();
+            Packet packet = io.read(Packet.ANY);
             if (packet!=null) {
                 io.write(packet);
             }

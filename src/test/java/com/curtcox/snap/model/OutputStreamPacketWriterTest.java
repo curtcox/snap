@@ -12,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.concurrent.*;
 
+import static com.curtcox.snap.model.Packet.ANY;
 import static com.curtcox.snap.model.Random.random;
 import static org.junit.Assert.*;
 import static com.curtcox.snap.model.Bytes.*;
@@ -110,7 +111,7 @@ public class OutputStreamPacketWriterTest {
         InputStreamPacketReader reader = new InputStreamPacketReader(externalOutput);
 
         ExecutorService service = Executors.newSingleThreadExecutor();
-        Future<Packet> submitted = service.submit(() -> reader.read());
+        Future<Packet> submitted = service.submit(() -> reader.read(ANY));
         writer.write(packet);
         Packet read = submitted.get();
 
@@ -129,7 +130,7 @@ public class OutputStreamPacketWriterTest {
         Packet packet = packetWithLongTopicAndMessage();
 
         ExecutorService service = Executors.newSingleThreadExecutor();
-        Future<Packet> submitted = service.submit(() -> reader.read());
+        Future<Packet> submitted = service.submit(() -> reader.read(ANY));
         writer.write(packet);
         Packet read = submitted.get();
 

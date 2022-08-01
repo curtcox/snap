@@ -21,7 +21,7 @@ final class Node {
     private Packet.IO networkIO() {
         // Methods in this IO are invoked by network threads.
         return new Packet.IO() {
-            @Override public Packet read() {
+            @Override public Packet read(Packet.Filter filter) {
                 return fromOther.take();
             }
             @Override public void write(Packet packet) {
@@ -39,8 +39,8 @@ final class Node {
         return fromNetwork.read(filter);
     }
 
-    Packet.Reader read() {
-        return fromNetwork.read();
-    }
+//    Packet.Reader read() {
+//        return fromNetwork.read();
+//    }
 
 }

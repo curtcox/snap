@@ -6,6 +6,7 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static com.curtcox.snap.model.Clock.tick;
+import static com.curtcox.snap.model.Packet.ANY;
 import static com.curtcox.snap.model.Random.random;
 import static com.curtcox.snap.model.TestUtil.consume;
 import static org.junit.Assert.*;
@@ -32,7 +33,7 @@ public class NodeTest {
 
         node.write(packet);
         tick(2);
-        Packet read = node.read(new TopicPacketFilter(packet.topic)).read();
+        Packet read = node.read(new TopicPacketFilter(packet.topic)).read(ANY);
 
         assertNotNull(packet);
         assertEquals(packet.sender,read.sender);
@@ -48,8 +49,8 @@ public class NodeTest {
         tick(2);
         Packet.Filter filter = new TopicPacketFilter(topic);
         Packet.Reader reader = node.read(filter);
-        assertEquals(packet,reader.read());
-        assertNull(node.read(filter).read());
+        assertEquals(packet,reader.read(ANY));
+        assertNull(node.read(filter).read(ANY));
     }
 
     @Test
@@ -57,17 +58,17 @@ public class NodeTest {
         node.write(Random.packet());
         tick(2);
 
-        Packet.Reader reader = node.read();
-        assertNotNull(reader.read());
-        assertNull(reader.read());
+        Packet.Reader reader = node.read(ANY);
+        assertNotNull(reader.read(ANY));
+        assertNull(reader.read(ANY));
     }
 
     @Test
     public void read_should_return_empty_reader_when_no_messages_sent() throws IOException {
         tick();
-        Packet.Reader packets = node.read();
+        Packet.Reader packets = node.read(ANY);
 
-        assertNull(packets.read());
+        assertNull(packets.read(ANY));
     }
 
     @Test
@@ -76,7 +77,7 @@ public class NodeTest {
 
         node.write(packet);
         tick();
-        Packet read = node.read(new TopicPacketFilter("different " + packet.topic)).read();
+        Packet read = node.read(new TopicPacketFilter("different " + packet.topic)).read(ANY);
 
         assertNull(read);
     }
@@ -118,14 +119,14 @@ public class NodeTest {
         tick(2);
 
         Packet.Reader reader = node.read(new TopicPacketFilter(topic1));
-        Packet packet = reader.read();
+        Packet packet = reader.read(ANY);
 
         assertNotNull(packet);
         assertEquals(sender1,packet.sender);
         assertEquals(topic1,packet.topic);
         assertEquals(message1,packet.message);
 
-        assertNull(node.read(new TopicPacketFilter(topic1)).read());
+        assertNull(node.read(new TopicPacketFilter(topic1)).read(ANY));
     }
 
     @Test
@@ -138,13 +139,13 @@ public class NodeTest {
         tick(3);
 
         Packet.Reader reader = node.read(new TopicPacketFilter(topic2));
-        Packet packet = reader.read();
+        Packet packet = reader.read(ANY);
 
         assertNotNull(packet);
         assertEquals(sender2,packet.sender);
         assertEquals(topic2,packet.topic);
         assertEquals(message2,packet.message);
-        assertNull(node.read(new TopicPacketFilter(topic2)).read());
+        assertNull(node.read(new TopicPacketFilter(topic2)).read(ANY));
     }
 
     @Test
@@ -169,7 +170,7 @@ public class NodeTest {
         tick(2);
 
         assertNotNull(consume(node));
-        assertNull(node.read().read());
+        assertNull(node.read(ANY).read(ANY));
     }
 
 }

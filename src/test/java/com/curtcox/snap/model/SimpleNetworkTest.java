@@ -8,6 +8,8 @@ import java.io.IOException;
 
 import static com.curtcox.snap.model.Clock.tick;
 import static com.curtcox.snap.model.TestUtil.consume;
+import static com.curtcox.snap.model.Packet.ANY;
+
 import static org.junit.Assert.*;
 
 public class SimpleNetworkTest {
@@ -29,8 +31,8 @@ public class SimpleNetworkTest {
 
     @Test
     public void there_are_no_messages_to_listen_to_before_any_are_sent() throws IOException {
-        assertNull(node1.read().read());
-        assertNull(node2.read().read());
+        assertNull(node1.read(ANY).read(ANY));
+        assertNull(node2.read(ANY).read(ANY));
     }
 
     @Test
@@ -39,7 +41,7 @@ public class SimpleNetworkTest {
         node1.write(packet);
         tick(2);
 
-        Packet read = node2.read().read();
+        Packet read = node2.read(ANY).read(ANY);
         assertEquals(packet,read);
     }
 
@@ -48,10 +50,10 @@ public class SimpleNetworkTest {
         node1.write(new Packet("D","call","Mom"));
         node1.write(new Packet("C","call","Dad"));
         tick(3);
-        Packet.Reader packets = node2.read();
+        Packet.Reader packets = node2.read(ANY);
 
-        assertEquals("Mom", packets.read().message);
-        assertEquals("Dad", packets.read().message);
+        assertEquals("Mom", packets.read(ANY).message);
+        assertEquals("Dad", packets.read(ANY).message);
     }
 
     @Test
@@ -60,7 +62,7 @@ public class SimpleNetworkTest {
         tick(2);
 
         assertNotNull(consume(node2));
-        assertNull(node2.read().read());
+        assertNull(node2.read(ANY).read(ANY));
     }
 
     @Test
@@ -69,12 +71,12 @@ public class SimpleNetworkTest {
         node1.write(new Packet("me","phone","ring"));
         tick(2);
 
-        Packet packet2 = node2.read().read();
+        Packet packet2 = node2.read(ANY).read(ANY);
         assertEquals("me",packet2.sender);
         assertEquals("phone",packet2.topic);
         assertEquals("ring",packet2.message);
 
-        Packet packet3 = node3.read().read();
+        Packet packet3 = node3.read(ANY).read(ANY);
         assertEquals("me",packet3.sender);
         assertEquals("phone",packet3.topic);
         assertEquals("ring",packet3.message);

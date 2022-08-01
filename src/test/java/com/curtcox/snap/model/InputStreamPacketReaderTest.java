@@ -33,7 +33,7 @@ public class InputStreamPacketReaderTest {
         InputStreamPacketReader reader = new InputStreamPacketReader(externalOutput);
 
         writer.write(packet);
-        Packet read = reader.read();
+        Packet read = reader.read(Packet.ANY);
 
         assertEquals(timestamp,read.timestamp);
         assertEquals(sender,read.sender);
@@ -42,7 +42,7 @@ public class InputStreamPacketReaderTest {
     }
 
     private Packet read(Bytes bytes) throws IOException {
-        return new InputStreamPacketReader(new ByteArrayInputStream(bytes.value())).read();
+        return new InputStreamPacketReader(new ByteArrayInputStream(bytes.value())).read(Packet.ANY);
     }
 
     @Test(expected = IOException.class)

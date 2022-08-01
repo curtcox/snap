@@ -66,7 +66,7 @@ final class SimpleNetwork implements Packet.Network {
     synchronized private Map<Packet.IO,Packet> readIncoming() throws IOException {
         Map<Packet.IO,Packet> in = new HashMap<>();
         for (Packet.IO input : ios) {
-            in.put(input,input.read());
+            in.put(input,input.read(Packet.ANY));
         }
         return in;
     }

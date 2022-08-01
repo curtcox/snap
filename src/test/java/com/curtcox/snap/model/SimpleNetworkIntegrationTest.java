@@ -41,19 +41,22 @@ public class SimpleNetworkIntegrationTest {
     public void messages_can_be_sent_from_a_node_thru_a_network() throws IOException {
         write_a_packet_to_node_3();
 
-        assertPacket(node1.read().read());
-        assertPacket(node2.read().read());
-        assertPacket(node4.read().read());
+        assertPacket(read(node1));
+        assertPacket(read(node2));
+        assertPacket(read(node4));
     }
 
+    private Packet read(Node node) throws IOException {
+        return node.read(Packet.ANY).read(Packet.ANY);
+    }
     @Test
     public void messages_can_be_sent_from_a_reader_writer_thru_a_network() throws IOException {
         write_a_packet_to_reader_writer();
 
-        assertPacket(node1.read().read());
-        assertPacket(node2.read().read());
-        assertPacket(node3.read().read());
-        assertPacket(node4.read().read());
+        assertPacket(read(node1));
+        assertPacket(read(node2));
+        assertPacket(read(node3));
+        assertPacket(read(node4));
     }
 
     @Test
@@ -63,12 +66,12 @@ public class SimpleNetworkIntegrationTest {
         network.add(readerWriter);
         write_a_packet_to_reader_writer();
 
-        assertPacket(node1.read().read());
-        assertPacket(node2.read().read());
-        assertPacket(node3.read().read());
-        assertPacket(node4.read().read());
+        assertPacket(read(node1));
+        assertPacket(read(node2));
+        assertPacket(read(node3));
+        assertPacket(read(node4));
         InputStreamPacketReader reader = new InputStreamPacketReader(new ByteArrayInputStream(out.toByteArray()));
-        assertPacket(reader.read());
+        assertPacket(reader.read(Packet.ANY));
     }
 
     private void write_a_packet_to_reader_writer() {

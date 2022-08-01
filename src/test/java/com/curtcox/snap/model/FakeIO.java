@@ -7,7 +7,7 @@ final class FakeIO implements Packet.IO {
     private final List<Packet> toRead = new ArrayList<>();
     private final List<Packet> written = new ArrayList<>();
     @Override
-    synchronized public Packet read() {
+    synchronized public Packet read(Packet.Filter filter) {
         if (toRead.isEmpty()) {
             return null;
         }

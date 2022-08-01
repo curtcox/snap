@@ -5,6 +5,7 @@ import org.junit.Test;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import static com.curtcox.snap.model.Packet.ANY;
 
 import static org.junit.Assert.*;
 
@@ -39,7 +40,7 @@ public class PacketRelayTest {
         writer.write(packet);
         createRelay(outputStream.toByteArray());
 
-        Packet read = relay.read();
+        Packet read = relay.read(ANY);
 
         assertEquals(packet,read);
     }
@@ -48,7 +49,7 @@ public class PacketRelayTest {
     public void read_returns_null_when_there_is_no_input() throws IOException {
         createRelay(new byte[0]);
 
-        Packet read = relay.read();
+        Packet read = relay.read(ANY);
 
         assertNull(read);
     }
@@ -60,7 +61,7 @@ public class PacketRelayTest {
 
         relay.write(packet);
         InputStreamPacketReader reader = new InputStreamPacketReader(new ByteArrayInputStream(outputStream.toByteArray()));
-        Packet read = reader.read();
+        Packet read = reader.read(ANY);
 
         assertEquals(packet,read);
     }

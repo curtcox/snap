@@ -30,11 +30,11 @@ public final class TestUtil {
     }
 
     static Packet consume(Node node) throws IOException {
-        return node.read().read();
+        return node.read(Packet.ANY).read(Packet.ANY);
     }
 
     static Packet consume(Snap snap) throws IOException {
-        return snap.listen().read();
+        return snap.listen().read(Packet.ANY);
     }
 
 }

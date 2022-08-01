@@ -2,6 +2,7 @@ import com.curtcox.snap.model.*;
 import org.junit.Test;
 
 import java.io.IOException;
+import static com.curtcox.snap.model.Packet.ANY;
 
 import static com.curtcox.snap.model.Clock.tick;
 import static org.junit.Assert.*;
@@ -37,7 +38,7 @@ public class SnapReadmeTest {
         Packet.Reader reader = snap1.ping();
         tick(3);
 
-        Packet packet = reader.read();
+        Packet packet = reader.read(ANY);
 
         assertEquals(snap2.whoami(),packet.sender);
     }
@@ -47,7 +48,7 @@ public class SnapReadmeTest {
         snap1.ping();
         tick(3);
 
-        Packet packet = snap1.listen().read();
+        Packet packet = snap1.listen().read(ANY);
 
         assertEquals(snap2.whoami(),packet.sender);
     }

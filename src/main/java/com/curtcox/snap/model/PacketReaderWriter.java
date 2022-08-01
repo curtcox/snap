@@ -19,8 +19,8 @@ final class PacketReaderWriter implements Packet.IO {
     }
 
     @Override
-    public Packet read() throws IOException {
-        return input.read();
+    public Packet read(Packet.Filter filter) throws IOException {
+        return input.read(filter);
     }
 
     @Override

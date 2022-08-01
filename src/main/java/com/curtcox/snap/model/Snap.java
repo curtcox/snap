@@ -13,9 +13,14 @@ public final class Snap {
     final Runner runner;
     private String name;
 
+    private final ConcurrentPacketList toRead = new ConcurrentPacketList();
+
     static final String PING = "ping";
     static final String REQUEST = "request";
     static final String RESPONSE = "response";
+
+    private static final Packet.Filter isPingRequest = packet -> packet.topic.equals(PING) && packet.message.startsWith(REQUEST);
+    private static final Packet.Filter isPingResponse = packet -> packet.topic.equals(PING) && packet.message.startsWith(RESPONSE);
 
     private Snap(Node node, Runner runner) {
         this.node = notNull(node);
@@ -43,8 +48,9 @@ public final class Snap {
 
     private void respondToPingRequests() {
         try {
-            Packet.Reader reader = node.read(packet -> packet.topic.equals(PING) && packet.message.startsWith(REQUEST));
-            for (Packet packet = reader.read(); packet !=null; packet = reader.read()) {
+            Packet.Reader reader = node.read(isPingRequest);
+            for (Packet packet = reader.read(isPingRequest); packet !=null; packet = reader.read(isPingRequest)) {
+                toRead.add(packet);
                 respondTo(packet);
             }
         } catch (IOException e) {
@@ -61,13 +67,12 @@ public final class Snap {
     }
 
     public Packet.Reader listen(String topic) {
-        return node.read(new TopicPacketFilter(topic));
+        return read(new TopicPacketFilter(topic));
     }
 
     public Packet.Reader listen() {
-        return node.read();
+        return node.read(Packet.ANY);
     }
-
 
     public String whoami() {
         if (name==null) {
@@ -98,6 +103,10 @@ public final class Snap {
 
     public Packet.Reader ping() {
         send(PING,REQUEST);
-        return node.read(packet -> packet.topic.equals(PING) && packet.message.startsWith(RESPONSE));
+        return read(isPingResponse);
+    }
+
+    private Packet.Reader read(Packet.Filter filter) {
+        return node.read(filter);
     }
 }

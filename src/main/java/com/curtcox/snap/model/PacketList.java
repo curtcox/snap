@@ -1,5 +1,7 @@
 package com.curtcox.snap.model;
 
+import java.io.*;
+
 /**
  * A list of packets that can be accessed by multiple threads concurrently.
  * This is to support different threads concurrently adding and removing packets.
@@ -13,14 +15,10 @@ final class PacketList {
     private final ConcurrentPacketList list = new ConcurrentPacketList();
 
     // other
-    Packet.Reader read() {
-        return () -> list.isEmpty() ? null : list.removeFirst();
-    }
-
-
-    // other
-    Packet.Reader read(Packet.Filter filter) {
-        return () -> list.isEmpty() ? null : list.removeFirstMatching(filter);
+    Packet.Reader read(Packet.Filter readerFilter) {
+        return packetFilter -> list.isEmpty()
+                        ? null
+                        : list.removeFirstMatching(packet -> readerFilter.passes(packet) && packetFilter.passes(packet));
     }
 
     // network

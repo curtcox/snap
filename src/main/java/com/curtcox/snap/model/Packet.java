@@ -18,6 +18,8 @@ public final class Packet {
      */
     public static final int MAX_SIZE = 2304;
 
+    public static final Filter ANY = packet -> true;
+
     public final String topic;
     public final String message;
     public final String sender;
@@ -30,7 +32,7 @@ public final class Packet {
         /**
          * Immediately return a packet or null if there is none.
          */
-        Packet read() throws IOException;
+        Packet read(Filter filter) throws IOException;
     }
 
     /**

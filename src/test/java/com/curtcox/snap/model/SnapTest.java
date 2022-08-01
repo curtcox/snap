@@ -8,6 +8,8 @@ import java.io.IOException;
 import static com.curtcox.snap.model.Clock.tick;
 import static com.curtcox.snap.model.Random.random;
 import static com.curtcox.snap.model.TestUtil.consume;
+import static com.curtcox.snap.model.Packet.ANY;
+
 import static org.junit.Assert.*;
 
 public class SnapTest {
@@ -48,7 +50,7 @@ public class SnapTest {
 
         snap.send(topic,message);
         tick(2);
-        Packet packet = snap.listen(topic).read();
+        Packet packet = snap.listen(topic).read(ANY);
 
         assertNotNull(packet);
         assertEquals(topic,packet.topic);
@@ -61,9 +63,9 @@ public class SnapTest {
         snap.send(topic,random("message"));
         tick(2);
         Packet.Reader iterator1 = snap.listen(topic);
-        assertNotNull(iterator1.read());
+        assertNotNull(iterator1.read(ANY));
         Packet.Reader iterator2 = snap.listen(topic);
-        assertNull(iterator2.read());
+        assertNull(iterator2.read(ANY));
     }
 
     @Test
@@ -71,12 +73,12 @@ public class SnapTest {
         snap.send(random("topic"),random("message"));
         tick(2);
         assertNotNull(consume(snap));
-        assertNull(snap.listen().read());
+        assertNull(snap.listen().read(ANY));
     }
 
     @Test
     public void read_should_return_null_when_no_messages_sent() throws IOException {
-        assertNull(snap.listen().read());
+        assertNull(snap.listen().read(ANY));
     }
 
     @Test
@@ -85,7 +87,7 @@ public class SnapTest {
         String message = random("message");
 
         snap.send(topic,message);
-        Packet packet = snap.listen("different " + topic).read();
+        Packet packet = snap.listen("different " + topic).read(ANY);
 
         assertNull(packet);
     }
@@ -102,13 +104,13 @@ public class SnapTest {
 
         Packet.Reader packets = snap.listen();
 
-        Packet packet1 = packets.read();
+        Packet packet1 = packets.read(ANY);
 
         assertNotNull(packet1);
         assertEquals(topic1,packet1.topic);
         assertEquals(message1,packet1.message);
 
-        Packet packet2 = packets.read();
+        Packet packet2 = packets.read(ANY);
 
         assertNotNull(packet2);
         assertEquals(topic2,packet2.topic);
@@ -126,13 +128,13 @@ public class SnapTest {
         tick(2);
 
         Packet.Reader iterator = snap.listen(topic1);
-        Packet packet = iterator.read();
+        Packet packet = iterator.read(ANY);
 
         assertNotNull(packet);
         assertEquals(topic1,packet.topic);
         assertEquals(message1,packet.message);
 
-        assertNull(snap.listen(topic1).read());
+        assertNull(snap.listen(topic1).read(ANY));
     }
 
     @Test
@@ -146,12 +148,12 @@ public class SnapTest {
         tick(3);
 
         Packet.Reader iterator = snap.listen(topic2);
-        Packet packet = iterator.read();
+        Packet packet = iterator.read(ANY);
 
         assertNotNull(packet);
         assertEquals(topic2,packet.topic);
         assertEquals(message2,packet.message);
-        assertNull(snap.listen(topic2).read());
+        assertNull(snap.listen(topic2).read(ANY));
     }
 
     @Test
@@ -166,10 +168,10 @@ public class SnapTest {
 
         Packet.Reader packets = snap.listen();
 
-        assertEquals("1", packets.read().message);
-        assertEquals("2", packets.read().message);
-        assertEquals("3", packets.read().message);
-        assertEquals("4", packets.read().message);
+        assertEquals("1", packets.read(ANY).message);
+        assertEquals("2", packets.read(ANY).message);
+        assertEquals("3", packets.read(ANY).message);
+        assertEquals("4", packets.read(ANY).message);
     }
 
     @Test
@@ -179,7 +181,7 @@ public class SnapTest {
         Packet.Reader reader = snap.ping();
         tick(3);
 
-        Packet response = reader.read();
+        Packet response = reader.read(ANY);
         assertNotNull(response);
         assertEquals(Snap.PING,response.topic);
         assertTrue(response.message.startsWith(Snap.RESPONSE));
@@ -196,7 +198,7 @@ public class SnapTest {
         Packet.Reader responses = Snap.on(network).ping();
         tick(3);
 
-        Packet packet = responses.read();
+        Packet packet = responses.read(ANY);
         assertNotNull(packet);
         assertEquals(Snap.PING,packet.topic);
         assertTrue(packet.message.startsWith(Snap.RESPONSE));
@@ -212,7 +214,7 @@ public class SnapTest {
         snap1.ping();
         tick(3);
 
-        Packet packet = snap2.listen().read();
+        Packet packet = snap2.listen().read(ANY);
         assertNotNull(packet);
         assertEquals(Snap.PING,packet.topic);
         assertTrue(packet.message.startsWith(Snap.REQUEST));
