@@ -39,8 +39,4 @@ final class Node {
         return fromNetwork.read(filter);
     }
 
-//    Packet.Reader read() {
-//        return fromNetwork.read();
-//    }
-
 }

@@ -5,7 +5,7 @@ import java.util.*;
 /**
  * A mutable list of packets that can be accessed by multiple threads concurrently.
  */
-final class ConcurrentPacketList {
+final class ConcurrentPacketList implements Packet.Reader {
     private final List<Packet> list = new ArrayList<>();
 
     synchronized boolean isEmpty() {
@@ -16,11 +16,7 @@ final class ConcurrentPacketList {
         list.add(packet);
     }
 
-    synchronized Packet removeFirst() {
-        return list.remove(0);
-    }
-
-    synchronized Packet removeFirstMatching(Packet.Filter filter) {
+    public synchronized Packet read(Packet.Filter filter) {
         for (Packet packet : list) {
             if (filter.passes(packet)) {
                 list.remove(packet);
@@ -30,4 +26,8 @@ final class ConcurrentPacketList {
         return null;
     }
 
+    @Override
+    public String toString() {
+        return "Concurrent packets " + list;
+    }
 }

@@ -67,11 +67,11 @@ public final class Snap {
     }
 
     public Packet.Reader listen(String topic) {
-        return read(new TopicPacketFilter(topic));
+        return reader(new TopicPacketFilter(topic));
     }
 
     public Packet.Reader listen() {
-        return node.read(Packet.ANY);
+        return reader(Packet.ANY);
     }
 
     public String whoami() {
@@ -103,10 +103,10 @@ public final class Snap {
 
     public Packet.Reader ping() {
         send(PING,REQUEST);
-        return read(isPingResponse);
+        return reader(isPingResponse);
     }
 
-    private Packet.Reader read(Packet.Filter filter) {
-        return node.read(filter);
+    private Packet.Reader reader(Packet.Filter filter) {
+        return new CombinedReader(toRead,node.read(filter));
     }
 }

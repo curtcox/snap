@@ -5,7 +5,7 @@ import java.util.*;
 
 final class CombinedReader implements Packet.Reader {
 
-    final List<Packet.Reader> readers;
+    private final List<Packet.Reader> readers;
 
     CombinedReader(List<Packet.Reader> readers) {
         this.readers = readers;
@@ -15,9 +15,14 @@ final class CombinedReader implements Packet.Reader {
         this.readers = Arrays.asList(readers);
     }
 
-
     @Override
     public Packet read(Packet.Filter filter) throws IOException {
+        for (Packet.Reader reader : readers) {
+            Packet packet = reader.read(filter);
+            if (packet != null) {
+                return packet;
+            }
+        }
         return null;
     }
 }

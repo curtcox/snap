@@ -181,11 +181,22 @@ public class SnapTest {
         Packet.Reader reader = snap.ping();
         tick(3);
 
+        Packet request = reader.read(ANY);
+        assertNotNull(request);
+        assertEquals(Snap.PING,request.topic);
+        assertTrue(request.message,request.message.startsWith(Snap.REQUEST));
+        assertStartsWith(request.message,Snap.REQUEST);
+        assertEquals(snap.whoami(),request.sender);
+
         Packet response = reader.read(ANY);
         assertNotNull(response);
         assertEquals(Snap.PING,response.topic);
-        assertTrue(response.message.startsWith(Snap.RESPONSE));
+        assertStartsWith(response.message,Snap.RESPONSE);
         assertEquals(snap.whoami(),response.sender);
+    }
+
+    private void assertStartsWith(String text, String prefix) {
+        assertTrue(text + " should start with " + prefix,text.startsWith(prefix));
     }
 
     @Test

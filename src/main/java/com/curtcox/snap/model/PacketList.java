@@ -18,12 +18,12 @@ final class PacketList {
     Packet.Reader read(Packet.Filter readerFilter) {
         return packetFilter -> list.isEmpty()
                         ? null
-                        : list.removeFirstMatching(packet -> readerFilter.passes(packet) && packetFilter.passes(packet));
+                        : list.read(packet -> readerFilter.passes(packet) && packetFilter.passes(packet));
     }
 
     // network
     Packet take() {
-        return (list.isEmpty()) ? null : list.removeFirst();
+        return (list.isEmpty()) ? null : list.read(Packet.ANY);
     }
 
     // network or other
