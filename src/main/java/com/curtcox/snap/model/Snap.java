@@ -28,8 +28,7 @@ public final class Snap {
     }
 
     public static Snap newInstance() {
-        throw new RuntimeException();
-        //return null;
+        return on(newNetwork(null));
     }
 
     public static Packet.Network newNetwork(Packet.Network.Type type) {
