@@ -20,13 +20,14 @@ public class InputStreamPacketReaderTest {
     String message = random("message");
     String sender = random("sender");
     long timestamp = System.currentTimeMillis();
+    long trigger = System.currentTimeMillis();
 
     @Rule
     public Timeout globalTimeout = Timeout.seconds(2);
 
     @Test
     public void can_read_packet() throws IOException {
-        Packet packet = new Packet(sender,topic,message,timestamp);
+        Packet packet = new Packet(sender,topic,message,timestamp,trigger);
         PipedOutputStream externalInput = new PipedOutputStream();
         PipedInputStream externalOutput = new PipedInputStream(externalInput);
         OutputStreamPacketWriter writer = new OutputStreamPacketWriter(externalInput);
@@ -36,6 +37,7 @@ public class InputStreamPacketReaderTest {
         Packet read = reader.read(Packet.ANY);
 
         assertEquals(timestamp,read.timestamp);
+        assertEquals(trigger,read.trigger);
         assertEquals(sender,read.sender);
         assertEquals(topic,read.topic);
         assertEquals(message,read.message);
@@ -60,11 +62,13 @@ public class InputStreamPacketReaderTest {
         Packet packet = read(Bytes.from(
                 Packet.MAGIC.value(),
                 from(timestamp).value(),
+                from(trigger).value(),
                 bytes(sizePlusValue(sender)).value(),
                 bytes(sizePlusValue(topic)).value(),
                 bytes(sizePlusValue(message)).value()
         ));
         assertEquals(timestamp,packet.timestamp);
+        assertEquals(trigger,packet.trigger);
         assertEquals(sender,packet.sender);
         assertEquals(topic,packet.topic);
         assertEquals(message,packet.message);
@@ -75,11 +79,13 @@ public class InputStreamPacketReaderTest {
         Packet packet = read(Bytes.from(
                 Packet.MAGIC.value(),
                 bytes(new byte[Long.BYTES]).value(),
+                bytes(new byte[Long.BYTES]).value(),
                 bytes(sizePlusValue("")).value(),
                 bytes(sizePlusValue("")).value(),
                 bytes(sizePlusValue("")).value()
         ));
         assertEquals(0L,packet.timestamp);
+        assertEquals(0L,packet.trigger);
         assertEquals("",packet.sender);
         assertEquals("",packet.topic);
         assertEquals("",packet.message);
@@ -101,8 +107,8 @@ public class InputStreamPacketReaderTest {
     }
 
     @Test
-    public void read_long_topic_and_message_8() throws IOException {
-        assertBigPacket(8);
+    public void read_long_topic_and_message_7() throws IOException {
+        assertBigPacket(7);
     }
 
     @Test
@@ -122,17 +128,20 @@ public class InputStreamPacketReaderTest {
         String topic = "X" + pad + "X";
         String message = "Y" + pad + "Y";
         long timestamp = System.currentTimeMillis();
+        long trigger = System.currentTimeMillis();
         Bytes bytes = Bytes.from(
                 Packet.MAGIC.value(),
                 from(timestamp).value(),
+                from(trigger).value(),
                 bytes(sizePlusValue(sender)).value(),
                 bytes(sizePlusValue(topic)).value(),
                 bytes(sizePlusValue(message)).value()
         );
-        int expectedLength = Packet.MAGIC.length + Long.BYTES + sender.length() + topic.length() + message.length() + (3 * 2);
+        int expectedLength = Packet.MAGIC.length + Long.BYTES + Long.BYTES + sender.length() + topic.length() + message.length() + (3 * 2);
         assertEquals(expectedLength,bytes.length);
         Packet packet = read(bytes);
         assertEquals(timestamp,packet.timestamp);
+        assertEquals(trigger,packet.trigger);
         assertEquals(sender,packet.sender);
         assertEquals(topic,packet.topic);
         assertEquals(message,packet.message);

@@ -8,19 +8,21 @@ public class PacketTest {
 
     @Test
     public void equal() {
-        assertEqualPackets(new Packet("","","",0),new Packet("","","",0));
-        assertEqualPackets(new Packet("s","","",0),new Packet("s","","",0));
-        assertEqualPackets(new Packet("","t","",0),new Packet("","t","",0));
-        assertEqualPackets(new Packet("","","m",0),new Packet("","","m",0));
-        assertEqualPackets(new Packet("","","",1),new Packet("","","",1));
+        assertEqualPackets(new Packet("","","",0,0),new Packet("","","",0,0));
+        assertEqualPackets(new Packet("s","","",0,0),new Packet("s","","",0,0));
+        assertEqualPackets(new Packet("","t","",0,0),new Packet("","t","",0,0));
+        assertEqualPackets(new Packet("","","m",0,0),new Packet("","","m",0,0));
+        assertEqualPackets(new Packet("","","",1,0),new Packet("","","",1,0));
+        assertEqualPackets(new Packet("","","",0,1),new Packet("","","",0,1));
     }
 
     @Test
     public void unequal() {
-        assertUnequalPackets(new Packet("","","",1),new Packet("","","",0));
-        assertUnequalPackets(new Packet("","","x",0),new Packet("","","",0));
-        assertUnequalPackets(new Packet("","x","",0),new Packet("","","",0));
-        assertUnequalPackets(new Packet("x","","",0),new Packet("","","",0));
+        assertUnequalPackets(new Packet("","","",0,1),new Packet("","","",0,0));
+        assertUnequalPackets(new Packet("","","",1,0),new Packet("","","",0,0));
+        assertUnequalPackets(new Packet("","","x",0,0),new Packet("","","",0,0));
+        assertUnequalPackets(new Packet("","x","",0,0),new Packet("","","",0,0));
+        assertUnequalPackets(new Packet("x","","",0,0),new Packet("","","",0,0));
     }
 
     @Test(expected = IllegalArgumentException.class)

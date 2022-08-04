@@ -29,12 +29,14 @@ final class InputStreamPacketReader implements Packet.Reader {
         int skip1 = Packet.MAGIC.length;
         long timestamp = longAt(raw,skip1);
         int skip2 = skip1 + Long.BYTES;
-        String sender = stringAt(raw,skip2);
-        int skip3 = skip2 + 2 + sender.length();
-        String topic = stringAt(raw,skip3);
-        int skip4 = skip3 + 2 + topic.length();
-        String message = stringAt(raw,skip4);
-        return new Packet(sender,topic,message,timestamp);
+        long trigger = longAt(raw,skip2);
+        int skip3 = skip2 + Long.BYTES;
+        String sender = stringAt(raw,skip3);
+        int skip4 = skip3 + 2 + sender.length();
+        String topic = stringAt(raw,skip4);
+        int skip5 = skip4 + 2 + topic.length();
+        String message = stringAt(raw,skip5);
+        return new Packet(sender,topic,message,timestamp,trigger);
     }
 
     public static long longAt(final byte[] b, int offset) {

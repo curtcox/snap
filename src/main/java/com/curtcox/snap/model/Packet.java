@@ -24,6 +24,7 @@ public final class Packet {
     public final String message;
     public final String sender;
     public final long timestamp;
+    public final long trigger;
 
     /**
      * For reading one or more packets.
@@ -72,11 +73,12 @@ public final class Packet {
     }
 
     public Packet(String sender,String topic, String message) {
-        this(sender,topic,message,now());
+        this(sender,topic,message,now(),0);
     }
 
-    public Packet(String sender,String topic, String message, long timestamp) {
+    public Packet(String sender,String topic, String message, long timestamp, long trigger) {
         this.timestamp = timestamp;
+        this.trigger = trigger;
         this.sender = notNull(sender);
         this.topic = notNull(topic);
         this.message = notNull(message);
@@ -96,11 +98,12 @@ public final class Packet {
 
     public boolean equals(Object o) {
         Packet that  = (Packet) o;
-        return topic.equals(that.topic) && message.equals(that.message) && sender.equals(that.sender) && timestamp == that.timestamp;
+        return topic.equals(that.topic) && message.equals(that.message) && sender.equals(that.sender) &&
+                timestamp == that.timestamp && trigger==that.trigger;
     }
 
     public int hashCode() {
-        return topic.hashCode() ^ message.hashCode() ^ sender.hashCode() ^ Long.hashCode(timestamp);
+        return topic.hashCode() ^ message.hashCode() ^ sender.hashCode() ^ Long.hashCode(timestamp) ^ Long.hashCode(trigger);
     }
 
     @Override

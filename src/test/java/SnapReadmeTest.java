@@ -52,4 +52,21 @@ public class SnapReadmeTest {
 
         assertEquals(snap2.whoami(),packet.sender);
     }
+
+    @Test
+    public void listening_after_ping_returns_response_time() throws IOException {
+        snap1.ping();
+        tick(3);
+
+        Packet packet = snap1.listen().read(ANY);
+
+        String senderName = snap2.whoami();
+        assertEquals(senderName,packet.sender);
+        assertContains(packet.message,senderName);
+    }
+
+    private void assertContains(String text, String substring) {
+        assertTrue(text + " does not contain " + substring ,text.contains(substring));
+    }
+
 }
