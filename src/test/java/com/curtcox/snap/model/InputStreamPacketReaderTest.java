@@ -20,7 +20,11 @@ public class InputStreamPacketReaderTest {
     String message = random("message");
     String sender = random("sender");
     long timestamp = System.currentTimeMillis();
-    long trigger = System.currentTimeMillis();
+    Packet.Trigger trigger = randomTrigger();
+
+    private static Packet.Trigger randomTrigger() {
+        return Packet.Trigger.from(System.currentTimeMillis());
+    }
 
     @Rule
     public Timeout globalTimeout = Timeout.seconds(2);
@@ -62,7 +66,7 @@ public class InputStreamPacketReaderTest {
         Packet packet = read(Bytes.from(
                 Packet.MAGIC.value(),
                 from(timestamp).value(),
-                from(trigger).value(),
+                from(trigger.toLong()).value(),
                 bytes(sizePlusValue(sender)).value(),
                 bytes(sizePlusValue(topic)).value(),
                 bytes(sizePlusValue(message)).value()

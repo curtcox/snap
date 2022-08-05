@@ -24,7 +24,45 @@ public final class Packet {
     public final String message;
     public final String sender;
     public final long timestamp;
-    public final long trigger;
+    public final Trigger trigger;
+
+    /**
+     * The trigger or cause of a packet or NONE if there isn't any.
+     * For example, a reply packet would have a request packet as a trigger.
+     */
+    public static final class Trigger {
+
+        private final long value;
+
+        public static final Trigger NONE = new Trigger(0);
+
+        private Trigger(long value) {
+            this.value = value;
+        }
+
+        public static Trigger from(Packet packet) {
+            return new Trigger(packet.hashCode());
+        }
+
+        public static Trigger from(long value) {
+            return new Trigger(value);
+        }
+
+        public long toLong() {
+            return value;
+        }
+
+        @Override
+        public int hashCode() {
+            return (int) value;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            Trigger that = (Trigger) o;
+            return value == that.value;
+        }
+    }
 
     /**
      * For reading one or more packets.
@@ -73,10 +111,10 @@ public final class Packet {
     }
 
     public Packet(String sender,String topic, String message) {
-        this(sender,topic,message,now(),0);
+        this(sender,topic,message,now(),Trigger.NONE);
     }
 
-    public Packet(String sender,String topic, String message, long timestamp, long trigger) {
+    public Packet(String sender,String topic, String message, long timestamp, Trigger trigger) {
         this.timestamp = timestamp;
         this.trigger = trigger;
         this.sender = notNull(sender);
@@ -103,7 +141,7 @@ public final class Packet {
     }
 
     public int hashCode() {
-        return topic.hashCode() ^ message.hashCode() ^ sender.hashCode() ^ Long.hashCode(timestamp) ^ Long.hashCode(trigger);
+        return topic.hashCode() ^ message.hashCode() ^ sender.hashCode() ^ Long.hashCode(timestamp) ^ trigger.hashCode();
     }
 
     @Override

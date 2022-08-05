@@ -6,23 +6,26 @@ import static org.junit.Assert.*;
 
 public class PacketTest {
 
+    Packet.Trigger t0 = Packet.Trigger.from(0);
+    Packet.Trigger t1 = Packet.Trigger.from(1);
+
     @Test
     public void equal() {
-        assertEqualPackets(new Packet("","","",0,0),new Packet("","","",0,0));
-        assertEqualPackets(new Packet("s","","",0,0),new Packet("s","","",0,0));
-        assertEqualPackets(new Packet("","t","",0,0),new Packet("","t","",0,0));
-        assertEqualPackets(new Packet("","","m",0,0),new Packet("","","m",0,0));
-        assertEqualPackets(new Packet("","","",1,0),new Packet("","","",1,0));
-        assertEqualPackets(new Packet("","","",0,1),new Packet("","","",0,1));
+        assertEqualPackets(new Packet("","","",0,t0),new Packet("","","",0,t0));
+        assertEqualPackets(new Packet("s","","",0,t0),new Packet("s","","",0,t0));
+        assertEqualPackets(new Packet("","t","",0,t0),new Packet("","t","",0,t0));
+        assertEqualPackets(new Packet("","","m",0,t0),new Packet("","","m",0,t0));
+        assertEqualPackets(new Packet("","","",1,t0),new Packet("","","",1,t0));
+        assertEqualPackets(new Packet("","","",0,t1),new Packet("","","",0,t1));
     }
 
     @Test
     public void unequal() {
-        assertUnequalPackets(new Packet("","","",0,1),new Packet("","","",0,0));
-        assertUnequalPackets(new Packet("","","",1,0),new Packet("","","",0,0));
-        assertUnequalPackets(new Packet("","","x",0,0),new Packet("","","",0,0));
-        assertUnequalPackets(new Packet("","x","",0,0),new Packet("","","",0,0));
-        assertUnequalPackets(new Packet("x","","",0,0),new Packet("","","",0,0));
+        assertUnequalPackets(new Packet("","","",0,t1),new Packet("","","",0,t0));
+        assertUnequalPackets(new Packet("","","",1,t0),new Packet("","","",0,t0));
+        assertUnequalPackets(new Packet("","","x",0,t0),new Packet("","","",0,t0));
+        assertUnequalPackets(new Packet("","x","",0,t0),new Packet("","","",0,t0));
+        assertUnequalPackets(new Packet("x","","",0,t0),new Packet("","","",0,t0));
     }
 
     @Test(expected = IllegalArgumentException.class)

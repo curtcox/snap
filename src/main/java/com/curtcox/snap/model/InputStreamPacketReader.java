@@ -29,7 +29,7 @@ final class InputStreamPacketReader implements Packet.Reader {
         int skip1 = Packet.MAGIC.length;
         long timestamp = longAt(raw,skip1);
         int skip2 = skip1 + Long.BYTES;
-        long trigger = longAt(raw,skip2);
+        Packet.Trigger trigger = Packet.Trigger.from(longAt(raw,skip2));
         int skip3 = skip2 + Long.BYTES;
         String sender = stringAt(raw,skip3);
         int skip4 = skip3 + 2 + sender.length();
