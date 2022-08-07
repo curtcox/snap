@@ -24,7 +24,12 @@ public class NodeTest {
 
     @Test
     public void write_should_not_produce_error() {
-        node.write(new Packet("Bender","schmopic","smessage"));
+        node.write(Packet.builder()
+            .sender(new Packet.Sender("Bender"))
+            .topic(new Packet.Topic("schmopic"))
+            .message("smessage")
+            .build()
+        );
     }
 
     @Test
@@ -44,7 +49,7 @@ public class NodeTest {
     @Test
     public void read_should_only_return_a_message_once_when_topic_specified() throws IOException {
         Packet packet = Random.packet();
-        String topic = packet.topic;
+        Packet.Topic topic = packet.topic;
         node.write(packet);
         tick(2);
         Packet.Filter filter = new TopicPacketFilter(topic);
@@ -77,21 +82,21 @@ public class NodeTest {
 
         node.write(packet);
         tick();
-        Packet read = node.read(new TopicPacketFilter("different " + packet.topic)).read(ANY);
+        Packet read = node.read(new TopicPacketFilter(new Packet.Topic("different " + packet.topic))).read(ANY);
 
         assertNull(read);
     }
 
     @Test
     public void read_with_no_topic_should_return_messages_sent_to_any_topic() throws IOException {
-        String topic1 = random("topic1");
+        Packet.Topic topic1 = Random.topic();
         String message1 = random("message1");
-        String sender1 = random("sender1");
-        node.write(new Packet(sender1,topic1,message1));
-        String topic2 = random("topic2");
+        Packet.Sender sender1 = Random.sender();
+        node.write(Packet.builder().sender(sender1).topic(topic1).message(message1).build());
+        Packet.Topic topic2 = Random.topic();
         String message2 = random("message2");
-        String sender2 = random("sender2");
-        node.write(new Packet(sender2,topic2,message2));
+        Packet.Sender sender2 = Random.sender();
+        node.write(Packet.builder().sender(sender2).topic(topic2).message(message2).build());
         tick(3);
 
         Packet packet1 = consume(node);
@@ -114,19 +119,19 @@ public class NodeTest {
         String topic1 = random("topic1");
         String message1 = random("message1");
         String sender1 = random("sender1");
-        node.write(new Packet(sender1,topic1,message1));
+        node.write(packet(sender1,topic1,message1));
         node.write(Random.packet());
         tick(2);
 
-        Packet.Reader reader = node.read(new TopicPacketFilter(topic1));
+        Packet.Reader reader = node.read(new TopicPacketFilter(new Packet.Topic(topic1)));
         Packet packet = reader.read(ANY);
 
         assertNotNull(packet);
-        assertEquals(sender1,packet.sender);
-        assertEquals(topic1,packet.topic);
+        assertEquals(sender1,packet.sender.value);
+        assertEquals(topic1,packet.topic.value);
         assertEquals(message1,packet.message);
 
-        assertNull(node.read(new TopicPacketFilter(topic1)).read(ANY));
+        assertNull(node.read(new TopicPacketFilter(new Packet.Topic(topic1))).read(ANY));
     }
 
     @Test
@@ -135,27 +140,27 @@ public class NodeTest {
         String sender2 = random("sender2");
         String topic2 = random("topic2");
         String message2 = random("message2");
-        node.write(new Packet(sender2,topic2,message2));
+        node.write(packet(sender2,topic2,message2));
         tick(3);
 
-        Packet.Reader reader = node.read(new TopicPacketFilter(topic2));
+        Packet.Reader reader = node.read(new TopicPacketFilter(new Packet.Topic(topic2)));
         Packet packet = reader.read(ANY);
 
         assertNotNull(packet);
-        assertEquals(sender2,packet.sender);
-        assertEquals(topic2,packet.topic);
+        assertEquals(sender2,packet.sender.value);
+        assertEquals(topic2,packet.topic.value);
         assertEquals(message2,packet.message);
-        assertNull(node.read(new TopicPacketFilter(topic2)).read(ANY));
+        assertNull(node.read(new TopicPacketFilter(new Packet.Topic(topic2))).read(ANY));
     }
 
     @Test
     public void messsages_are_delivered_in_order_when_on_network() throws IOException {
         Node.on(network);
 
-        node.write(new Packet("s","call","1"));
-        node.write(new Packet("s","call","2"));
-        node.write(new Packet("s","call","3"));
-        node.write(new Packet("s","call","4"));
+        node.write(packet("s","call","1"));
+        node.write(packet("s","call","2"));
+        node.write(packet("s","call","3"));
+        node.write(packet("s","call","4"));
         tick(5);
 
         assertEquals("1", consume(node).message);
@@ -166,11 +171,18 @@ public class NodeTest {
 
     @Test
     public void messages_can_be_read_only_once() throws IOException {
-        node.write(new Packet("me","phone","ring"));
+        node.write(packet("me","phone","ring"));
         tick(2);
 
         assertNotNull(consume(node));
         assertNull(node.read(ANY).read(ANY));
     }
 
+    private Packet packet(String sender,String topic,String message) {
+        return Packet.builder()
+                .sender(new Packet.Sender(sender))
+                .topic(new Packet.Topic(topic))
+                .message(message)
+                .build();
+    }
 }

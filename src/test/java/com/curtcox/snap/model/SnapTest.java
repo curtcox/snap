@@ -40,12 +40,12 @@ public class SnapTest {
 
     @Test
     public void write_should_not_produce_error() {
-        snap.send("schmopic","smessage");
+        snap.send(new Packet.Topic("schmopic"),"smessage");
     }
 
     @Test
     public void read_should_return_the_message_sent() throws IOException {
-        String topic = random("topic");
+        Packet.Topic topic = Random.topic();
         String message = random("message");
 
         snap.send(topic,message);
@@ -59,7 +59,7 @@ public class SnapTest {
 
     @Test
     public void read_should_only_return_a_message_once_when_topic_specified() throws IOException {
-        String topic = random("topic");
+        Packet.Topic topic = Random.topic();
         snap.send(topic,random("message"));
         tick(2);
         Packet.Reader iterator1 = snap.listen(topic);
@@ -70,7 +70,7 @@ public class SnapTest {
 
     @Test
     public void read_should_only_return_a_message_once_when_no_topic_specified() throws IOException {
-        snap.send(random("topic"),random("message"));
+        snap.send(new Packet.Topic(random("topic")),random("message"));
         tick(2);
         assertNotNull(consume(snap));
         assertNull(snap.listen().read(ANY));
@@ -83,21 +83,21 @@ public class SnapTest {
 
     @Test
     public void read_should_return_null_when_there_is_a_message_that_does_not_match_topic() throws IOException {
-        String topic = random("topic");
+        Packet.Topic topic = Random.topic();
         String message = random("message");
 
         snap.send(topic,message);
-        Packet packet = snap.listen("different " + topic).read(ANY);
+        Packet packet = snap.listen(new Packet.Topic("different " + topic)).read(ANY);
 
         assertNull(packet);
     }
 
     @Test
     public void read_with_no_topic_should_return_messages_sent_to_any_topic() throws IOException {
-        String topic1 = random("topic1");
+        Packet.Topic topic1 = Random.topic();
         String message1 = random("message1");
         snap.send(topic1,message1);
-        String topic2 = random("topic2");
+        Packet.Topic topic2 = Random.topic();
         String message2 = random("message2");
         snap.send(topic2,message2);
         tick(3);
@@ -119,10 +119,10 @@ public class SnapTest {
 
     @Test
     public void read_with_topic_should_return_1st_message_when_it_matches_topic() throws IOException {
-        String topic1 = random("topic1");
+        Packet.Topic topic1 = Random.topic();
         String message1 = random("message1");
         snap.send(topic1,message1);
-        String topic2 = random("topic2");
+        Packet.Topic topic2 = Random.topic();
         String message2 = random("message2");
         snap.send(topic2,message2);
         tick(2);
@@ -139,10 +139,10 @@ public class SnapTest {
 
     @Test
     public void read_with_topic_should_return_2nd_message_when_it_matches_topic() throws IOException {
-        String topic1 = random("topic1");
+        Packet.Topic topic1 = Random.topic();
         String message1 = random("message1");
         snap.send(topic1,message1);
-        String topic2 = random("topic2");
+        Packet.Topic topic2 = Random.topic();
         String message2 = random("message2");
         snap.send(topic2,message2);
         tick(3);
@@ -159,11 +159,12 @@ public class SnapTest {
     @Test
     public void messsages_are_delivered_in_order_when_on_network() throws IOException {
         Node.on(network);
+        Packet.Topic topic = new Packet.Topic("call");
 
-        snap.send("call","1");
-        snap.send("call","2");
-        snap.send("call","3");
-        snap.send("call","4");
+        snap.send(topic,"1");
+        snap.send(topic,"2");
+        snap.send(topic,"3");
+        snap.send(topic,"4");
         tick(5);
 
         Packet.Reader packets = snap.listen();
@@ -186,13 +187,13 @@ public class SnapTest {
         assertEquals(Snap.PING,request.topic);
         assertTrue(request.message,request.message.startsWith(Snap.REQUEST));
         assertStartsWith(request.message,Snap.REQUEST);
-        assertEquals(snap.whoami(),request.sender);
+        assertEquals(snap.whoami(),request.sender.value);
 
         Packet response = reader.read(ANY);
         assertNotNull(response);
         assertEquals(Snap.PING,response.topic);
         assertStartsWith(response.message,Snap.RESPONSE);
-        assertEquals(snap.whoami(),response.sender);
+        assertEquals(snap.whoami(),response.sender.value);
     }
 
     private void assertStartsWith(String text, String prefix) {
@@ -213,7 +214,7 @@ public class SnapTest {
         assertNotNull(packet);
         assertEquals(Snap.PING,packet.topic);
         assertTrue(packet.message.startsWith(Snap.RESPONSE));
-        assertEquals(responderName,packet.sender);
+        assertEquals(responderName,packet.sender.value);
     }
 
     @Test
@@ -229,7 +230,7 @@ public class SnapTest {
         assertNotNull(packet);
         assertEquals(Snap.PING,packet.topic);
         assertTrue(packet.message.startsWith(Snap.REQUEST));
-        assertEquals(snap1.whoami(),packet.sender);
+        assertEquals(snap1.whoami(),packet.sender.value);
     }
 
 }

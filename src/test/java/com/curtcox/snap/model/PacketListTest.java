@@ -11,9 +11,21 @@ public class PacketListTest {
 
     PacketList list = new PacketList();
 
-    Packet packet = new Packet("A","one","1");
-    Packet packet2 = new Packet("B","two","2");
-    Packet packet3 = new Packet("C","three","3");
+    Packet packet = Packet.builder()
+            .sender(new Packet.Sender("A"))
+            .topic(new Packet.Topic("one"))
+            .message("1")
+            .build();
+    Packet packet2 = Packet.builder()
+            .sender(new Packet.Sender("B"))
+            .topic(new Packet.Topic("two"))
+            .message("2")
+            .build();
+    Packet packet3 = Packet.builder()
+            .sender(new Packet.Sender("C"))
+            .topic(new Packet.Topic("three"))
+            .message("3")
+            .build();
 
     @Test
     public void can_create() {

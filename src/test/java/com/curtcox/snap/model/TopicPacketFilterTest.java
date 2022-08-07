@@ -8,18 +8,26 @@ public class TopicPacketFilterTest {
 
     @Test
     public void can_create() {
-        assertNotNull(new TopicPacketFilter(""));
+        assertNotNull(new TopicPacketFilter(new Packet.Topic("")));
     }
 
     @Test
     public void passes_exact_matches() {
-        TopicPacketFilter filter = new TopicPacketFilter("moon");
-        assertTrue(filter.passes(new Packet("","moon","")));
-        assertFalse(filter.passes(new Packet("","pre-moon","")));
-        assertFalse(filter.passes(new Packet("","moon-post","")));
-        assertFalse(filter.passes(new Packet("","moom","")));
-        assertFalse(filter.passes(new Packet("","oo","")));
-        assertFalse(filter.passes(new Packet("","","")));
+        TopicPacketFilter filter = new TopicPacketFilter(new Packet.Topic("moon"));
+        assertTrue(filter.passes(packet("","moon","")));
+        assertFalse(filter.passes(packet("","pre-moon","")));
+        assertFalse(filter.passes(packet("","moon-post","")));
+        assertFalse(filter.passes(packet("","moom","")));
+        assertFalse(filter.passes(packet("","oo","")));
+        assertFalse(filter.passes(packet("","","")));
+    }
+
+    private static Packet packet(String sender, String topic, String message) {
+        return Packet.builder()
+                .sender(new Packet.Sender(sender))
+                .topic(new Packet.Topic(topic))
+                .message(message)
+                .build();
     }
 
 }

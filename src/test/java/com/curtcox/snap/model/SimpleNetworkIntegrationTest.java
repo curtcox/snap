@@ -22,10 +22,10 @@ public class SimpleNetworkIntegrationTest {
     Node node3 = Node.on(network);
     Node node4 = Node.on(network);
 
-    String topic = random("topic");
+    Packet.Topic topic = Random.topic();
     String message = random("message");
 
-    String sender = random("sender");
+    Packet.Sender sender = Random.sender();
 
     Packet packet = new Packet(sender,topic,message);
 

@@ -15,7 +15,7 @@ public final class Snap {
 
     private final ConcurrentPacketList toRead = new ConcurrentPacketList();
 
-    static final String PING = "ping";
+    static final Packet.Topic PING = new Packet.Topic("ping");
     static final String REQUEST = "request";
     static final String RESPONSE = "response";
 
@@ -61,11 +61,16 @@ public final class Snap {
         send(PING,RESPONSE);
     }
 
-    public void send(String topic, String message) {
-        node.write(new Packet(whoami(),topic,message));
+    public void send(Packet.Topic topic, String message) {
+        node.write(Packet.builder()
+                .sender(new Packet.Sender(whoami()))
+                .topic(topic)
+                .message(message)
+                .build()
+        );
     }
 
-    public Packet.Reader listen(String topic) {
+    public Packet.Reader listen(Packet.Topic topic) {
         return reader(new TopicPacketFilter(topic));
     }
 

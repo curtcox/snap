@@ -20,11 +20,38 @@ public final class Packet {
 
     public static final Filter ANY = packet -> true;
 
-    public final String topic;
+    public final Topic topic;
     public final String message;
-    public final String sender;
+    public final Sender sender;
     public final long timestamp;
     public final Trigger trigger;
+
+    public static final class Topic {
+        final String value;
+        Topic(String value) {
+            this.value = value;
+        }
+        @Override public String toString() { return value; }
+        @Override public int hashCode() { return value.hashCode(); }
+        @Override public boolean equals(Object o) {
+            Topic that = (Topic) o;
+            return value.equals(that.value);
+        }
+    }
+
+    public static final class Sender {
+        final String value;
+        Sender(String value) {
+            this.value = value;
+        }
+
+        @Override public String toString() { return value; }
+        @Override public int hashCode() { return value.hashCode(); }
+        @Override public boolean equals(Object o) {
+            Sender that = (Sender) o;
+            return value.equals(that.value);
+        }
+    }
 
     /**
      * The trigger or cause of a packet or NONE if there isn't any.
@@ -110,17 +137,52 @@ public final class Packet {
         boolean passes(Packet packet);
     }
 
-    public Packet(String sender,String topic, String message) {
+    public Packet(Sender sender,Topic topic, String message) {
         this(sender,topic,message,now(),Trigger.NONE);
     }
 
-    public Packet(String sender,String topic, String message, long timestamp, Trigger trigger) {
-        this.timestamp = timestamp;
-        this.trigger = trigger;
+    public Packet(Sender sender,Topic topic, String message, Long timestamp, Trigger trigger) {
+        this.timestamp = timestamp == null ? now() : timestamp;
+        this.trigger = trigger == null ? Trigger.NONE : trigger;
         this.sender = notNull(sender);
         this.topic = notNull(topic);
         this.message = notNull(message);
         checkSize();
+    }
+
+    static Builder builder() {
+        return new Builder();
+    }
+
+    static class Builder {
+        private Sender sender;
+        private Topic topic;
+        private String message;
+        private Trigger trigger;
+        private Long timestamp;
+        Builder sender(Sender sender) {
+            this.sender = sender;
+            return this;
+        }
+        Builder topic(Topic topic) {
+            this.topic = topic;
+            return this;
+        }
+        Builder message(String message) {
+            this.message = message;
+            return this;
+        }
+        Builder timestamp(Long timestamp) {
+            this.timestamp = timestamp;
+            return this;
+        }
+        Builder trigger(Trigger trigger) {
+            this.trigger = trigger;
+            return this;
+        }
+        Packet build() {
+            return new Packet(sender,topic,message,timestamp,trigger);
+        }
     }
 
     private void checkSize() {
@@ -137,7 +199,7 @@ public final class Packet {
     public boolean equals(Object o) {
         Packet that  = (Packet) o;
         return topic.equals(that.topic) && message.equals(that.message) && sender.equals(that.sender) &&
-                timestamp == that.timestamp && trigger==that.trigger;
+                timestamp == that.timestamp && trigger.equals(that.trigger);
     }
 
     public int hashCode() {
@@ -146,7 +208,7 @@ public final class Packet {
 
     @Override
     public String toString() {
-       return topic + " " + message;
+       return timestamp + " " + sender + " " + topic + " " + message + " " + trigger;
     }
 
     Bytes asBytes() {

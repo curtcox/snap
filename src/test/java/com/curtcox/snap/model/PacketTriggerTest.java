@@ -29,14 +29,26 @@ public class PacketTriggerTest {
     @Test
     public void not_equal_when_sender_is_different() {
         Packet packet1 = Random.packet();
-        Packet packet2 = new Packet(packet1.sender + "2",packet1.topic,packet1.message,packet1.timestamp,packet1.trigger);
+        Packet packet2 = Packet.builder()
+            .sender(new Packet.Sender(packet1.sender + "2"))
+            .topic(packet1.topic)
+            .message(packet1.message)
+            .timestamp(packet1.timestamp)
+            .trigger(packet1.trigger)
+            .build();
         assertNotEquals(Packet.Trigger.from(packet1),Packet.Trigger.from(packet2));
     }
 
     @Test
     public void not_equal_when_topic_is_different() {
         Packet packet1 = Random.packet();
-        Packet packet2 = new Packet(packet1.sender,packet1.topic + "2",packet1.message,packet1.timestamp,packet1.trigger);
+        Packet packet2 = Packet.builder()
+                .sender(packet1.sender)
+                .topic(new Packet.Topic(packet1.topic + "2"))
+                .message(packet1.message)
+                .timestamp(packet1.timestamp)
+                .trigger(packet1.trigger)
+                .build();
         assertNotEquals(Packet.Trigger.from(packet1),Packet.Trigger.from(packet2));
     }
 

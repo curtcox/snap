@@ -19,8 +19,8 @@ final class OutputStreamPacketWriter implements Packet.Writer {
                 Packet.MAGIC.value(),
                 longToBytes(packet.timestamp),
                 longToBytes(packet.trigger.toLong()),
-                sizePlusValue(packet.sender),
-                sizePlusValue(packet.topic),
+                sizePlusValue(packet.sender.toString()),
+                sizePlusValue(packet.topic.toString()),
                 sizePlusValue(packet.message)
         ).value());
     }

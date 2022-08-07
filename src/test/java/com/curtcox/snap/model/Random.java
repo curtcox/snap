@@ -6,7 +6,19 @@ public final class Random {
         return prefix + " " + System.nanoTime() % 1000;
     }
 
+    static Packet.Sender sender() {
+        return new Packet.Sender(random("sender"));
+    }
+
+    static Packet.Topic topic() {
+        return new Packet.Topic(random("topic"));
+    }
+
     static Packet packet() {
-        return new Packet(random("sender"),random("topic"),random("message"));
+        return Packet.builder()
+                .sender(sender())
+                .topic(topic())
+                .message(random("message"))
+                .build();
     }
 }

@@ -19,11 +19,11 @@ import static com.curtcox.snap.model.Bytes.*;
 
 public class OutputStreamPacketWriterTest {
 
-    String topic = random("topic");
+    Packet.Topic topic = Random.topic();
     String message = random("message");
-    String sender = random("sender");
+    Packet.Sender sender = Random.sender();
 
-    Packet packet = new Packet(sender,topic,message);
+    Packet packet = Packet.builder().sender(sender).topic(topic).message(message).build();
 
     @Rule
     public Timeout globalTimeout = Timeout.seconds(2);
@@ -51,10 +51,10 @@ public class OutputStreamPacketWriterTest {
                 Packet.MAGIC.value(),
                 from(packet.timestamp).value(),
                 from(packet.trigger.toLong()).value(),
-                bytes(0,sender.length()).value(),
-                sender.getBytes(StandardCharsets.UTF_8),
-                bytes(0,topic.length()).value(),
-                topic.getBytes(StandardCharsets.UTF_8)
+                bytes(0,sender.value.length()).value(),
+                sender.value.getBytes(StandardCharsets.UTF_8),
+                bytes(0,topic.value.length()).value(),
+                topic.value.getBytes(StandardCharsets.UTF_8)
         )));
     }
 
@@ -70,10 +70,10 @@ public class OutputStreamPacketWriterTest {
                 Packet.MAGIC.value(),
                 from(packet.timestamp).value(),
                 from(packet.trigger.toLong()).value(),
-                bytes(0,sender.length()).value(),
-                sender.getBytes(StandardCharsets.UTF_8),
-                bytes(0,topic.length()).value(),
-                topic.getBytes(StandardCharsets.UTF_8),
+                bytes(0,sender.value.length()).value(),
+                sender.value.getBytes(StandardCharsets.UTF_8),
+                bytes(0,topic.value.length()).value(),
+                topic.value.getBytes(StandardCharsets.UTF_8),
                 bytes(0,message.length()).value(),
                 message.getBytes(StandardCharsets.UTF_8)
         ),bytes);
@@ -85,13 +85,13 @@ public class OutputStreamPacketWriterTest {
         OutputStreamPacketWriter writer = new OutputStreamPacketWriter(outputStream);
 
         Packet packet = packetWithLongTopicAndMessage();
-        String topic = packet.topic;
+        String topic = packet.topic.value;
         String message = packet.message;
-        String sender = packet.sender;
+        String sender = packet.sender.value;
         writer.write(packet);
 
         Bytes bytes = new Bytes(outputStream.toByteArray());
-        int expectedLength = Packet.MAGIC.length + Long.BYTES + sender.length() + topic.length() + message.length() + (3 * 2);
+        int expectedLength = Packet.MAGIC.length + Long.BYTES + Long.BYTES + sender.length() + topic.length() + message.length() + (3 * 2);
         assertEquals(expectedLength, bytes.length);
         assertEquals(Bytes.from(
                 Packet.MAGIC.value(),
@@ -151,7 +151,11 @@ public class OutputStreamPacketWriterTest {
         assertTrue(sender.length()>255);
         assertTrue(topic.length()>255);
         assertTrue(message.length()>255);
-        Packet packet = new Packet(sender,topic,message);
+        Packet packet = Packet.builder()
+                .sender(new Packet.Sender(sender))
+                .topic(new Packet.Topic(topic))
+                .message(message)
+                .build();
         return packet;
     }
 }

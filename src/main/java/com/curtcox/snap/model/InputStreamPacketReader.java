@@ -36,7 +36,12 @@ final class InputStreamPacketReader implements Packet.Reader {
         String topic = stringAt(raw,skip4);
         int skip5 = skip4 + 2 + topic.length();
         String message = stringAt(raw,skip5);
-        return new Packet(sender,topic,message,timestamp,trigger);
+        return Packet.builder()
+                .sender(new Packet.Sender(sender))
+                .topic(new Packet.Topic(topic))
+                .message(message)
+                .timestamp(timestamp).trigger(trigger)
+                .build();
     }
 
     public static long longAt(final byte[] b, int offset) {
