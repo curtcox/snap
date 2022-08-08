@@ -1,6 +1,5 @@
 package com.curtcox.snap.model;
 
-import java.io.IOException;
 import java.net.*;
 
 import static com.curtcox.snap.util.Check.notNull;
@@ -10,21 +9,12 @@ public final class Snap {
 
     final Node node;
 
-    final Runner runner;
     private String name;
 
     private final ConcurrentPacketList toRead = new ConcurrentPacketList();
 
-    static final Packet.Topic PING = new Packet.Topic("ping");
-    static final String REQUEST = "request";
-    static final String RESPONSE = "response";
-
-    private static final Packet.Filter isPingRequest = packet -> packet.topic.equals(PING) && packet.message.startsWith(REQUEST);
-    private static final Packet.Filter isPingResponse = packet -> packet.topic.equals(PING) && packet.message.startsWith(RESPONSE);
-
-    private Snap(Node node, Runner runner) {
+    private Snap(Node node) {
         this.node = notNull(node);
-        this.runner = notNull(runner);
     }
 
     public static Snap newInstance() {
@@ -40,25 +30,9 @@ public final class Snap {
     }
 
     public static Snap of(Node node, Runner runner) {
-        Snap snap = new Snap(node,runner);
-        runner.periodically(() -> snap.respondToPingRequests());
+        Snap snap = new Snap(node);
+        Ping.of(snap,node,runner);
         return snap;
-    }
-
-    private void respondToPingRequests() {
-        try {
-            Packet.Reader reader = node.read(isPingRequest);
-            for (Packet packet = reader.read(isPingRequest); packet !=null; packet = reader.read(isPingRequest)) {
-                toRead.add(packet);
-                respondTo(packet);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void respondTo(Packet packet) {
-        send(PING,RESPONSE);
     }
 
     public void send(Packet.Topic topic, String message) {
@@ -106,11 +80,15 @@ public final class Snap {
     }
 
     public Packet.Reader ping() {
-        send(PING,REQUEST);
-        return reader(isPingResponse);
+        send(Ping.TOPIC,Ping.REQUEST);
+        return reader(Ping.isPingResponse);
     }
 
     private Packet.Reader reader(Packet.Filter filter) {
         return new CombinedReader(toRead,node.read(filter));
+    }
+
+    void addPacketToRead(Packet packet) {
+        toRead.add(packet);
     }
 }

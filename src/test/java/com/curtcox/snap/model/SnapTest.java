@@ -184,15 +184,15 @@ public class SnapTest {
 
         Packet request = reader.read(ANY);
         assertNotNull(request);
-        assertEquals(Snap.PING,request.topic);
-        assertTrue(request.message,request.message.startsWith(Snap.REQUEST));
-        assertStartsWith(request.message,Snap.REQUEST);
+        assertEquals(Ping.TOPIC,request.topic);
+        assertTrue(request.message,request.message.startsWith(Ping.REQUEST));
+        assertStartsWith(request.message,Ping.REQUEST);
         assertEquals(snap.whoami(),request.sender.value);
 
         Packet response = reader.read(ANY);
         assertNotNull(response);
-        assertEquals(Snap.PING,response.topic);
-        assertStartsWith(response.message,Snap.RESPONSE);
+        assertEquals(Ping.TOPIC,response.topic);
+        assertStartsWith(response.message,Ping.RESPONSE);
         assertEquals(snap.whoami(),response.sender.value);
     }
 
@@ -212,8 +212,8 @@ public class SnapTest {
 
         Packet packet = responses.read(ANY);
         assertNotNull(packet);
-        assertEquals(Snap.PING,packet.topic);
-        assertTrue(packet.message.startsWith(Snap.RESPONSE));
+        assertEquals(Ping.TOPIC,packet.topic);
+        assertTrue(packet.message.startsWith(Ping.RESPONSE));
         assertEquals(responderName,packet.sender.value);
     }
 
@@ -228,8 +228,8 @@ public class SnapTest {
 
         Packet packet = snap2.listen().read(ANY);
         assertNotNull(packet);
-        assertEquals(Snap.PING,packet.topic);
-        assertTrue(packet.message.startsWith(Snap.REQUEST));
+        assertEquals(Ping.TOPIC,packet.topic);
+        assertTrue(packet.message.startsWith(Ping.REQUEST));
         assertEquals(snap1.whoami(),packet.sender.value);
     }
 
