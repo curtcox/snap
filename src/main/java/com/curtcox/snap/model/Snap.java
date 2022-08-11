@@ -80,11 +80,10 @@ public final class Snap {
     }
 
     public Packet.Reader ping() {
-        send(Ping.TOPIC,Ping.REQUEST);
-        return reader(Ping.isPingResponse);
+        return Ping.ping(this);
     }
 
-    private Packet.Reader reader(Packet.Filter filter) {
+    Packet.Reader reader(Packet.Filter filter) {
         return new CombinedReader(toRead,node.read(filter));
     }
 

@@ -3,7 +3,7 @@ package com.curtcox.snap.model;
 import java.io.IOException;
 
 import static com.curtcox.snap.model.Clock.tick;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 public final class TestUtil {
 
@@ -35,6 +35,10 @@ public final class TestUtil {
 
     static Packet consume(Snap snap) throws IOException {
         return snap.listen().read(Packet.ANY);
+    }
+
+    static void assertStartsWith(String text, String prefix) {
+        assertTrue(text + " should start with " + prefix,text.startsWith(prefix));
     }
 
 }

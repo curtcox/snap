@@ -97,6 +97,8 @@ public final class Packet {
     public interface Reader {
         /**
          * Immediately return a packet or null if there is none.
+         * Reading a packet prevents others from reading it, so clients should generally use filters to only read
+         * what they are interested in processing.
          */
         Packet read(Filter filter) throws IOException;
     }

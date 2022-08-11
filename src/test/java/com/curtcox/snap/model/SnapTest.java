@@ -184,21 +184,15 @@ public class SnapTest {
 
         Packet request = reader.read(ANY);
         assertNotNull(request);
-        assertEquals(Ping.TOPIC,request.topic);
-        assertTrue(request.message,request.message.startsWith(Ping.REQUEST));
-        assertStartsWith(request.message,Ping.REQUEST);
+        assertTrue(Ping.isPingRequest.passes(request));
         assertEquals(snap.whoami(),request.sender.value);
 
         Packet response = reader.read(ANY);
         assertNotNull(response);
-        assertEquals(Ping.TOPIC,response.topic);
-        assertStartsWith(response.message,Ping.RESPONSE);
+        assertTrue(Ping.isPingResponse.passes(response));
         assertEquals(snap.whoami(),response.sender.value);
     }
 
-    private void assertStartsWith(String text, String prefix) {
-        assertTrue(text + " should start with " + prefix,text.startsWith(prefix));
-    }
 
     @Test
     public void ping_returns_ping_responses_on_simple_network() throws Exception {
@@ -212,8 +206,7 @@ public class SnapTest {
 
         Packet packet = responses.read(ANY);
         assertNotNull(packet);
-        assertEquals(Ping.TOPIC,packet.topic);
-        assertTrue(packet.message.startsWith(Ping.RESPONSE));
+        assertTrue(Ping.isPingResponse.passes(packet));
         assertEquals(responderName,packet.sender.value);
     }
 
@@ -228,8 +221,7 @@ public class SnapTest {
 
         Packet packet = snap2.listen().read(ANY);
         assertNotNull(packet);
-        assertEquals(Ping.TOPIC,packet.topic);
-        assertTrue(packet.message.startsWith(Ping.REQUEST));
+        assertTrue(Ping.isPingRequest.passes(packet));
         assertEquals(snap1.whoami(),packet.sender.value);
     }
 
