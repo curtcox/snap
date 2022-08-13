@@ -3,6 +3,10 @@ package com.curtcox.snap.model;
 import java.io.*;
 import java.util.*;
 
+/**
+ * For treating multiple readers as a single reader AKA a Y.
+ * See also SplitReader.
+ */
 final class CombinedReader implements Packet.Reader {
 
     private final List<Packet.Reader> readers;
@@ -12,7 +16,7 @@ final class CombinedReader implements Packet.Reader {
     }
 
     CombinedReader(Packet.Reader... readers) {
-        this.readers = Arrays.asList(readers);
+        this(Arrays.asList(readers));
     }
 
     @Override

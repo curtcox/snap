@@ -16,6 +16,7 @@ final class ConcurrentPacketList implements Packet.Reader {
         list.add(packet);
     }
 
+    @Override
     public synchronized Packet read(Packet.Filter filter) {
         for (Packet packet : list) {
             if (filter.passes(packet)) {

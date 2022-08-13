@@ -9,8 +9,8 @@ import static com.curtcox.snap.util.Check.notNull;
  */
 final class Node {
 
-    private final PacketList fromNetwork = new PacketList();
-    private final PacketList fromOther = new PacketList();
+    private final PacketReaderFactory fromNetwork = new PacketReaderFactory();
+    private final PacketReaderFactory fromOther = new PacketReaderFactory();
 
     static Node on(Packet.Network network) {
         final Node node = new Node();

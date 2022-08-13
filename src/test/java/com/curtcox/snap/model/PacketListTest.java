@@ -9,7 +9,7 @@ import static org.junit.Assert.*;
 
 public class PacketListTest {
 
-    PacketList list = new PacketList();
+    PacketReaderFactory list = new PacketReaderFactory();
 
     Packet packet = Packet.builder()
             .sender(new Packet.Sender("A"))
@@ -29,7 +29,7 @@ public class PacketListTest {
 
     @Test
     public void can_create() {
-        assertNotNull(new PacketList());
+        assertNotNull(new PacketReaderFactory());
     }
 
     @Test
