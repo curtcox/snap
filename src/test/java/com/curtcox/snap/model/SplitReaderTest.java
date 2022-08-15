@@ -43,13 +43,29 @@ public class SplitReaderTest {
     }
 
     @Test
-    public void a_single_reader_can_read_2_packets_from_the_underlying_reader() {
-        fail();
+    public void a_single_reader_can_read_2_packets_from_the_underlying_reader() throws IOException {
+        Packet packet2 = Random.packet();
+        packets.add(packet);
+        packets.add(packet2);
+        Packet.Reader outer = reader.reader(Packet.ANY);
+        assertEquals(packet,outer.read(Packet.ANY));
+        assertEquals(packet2,outer.read(Packet.ANY));
+        assertNull(outer.read(Packet.ANY));
     }
 
     @Test
-    public void multiple_readers_can_read_2_packets_from_the_underlying_reader() {
-        fail();
+    public void multiple_readers_can_read_2_packets_from_the_underlying_reader() throws IOException {
+        Packet packet2 = Random.packet();
+        packets.add(packet);
+        packets.add(packet2);
+        Packet.Reader outer1 = reader.reader(Packet.ANY);
+        assertEquals(packet,outer1.read(Packet.ANY));
+        assertEquals(packet2,outer1.read(Packet.ANY));
+        assertNull(outer1.read(Packet.ANY));
+        Packet.Reader outer2 = reader.reader(Packet.ANY);
+        assertEquals(packet,outer2.read(Packet.ANY));
+        assertEquals(packet2,outer2.read(Packet.ANY));
+        assertNull(outer2.read(Packet.ANY));
     }
 
 }
