@@ -7,7 +7,7 @@ import static com.curtcox.snap.util.Check.notNull;
  * A node will normally be used by at least two different threads.
  * NodeS are stateless and delegate state logic to PacketListS.
  */
-final class Node {
+final class Node implements Packet.Reader.Factory {
 
     private final PacketReaderFactory fromNetwork = new PacketReaderFactory();
     private final PacketReaderFactory fromOther = new PacketReaderFactory();
@@ -35,8 +35,9 @@ final class Node {
         fromOther.add(notNull(packet));
     }
 
-    Packet.Reader read(Packet.Filter filter) {
-        return fromNetwork.read(filter);
+    @Override
+    public Packet.Reader reader(Packet.Filter filter) {
+        return fromNetwork.reader(filter);
     }
 
 }

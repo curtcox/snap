@@ -47,7 +47,7 @@ public class PacketListTest {
     @Test
     public void take_is_null_after_only_packet_is_taken_via_reading() throws IOException {
         list.add(packet);
-        Packet.Reader iterreaderator = list.read(ANY);
+        Packet.Reader iterreaderator = list.reader(ANY);
         assertEquals(packet, iterreaderator.read(ANY));
         assertNull(list.take());
     }
@@ -76,7 +76,7 @@ public class PacketListTest {
     public void take_is_null_after_both_packets_are_taken_via_reading() throws IOException {
         list.add(packet);
         list.add(packet2);
-        Packet.Reader reader = list.read(ANY);
+        Packet.Reader reader = list.reader(ANY);
         assertEquals(packet,reader.read(ANY));
         assertEquals(packet2,reader.read(ANY));
         assertNull(list.take());
@@ -87,7 +87,7 @@ public class PacketListTest {
         list.add(packet);
         list.add(packet2);
         list.add(packet3);
-        Packet.Reader reader = list.read(ANY);
+        Packet.Reader reader = list.reader(ANY);
         assertEquals(packet,reader.read(ANY));
         assertEquals(packet2,reader.read(ANY));
         assertEquals(packet3,reader.read(ANY));
@@ -96,19 +96,19 @@ public class PacketListTest {
 
     @Test
     public void reading_with_no_packets_returns_null() throws IOException {
-        assertNull(list.read(ANY).read(ANY));
+        assertNull(list.reader(ANY).read(ANY));
     }
 
     @Test
     public void iterator_with_no_packets_next_throws_exception() throws IOException {
-        assertNull(list.read(ANY).read(ANY));
+        assertNull(list.reader(ANY).read(ANY));
     }
 
     @Test
     public void reading_one_packet() throws IOException {
         list.add(packet);
 
-        assertEquals(packet,list.read(ANY).read(ANY));
+        assertEquals(packet,list.reader(ANY).read(ANY));
     }
 
     @Test
@@ -116,7 +116,7 @@ public class PacketListTest {
         list.add(packet);
 
         assertEquals(packet,list.take());
-        assertNull(list.read(ANY).read(ANY));
+        assertNull(list.reader(ANY).read(ANY));
     }
 
     @Test
@@ -124,12 +124,12 @@ public class PacketListTest {
         list.add(packet);
         list.add(packet2);
 
-        Packet.Reader reader = list.read(ANY);
+        Packet.Reader reader = list.reader(ANY);
 
         assertEquals(packet,list.take());
         assertEquals(packet2,list.take());
         assertNull(reader.read(ANY));
-        assertNull(list.read(ANY).read(ANY));
+        assertNull(list.reader(ANY).read(ANY));
     }
 
     @Test
@@ -137,7 +137,7 @@ public class PacketListTest {
         list.add(packet);
         list.add(packet2);
 
-        Packet.Reader reader = list.read(ANY);
+        Packet.Reader reader = list.reader(ANY);
 
         assertEquals(packet,reader.read(ANY));
         assertEquals(packet2,reader.read(ANY));
@@ -147,7 +147,7 @@ public class PacketListTest {
     public void reader_with_one_packet_that_is_taken_before_it_is_read_indicates_no_next() throws IOException {
         list.add(packet);
 
-        Packet.Reader reader = list.read(ANY);
+        Packet.Reader reader = list.reader(ANY);
 
         assertEquals(packet,list.take());
         assertNull(reader.read(ANY));
@@ -156,7 +156,7 @@ public class PacketListTest {
     @Test
     public void reader_with_one_packet_that_is_taken_before_it_is_read_throws_exception() throws IOException {
         list.add(packet);
-        Packet.Reader reader = list.read(ANY);
+        Packet.Reader reader = list.reader(ANY);
         assertEquals(packet,list.take());
         assertNull(reader.read(ANY));
     }
@@ -175,7 +175,7 @@ public class PacketListTest {
         list.add(packet);
         list.add(packet2);
 
-        Packet.Reader reader = list.read(ANY);
+        Packet.Reader reader = list.reader(ANY);
         assertEquals(packet,list.take());
         assertEquals(packet2,list.take());
         assertNull(reader.read(ANY));
@@ -183,7 +183,7 @@ public class PacketListTest {
 
     @Test
     public void empty_list_returns_packet_added_after_creation() throws IOException {
-        Packet.Reader reader = list.read(Packet.ANY);
+        Packet.Reader reader = list.reader(Packet.ANY);
         list.add(packet);
         assertEquals(packet,reader.read(Packet.ANY));
     }
@@ -191,7 +191,7 @@ public class PacketListTest {
     @Test
     public void setList_with_packet_returns_packet_added_after_creation() throws IOException {
         list.add(packet);
-        Packet.Reader reader = list.read(ANY);
+        Packet.Reader reader = list.reader(ANY);
         list.add(packet2);
         assertEquals(packet,reader.read(ANY));
         assertEquals(packet2,reader.read(ANY));

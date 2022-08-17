@@ -5,7 +5,7 @@ import java.net.*;
 import static com.curtcox.snap.util.Check.notNull;
 
 // Potential future API
-public final class Snap {
+public final class Snap implements Packet.Reader.Factory {
 
     final Node node;
 
@@ -83,8 +83,9 @@ public final class Snap {
         return Ping.ping(this);
     }
 
-    Packet.Reader reader(Packet.Filter filter) {
-        return new CombinedReader(toRead,node.read(filter));
+    @Override
+    public Packet.Reader reader(Packet.Filter filter) {
+        return new CombinedReader(toRead,node.reader(filter));
     }
 
     void addPacketToRead(Packet packet) {

@@ -31,8 +31,8 @@ public class SimpleNetworkTest {
 
     @Test
     public void there_are_no_messages_to_listen_to_before_any_are_sent() throws IOException {
-        assertNull(node1.read(ANY).read(ANY));
-        assertNull(node2.read(ANY).read(ANY));
+        assertNull(node1.reader(ANY).read(ANY));
+        assertNull(node2.reader(ANY).read(ANY));
     }
 
     @Test
@@ -41,7 +41,7 @@ public class SimpleNetworkTest {
         node1.write(packet);
         tick(2);
 
-        Packet read = node2.read(ANY).read(ANY);
+        Packet read = node2.reader(ANY).read(ANY);
         assertEquals(packet,read);
     }
 
@@ -50,7 +50,7 @@ public class SimpleNetworkTest {
         node1.write(packet("D","call","Mom"));
         node1.write(packet("C","call","Dad"));
         tick(3);
-        Packet.Reader packets = node2.read(ANY);
+        Packet.Reader packets = node2.reader(ANY);
 
         assertEquals("Mom", packets.read(ANY).message);
         assertEquals("Dad", packets.read(ANY).message);
@@ -62,7 +62,7 @@ public class SimpleNetworkTest {
         tick(2);
 
         assertNotNull(consume(node2));
-        assertNull(node2.read(ANY).read(ANY));
+        assertNull(node2.reader(ANY).read(ANY));
     }
 
     @Test
@@ -71,12 +71,12 @@ public class SimpleNetworkTest {
         node1.write(packet("me","phone","ring"));
         tick(2);
 
-        Packet packet2 = node2.read(ANY).read(ANY);
+        Packet packet2 = node2.reader(ANY).read(ANY);
         assertEquals("me",packet2.sender.value);
         assertEquals("phone",packet2.topic.value);
         assertEquals("ring",packet2.message);
 
-        Packet packet3 = node3.read(ANY).read(ANY);
+        Packet packet3 = node3.reader(ANY).read(ANY);
         assertEquals("me",packet3.sender.value);
         assertEquals("phone",packet3.topic.value);
         assertEquals("ring",packet3.message);

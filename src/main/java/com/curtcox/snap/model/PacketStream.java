@@ -1,0 +1,48 @@
+package com.curtcox.snap.model;
+
+import java.util.LinkedList;
+import java.util.List;
+
+final class PacketStream {
+
+    private long at;
+    private final List<PacketAndPosition> packets = new LinkedList<>();
+    PacketAndPosition after(Position position, Packet.Filter filter) {
+        for (PacketAndPosition packetAndPosition : packets) {
+            if ((position==null || packetAndPosition.position.after(position)) &&
+                    filter.passes(packetAndPosition.packet)) {
+                return packetAndPosition;
+            }
+        }
+        return null;
+    }
+
+    void add(Packet packet) {
+        at = at + 1;
+        packets.add(new PacketAndPosition(packet,new Position(at)));
+    }
+
+    static final class Position {
+        final long value;
+
+        Position(long value) {
+            this.value = value;
+        }
+
+        boolean after(Position position) {
+            return value > position.value;
+        }
+    }
+
+    static final class PacketAndPosition {
+
+        final Packet packet;
+        final Position position;
+
+        PacketAndPosition(Packet packet, Position position) {
+            this.packet = packet;
+            this.position = position;
+        }
+
+    }
+}

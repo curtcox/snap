@@ -26,6 +26,10 @@ public final class Packet {
     public final long timestamp;
     public final Trigger trigger;
 
+    /**
+     * Typesafe string for the name of group of packets about the same thing.
+     * Topic as in topic of conversation. What these packets are about.
+     */
     public static final class Topic {
         final String value;
         Topic(String value) {
@@ -39,6 +43,9 @@ public final class Packet {
         }
     }
 
+    /**
+     * The name of who sent a packet.
+     */
     public static final class Sender {
         final String value;
         Sender(String value) {
@@ -101,6 +108,10 @@ public final class Packet {
          * what they are interested in processing.
          */
         Packet read(Filter filter) throws IOException;
+
+        interface Factory {
+            Packet.Reader reader(Packet.Filter readerFilter);
+        }
     }
 
     /**

@@ -9,12 +9,13 @@ package com.curtcox.snap.model;
  * Readers will return null when the element that would have been returned
  * is consumed via a different method (possibly on a different thread).
  */
-final class PacketReaderFactory {
+final class PacketReaderFactory implements Packet.Reader.Factory {
 
     private final ConcurrentPacketList list = new ConcurrentPacketList();
 
     // other
-    Packet.Reader read(Packet.Filter readerFilter) {
+    @Override
+    public Packet.Reader reader(Packet.Filter readerFilter) {
         return packetFilter -> list.isEmpty()
             ? null
             : list.read(packet -> readerFilter.passes(packet) && packetFilter.passes(packet));

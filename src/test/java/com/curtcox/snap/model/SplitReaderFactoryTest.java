@@ -6,15 +6,15 @@ import java.io.*;
 
 import static org.junit.Assert.*;
 
-public class SplitReaderTest {
+public class SplitReaderFactoryTest {
 
     Packet packet = Random.packet();
     ConcurrentPacketList packets = new ConcurrentPacketList();
-    SplitReader reader = new SplitReader(packets);
+    SplitReaderFactory reader = new SplitReaderFactory(packets);
 
     @Test
     public void can_create() {
-        assertNotNull(new SplitReader(packets));
+        assertNotNull(new SplitReaderFactory(packets));
     }
 
     @Test

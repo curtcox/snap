@@ -47,7 +47,7 @@ public class SimpleNetworkIntegrationTest {
     }
 
     private Packet read(Node node) throws IOException {
-        return node.read(Packet.ANY).read(Packet.ANY);
+        return node.reader(Packet.ANY).read(Packet.ANY);
     }
     @Test
     public void messages_can_be_sent_from_a_reader_writer_thru_a_network() throws IOException {
