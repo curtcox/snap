@@ -2,6 +2,9 @@ package com.curtcox.snap.model;
 
 import java.io.*;
 
+/**
+ * For determining who can-hear / is-listening-to whom.
+ */
 final class Ping {
 
     final Packet.Reader.Factory node;

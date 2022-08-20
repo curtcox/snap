@@ -3,7 +3,13 @@ package com.curtcox.snap.model;
 import java.util.LinkedList;
 import java.util.List;
 
-final class PacketStream {
+/**
+ * An ordered sequence of packets.
+ * For easily creating multiple readers of the same packets.
+ */
+final class PacketStream
+    implements Packet.Sink
+{
 
     private long at;
     private final List<PacketAndPosition> packets = new LinkedList<>();
@@ -17,7 +23,8 @@ final class PacketStream {
         return null;
     }
 
-    void add(Packet packet) {
+    @Override
+    public void add(Packet packet) {
         at = at + 1;
         packets.add(new PacketAndPosition(packet,new Position(at)));
     }

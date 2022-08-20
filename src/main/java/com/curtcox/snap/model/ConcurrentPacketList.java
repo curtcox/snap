@@ -5,14 +5,17 @@ import java.util.*;
 /**
  * A mutable list of packets that can be accessed by multiple threads concurrently.
  */
-final class ConcurrentPacketList implements Packet.Reader {
+final class ConcurrentPacketList
+        implements Packet.Reader, Packet.Sink
+{
     private final List<Packet> list = new ArrayList<>();
 
     synchronized boolean isEmpty() {
         return list.isEmpty();
     }
 
-    synchronized void add(Packet packet) {
+    @Override
+    synchronized public void add(Packet packet) {
         list.add(packet);
     }
 

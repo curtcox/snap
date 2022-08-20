@@ -115,6 +115,14 @@ public final class Packet {
     }
 
     /**
+     * Something that accepts packets.
+     * Perhaps this should be the same interface as Writer.
+     */
+    public interface Sink {
+        void add(Packet packet);
+    }
+
+    /**
      * For writing one or more packets.
      */
     public interface Writer {
