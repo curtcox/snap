@@ -1,17 +1,19 @@
 package com.curtcox.snap.model;
 
+import com.curtcox.snap.model.Packet.*;
+
 public final class Random {
 
     public static String random(String prefix) {
         return prefix + " " + System.nanoTime() % 1000;
     }
 
-    static Packet.Sender sender() {
-        return new Packet.Sender(random("sender"));
+    static Sender sender() {
+        return new Sender(random("sender"));
     }
 
-    static Packet.Topic topic() {
-        return new Packet.Topic(random("topic"));
+    public static Topic topic() {
+        return new Topic(random("topic"));
     }
 
     static Packet packet() {

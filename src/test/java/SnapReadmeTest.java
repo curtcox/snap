@@ -2,7 +2,7 @@ import com.curtcox.snap.model.*;
 import org.junit.Test;
 
 import java.io.IOException;
-import static com.curtcox.snap.model.Packet.ANY;
+import static com.curtcox.snap.model.Packet.*;
 
 import static com.curtcox.snap.model.Clock.tick;
 import static org.junit.Assert.*;
@@ -35,7 +35,8 @@ public class SnapReadmeTest {
 
     @Test
     public void ping_returns_whoami_names() throws IOException {
-        Packet.Reader reader = snap1.ping();
+        Topic topic = Random.topic();
+        Reader reader = snap1.ping(topic);
         tick(3);
 
         Packet packet = reader.read(ANY);
@@ -45,7 +46,8 @@ public class SnapReadmeTest {
 
     @Test
     public void listening_after_ping_returns_whoami_names() throws IOException {
-        snap1.ping();
+        Topic topic = Random.topic();
+        snap1.ping(topic);
         tick(3);
 
         Packet packet = snap1.listen().read(ANY);
@@ -55,7 +57,9 @@ public class SnapReadmeTest {
 
     @Test
     public void listening_after_ping_returns_response_time() throws IOException {
-        snap1.ping();
+        Topic topic = Random.topic();
+
+        snap1.ping(topic);
         tick(3);
 
         Packet packet = snap1.listen().read(ANY);

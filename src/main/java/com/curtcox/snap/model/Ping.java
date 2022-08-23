@@ -1,36 +1,36 @@
 package com.curtcox.snap.model;
 
-import java.io.*;
+import com.curtcox.snap.model.Packet.*;
+
+import java.io.IOException;
 
 /**
  * For determining who can-hear / is-listening-to whom.
  */
 final class Ping {
 
-    final Packet.Reader.Factory node;
+    final Reader.Factory node;
     final Snap snap;
 
-    private static final Packet.Topic TOPIC = new Packet.Topic("ping");
+    static final String REQUEST = "ping request";
+    static final String RESPONSE = "ping response";
 
-    private static final String REQUEST = "request";
-    private static final String RESPONSE = "response";
-
-    static final Packet.Filter isPingRequest = packet -> packet.topic.equals(TOPIC) && packet.message.startsWith(REQUEST);
-    static final Packet.Filter isPingResponse = packet -> packet.topic.equals(TOPIC) && packet.message.startsWith(RESPONSE);
+    static final Filter isPingRequest = packet -> REQUEST.equals(packet.message);
+    static final Filter isPingResponse = packet -> RESPONSE.equals(packet.message);
 
     Ping(Packet.Reader.Factory node,Snap snap) {
         this.node = node;
         this.snap = snap;
     }
 
-    static void of(Snap snap, Packet.Reader.Factory node, Runner runner) {
+    static void of(Snap snap, Reader.Factory node, Runner runner) {
         Ping ping = new Ping(node,snap);
         runner.periodically(() -> ping.respondToPingRequests());
     }
 
     void respondToPingRequests() {
         try {
-            Packet.Reader reader = node.reader(isPingRequest);
+            Reader reader = node.reader(isPingRequest);
             for (Packet packet = reader.read(isPingRequest); packet !=null; packet = reader.read(isPingRequest)) {
                 process(packet);
             }
@@ -45,11 +45,11 @@ final class Ping {
     }
 
     private void respondTo(Packet packet) {
-        snap.send(TOPIC,RESPONSE);
+        snap.send(packet.topic,RESPONSE);
     }
 
-    static Packet.Reader ping(Snap snap) {
-        snap.send(TOPIC,REQUEST);
+    static Reader ping(Topic topic,Snap snap) {
+        snap.send(topic,REQUEST);
         return snap.reader(Ping.isPingResponse);
     }
 

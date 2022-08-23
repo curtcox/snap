@@ -8,7 +8,7 @@ import java.io.IOException;
 import static com.curtcox.snap.model.Clock.tick;
 import static com.curtcox.snap.model.Random.random;
 import static com.curtcox.snap.model.TestUtil.consume;
-import static com.curtcox.snap.model.Packet.ANY;
+import static com.curtcox.snap.model.Packet.*;
 
 import static org.junit.Assert.*;
 
@@ -179,7 +179,8 @@ public class SnapTest {
     public void snap_returns_ping_response_on_reflector_network() throws Exception {
         Node.on(network);
 
-        Packet.Reader reader = snap.ping();
+        Topic topic = Random.topic();
+        Reader reader = snap.ping(topic);
         tick(3);
 
         Packet request = reader.read(ANY);
@@ -201,7 +202,8 @@ public class SnapTest {
         String responderName = random("responder");
         responder.setName(responderName);
 
-        Packet.Reader responses = Snap.on(network).ping();
+        Topic topic = Random.topic();
+        Reader responses = Snap.on(network).ping(topic);
         tick(3);
 
         Packet packet = responses.read(ANY);
@@ -215,8 +217,9 @@ public class SnapTest {
         SimpleNetwork network = SimpleNetwork.newPolling();
         Snap snap1 = Snap.on(network);
         Snap snap2 = Snap.on(network);
+        Topic topic = Random.topic();
 
-        snap1.ping();
+        snap1.ping(topic);
         tick(3);
 
         Packet packet = snap2.listen().read(ANY);

@@ -3,9 +3,10 @@ package com.curtcox.snap.model;
 import java.net.*;
 
 import static com.curtcox.snap.util.Check.notNull;
+import com.curtcox.snap.model.Packet.*;
 
 // Potential future API
-public final class Snap implements Packet.Reader.Factory {
+public final class Snap implements Reader.Factory {
 
     final Node node;
 
@@ -21,11 +22,11 @@ public final class Snap implements Packet.Reader.Factory {
         return on(newNetwork(null));
     }
 
-    public static Packet.Network newNetwork(Packet.Network.Type type) {
+    public static Network newNetwork(Network.Type type) {
         return SimpleNetwork.newPolling();
     }
 
-    public static Snap on(Packet.Network network) {
+    public static Snap on(Network network) {
         return Snap.of(Node.on(network),Runner.of());
     }
 
@@ -35,7 +36,7 @@ public final class Snap implements Packet.Reader.Factory {
         return snap;
     }
 
-    public void send(Packet.Topic topic, String message) {
+    public void send(Topic topic, String message) {
         node.write(Packet.builder()
                 .sender(new Packet.Sender(whoami()))
                 .topic(topic)
@@ -44,11 +45,11 @@ public final class Snap implements Packet.Reader.Factory {
         );
     }
 
-    public Packet.Reader listen(Packet.Topic topic) {
+    public Reader listen(Packet.Topic topic) {
         return reader(new TopicPacketFilter(topic));
     }
 
-    public Packet.Reader listen() {
+    public Reader listen() {
         return reader(Packet.ANY);
     }
 
@@ -79,12 +80,12 @@ public final class Snap implements Packet.Reader.Factory {
         this.name = name;
     }
 
-    public Packet.Reader ping() {
-        return Ping.ping(this);
+    public Reader ping(Topic topic) {
+        return Ping.ping(topic,this);
     }
 
     @Override
-    public Packet.Reader reader(Packet.Filter filter) {
+    public Reader reader(Packet.Filter filter) {
         return new CombinedReader(toRead,node.reader(filter));
     }
 
