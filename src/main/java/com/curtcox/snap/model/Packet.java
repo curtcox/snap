@@ -110,7 +110,7 @@ public final class Packet {
         Packet read(Filter filter) throws IOException;
 
         interface Factory {
-            Packet.Reader reader(Packet.Filter readerFilter);
+            Reader reader(Filter readerFilter);
         }
     }
 

@@ -1,6 +1,7 @@
 package com.curtcox.snap.model;
 
 import java.io.IOException;
+import com.curtcox.snap.model.Packet.*;
 
 /**
  * So multiple readers can read from a single reader.
@@ -10,18 +11,18 @@ import java.io.IOException;
  * coordinated.
  * See also CombinedReader.
  */
-final class SplitReaderFactory implements Packet.Reader.Factory {
+final class SplitReaderFactory implements Reader.Factory {
 
-    private final Packet.Reader source;
+    private final Reader source;
     private final PacketStream stream = new PacketStream();
 
-    SplitReaderFactory(Packet.Reader reader) {
+    SplitReaderFactory(Reader reader) {
         this.source = reader;
     }
 
     @Override
-    public Packet.Reader reader(Packet.Filter f1) {
-        final Packet.Reader reader = new Packet.Reader() {
+    public Reader reader(Packet.Filter f1) {
+        final Reader reader = new Reader() {
 
             PacketStream.Position last;
             @Override
