@@ -45,11 +45,11 @@ public final class Snap implements Reader.Factory {
         );
     }
 
-    public Reader listen(Packet.Topic topic) {
+    public Reader reader(Packet.Topic topic) {
         return reader(new TopicPacketFilter(topic));
     }
 
-    public Reader listen() {
+    public Reader reader() {
         return reader(Packet.ANY);
     }
 

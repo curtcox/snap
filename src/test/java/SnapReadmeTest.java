@@ -50,7 +50,7 @@ public class SnapReadmeTest {
         snap1.ping(topic);
         tick(3);
 
-        Packet packet = snap1.listen().read(ANY);
+        Packet packet = snap1.reader().read(ANY);
 
         assertEquals(snap2.whoami(),packet.sender);
     }
@@ -62,7 +62,7 @@ public class SnapReadmeTest {
         snap1.ping(topic);
         tick(3);
 
-        Packet packet = snap1.listen().read(ANY);
+        Packet packet = snap1.reader().read(ANY);
 
         String senderName = snap2.whoami();
         assertEquals(senderName,packet.sender);

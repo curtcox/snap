@@ -34,7 +34,7 @@ public final class TestUtil {
     }
 
     static Packet consume(Snap snap) throws IOException {
-        return snap.listen().read(Packet.ANY);
+        return snap.reader().read(Packet.ANY);
     }
 
     static void assertStartsWith(String text, String prefix) {
