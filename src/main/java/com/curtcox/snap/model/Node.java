@@ -1,27 +1,27 @@
 package com.curtcox.snap.model;
 
 import static com.curtcox.snap.util.Check.notNull;
-
+import com.curtcox.snap.model.Packet.*;
 /**
  * NodeS exist to transfer PacketS between a Network and something else.
  * A node will normally be used by at least two different threads.
  * NodeS are stateless and delegate state logic to PacketListS.
  */
-final class Node implements Packet.Reader.Factory {
+final class Node implements Reader.Factory {
 
     private final PacketReaderFactory fromNetwork = new PacketReaderFactory();
     private final PacketReaderFactory fromOther = new PacketReaderFactory();
 
-    static Node on(Packet.Network network) {
+    static Node on(Network network) {
         final Node node = new Node();
         network.add(node.networkIO());
         return node;
     }
 
-    private Packet.IO networkIO() {
+    private IO networkIO() {
         // Methods in this IO are invoked by network threads.
-        return new Packet.IO() {
-            @Override public Packet read(Packet.Filter filter) {
+        return new IO() {
+            @Override public Packet read(Filter filter) {
                 return fromOther.take();
             }
             @Override public void write(Packet packet) {
@@ -36,7 +36,7 @@ final class Node implements Packet.Reader.Factory {
     }
 
     @Override
-    public Packet.Reader reader(Packet.Filter filter) {
+    public Reader reader(Filter filter) {
         return fromNetwork.reader(filter);
     }
 
