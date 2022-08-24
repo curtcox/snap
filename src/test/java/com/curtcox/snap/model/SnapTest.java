@@ -137,27 +137,43 @@ public class SnapTest {
         assertNull(snap.reader(topic1).read(ANY));
     }
 
-    @Test
-    public void read_with_topic_should_return_2nd_message_when_it_matches_topic() throws IOException {
-        Packet.Topic topic1 = Random.topic();
-        String message1 = random("message1");
-        snap.send(topic1,message1);
-        Packet.Topic topic2 = Random.topic();
-        String message2 = random("message2");
-        snap.send(topic2,message2);
-        tick(3);
+    static class TopicMessage {
+        final Topic topic;
+        final String message;
 
-        Packet.Reader iterator = snap.reader(topic2);
-        Packet packet = iterator.read(ANY);
+        TopicMessage(Topic topic, String message) {
+            this.topic = topic;
+            this.message = message;
+        }
+    }
 
+    private TopicMessage sendRandom(String prefix) {
+        Topic topic = Random.topic();
+        String message = random(prefix);
+        snap.send(topic,message);
+        return new TopicMessage(topic,message);
+    }
+
+    private void assertMatch(TopicMessage topicMessage, Packet packet) {
         assertNotNull(packet);
-        assertEquals(topic2,packet.topic);
-        assertEquals(message2,packet.message);
-        assertNull(snap.reader(topic2).read(ANY));
+        assertEquals(topicMessage.topic,packet.topic);
+        assertEquals(topicMessage.message,packet.message);
     }
 
     @Test
-    public void messsages_are_delivered_in_order_when_on_network() throws IOException {
+    public void read_with_topic_should_return_2nd_message_once_when_it_matches_topic() throws IOException {
+        sendRandom("message1");
+        TopicMessage sent2 = sendRandom("message2");
+
+        tick(3);
+
+        assertMatch(sent2,snap.reader(sent2.topic).read(ANY));
+
+        assertNull(snap.reader(sent2.topic).read(ANY));
+    }
+
+    @Test
+    public void messages_are_delivered_in_order_when_on_network() throws IOException {
         Node.on(network);
         Packet.Topic topic = new Packet.Topic("call");
 
