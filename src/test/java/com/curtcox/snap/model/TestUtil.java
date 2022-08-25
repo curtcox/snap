@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import static com.curtcox.snap.model.Clock.tick;
 import static org.junit.Assert.*;
+import com.curtcox.snap.model.Packet.*;
 
 public final class TestUtil {
 
@@ -35,6 +36,10 @@ public final class TestUtil {
 
     static Packet consume(Snap snap) throws IOException {
         return snap.reader().read(Packet.ANY);
+    }
+
+    static Packet consume(Snap snap,Topic topic) throws IOException {
+        return snap.reader(topic).read(Packet.ANY);
     }
 
     static void assertStartsWith(String text, String prefix) {

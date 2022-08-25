@@ -43,100 +43,6 @@ public class SnapTest {
         snap.send(new Packet.Topic("schmopic"),"smessage");
     }
 
-    @Test
-    public void read_should_return_the_message_sent() throws IOException {
-        Packet.Topic topic = Random.topic();
-        String message = random("message");
-
-        snap.send(topic,message);
-        tick(2);
-        Packet packet = snap.reader(topic).read(ANY);
-
-        assertNotNull(packet);
-        assertEquals(topic,packet.topic);
-        assertEquals(message,packet.message);
-    }
-
-    @Test
-    public void read_should_only_return_a_message_once_when_topic_specified() throws IOException {
-        Packet.Topic topic = Random.topic();
-        snap.send(topic,random("message"));
-        tick(2);
-        Packet.Reader iterator1 = snap.reader(topic);
-        assertNotNull(iterator1.read(ANY));
-        Packet.Reader iterator2 = snap.reader(topic);
-        assertNull(iterator2.read(ANY));
-    }
-
-    @Test
-    public void read_should_only_return_a_message_once_when_no_topic_specified() throws IOException {
-        snap.send(new Packet.Topic(random("topic")),random("message"));
-        tick(2);
-        assertNotNull(consume(snap));
-        assertNull(snap.reader().read(ANY));
-    }
-
-    @Test
-    public void read_should_return_null_when_no_messages_sent() throws IOException {
-        assertNull(snap.reader().read(ANY));
-    }
-
-    @Test
-    public void read_should_return_null_when_there_is_a_message_that_does_not_match_topic() throws IOException {
-        Packet.Topic topic = Random.topic();
-        String message = random("message");
-
-        snap.send(topic,message);
-        Packet packet = snap.reader(new Packet.Topic("different " + topic)).read(ANY);
-
-        assertNull(packet);
-    }
-
-    @Test
-    public void read_with_no_topic_should_return_messages_sent_to_any_topic() throws IOException {
-        Packet.Topic topic1 = Random.topic();
-        String message1 = random("message1");
-        snap.send(topic1,message1);
-        Packet.Topic topic2 = Random.topic();
-        String message2 = random("message2");
-        snap.send(topic2,message2);
-        tick(3);
-
-        Packet.Reader packets = snap.reader();
-
-        Packet packet1 = packets.read(ANY);
-
-        assertNotNull(packet1);
-        assertEquals(topic1,packet1.topic);
-        assertEquals(message1,packet1.message);
-
-        Packet packet2 = packets.read(ANY);
-
-        assertNotNull(packet2);
-        assertEquals(topic2,packet2.topic);
-        assertEquals(message2,packet2.message);
-    }
-
-    @Test
-    public void read_with_topic_should_return_1st_message_when_it_matches_topic() throws IOException {
-        Packet.Topic topic1 = Random.topic();
-        String message1 = random("message1");
-        snap.send(topic1,message1);
-        Packet.Topic topic2 = Random.topic();
-        String message2 = random("message2");
-        snap.send(topic2,message2);
-        tick(2);
-
-        Packet.Reader iterator = snap.reader(topic1);
-        Packet packet = iterator.read(ANY);
-
-        assertNotNull(packet);
-        assertEquals(topic1,packet.topic);
-        assertEquals(message1,packet.message);
-
-        assertNull(snap.reader(topic1).read(ANY));
-    }
-
     static class TopicMessage {
         final Topic topic;
         final String message;
@@ -161,15 +67,80 @@ public class SnapTest {
     }
 
     @Test
+    public void read_should_return_the_message_sent() throws IOException {
+        TopicMessage sent = sendRandom("message");
+
+        tick(2);
+        Packet packet = consume(snap,sent.topic);
+
+        assertMatch(sent,packet);
+    }
+
+    @Test
+    public void read_should_only_return_a_message_once_when_topic_specified() throws IOException {
+        TopicMessage sent = sendRandom("message");
+
+        tick(2);
+
+        assertMatch(sent,consume(snap));
+        assertNull(consume(snap));
+    }
+
+    @Test
+    public void read_should_only_return_a_message_once_when_no_topic_specified() throws IOException {
+        snap.send(new Packet.Topic(random("topic")),random("message"));
+        tick(2);
+        assertNotNull(consume(snap));
+        assertNull(consume(snap));
+    }
+
+    @Test
+    public void read_should_return_null_when_no_messages_sent() throws IOException {
+        assertNull(consume(snap));
+    }
+
+    @Test
+    public void read_should_return_null_when_there_is_a_message_that_does_not_match_topic() throws IOException {
+        Packet.Topic topic = Random.topic();
+        String message = random("message");
+
+        snap.send(topic,message);
+        Packet packet = snap.reader(new Packet.Topic("different " + topic)).read(ANY);
+
+        assertNull(packet);
+    }
+
+    @Test
+    public void read_with_no_topic_should_return_messages_sent_to_any_topic() throws IOException {
+        TopicMessage sent1 = sendRandom("message1");
+        TopicMessage sent2 = sendRandom("message2");
+        tick(3);
+
+        Packet.Reader packets = snap.reader();
+
+        assertMatch(sent1,packets.read(ANY));
+        assertMatch(sent2,packets.read(ANY));
+    }
+
+    @Test
+    public void read_with_topic_should_return_1st_message_when_it_matches_topic() throws IOException {
+        TopicMessage sent1 = sendRandom("message1");
+        sendRandom("message2");
+        tick(2);
+
+        assertMatch(sent1,consume(snap,sent1.topic));
+        assertNull(snap.reader(sent1.topic).read(ANY));
+    }
+
+    @Test
     public void read_with_topic_should_return_2nd_message_once_when_it_matches_topic() throws IOException {
         sendRandom("message1");
         TopicMessage sent2 = sendRandom("message2");
 
         tick(3);
 
-        assertMatch(sent2,snap.reader(sent2.topic).read(ANY));
-
-        assertNull(snap.reader(sent2.topic).read(ANY));
+        assertMatch(sent2,consume(snap,sent2.topic));
+        assertNull(consume(snap,sent2.topic));
     }
 
     @Test
@@ -238,7 +209,7 @@ public class SnapTest {
         snap1.ping(topic);
         tick(3);
 
-        Packet packet = snap2.reader().read(ANY);
+        Packet packet = consume(snap2);
         assertNotNull(packet);
         assertTrue(Ping.isPingRequest.passes(packet));
         assertEquals(snap1.whoami(),packet.sender.value);
