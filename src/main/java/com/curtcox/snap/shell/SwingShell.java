@@ -2,10 +2,7 @@ package com.curtcox.snap.shell;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 
 /**
  * A Swing based shell that can provide a text based UI for a CommandRunner.

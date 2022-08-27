@@ -88,7 +88,7 @@ public class SnapTest {
 
     @Test
     public void read_should_only_return_a_message_once_when_no_topic_specified() throws IOException {
-        snap.send(new Packet.Topic(random("topic")),random("message"));
+        snap.send(new Topic(random("topic")),random("message"));
         tick(2);
         assertNotNull(consume(snap));
         assertNull(consume(snap));
@@ -101,11 +101,11 @@ public class SnapTest {
 
     @Test
     public void read_should_return_null_when_there_is_a_message_that_does_not_match_topic() throws IOException {
-        Packet.Topic topic = Random.topic();
+        Topic topic = Random.topic();
         String message = random("message");
 
         snap.send(topic,message);
-        Packet packet = snap.reader(new Packet.Topic("different " + topic)).read(ANY);
+        Packet packet = snap.reader(new Topic("different " + topic)).read(ANY);
 
         assertNull(packet);
     }
@@ -146,7 +146,7 @@ public class SnapTest {
     @Test
     public void messages_are_delivered_in_order_when_on_network() throws IOException {
         Node.on(network);
-        Packet.Topic topic = new Packet.Topic("call");
+        Topic topic = new Topic("call");
 
         snap.send(topic,"1");
         snap.send(topic,"2");

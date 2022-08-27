@@ -32,7 +32,7 @@ public final class Packet {
      */
     public static final class Topic {
         final String value;
-        Topic(String value) {
+        public Topic(String value) {
             this.value = value;
         }
         @Override public String toString() { return value; }

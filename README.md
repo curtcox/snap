@@ -42,7 +42,7 @@ To find all current listeners send a ping request.
 snap ping
 ```
 
-Which will request that all current listeners identify themselves.
+Which will return a list of everything that is either generating events or listening to them.
 Any listener for the specified topic should reply with information about the listener and the topic they are listening to.
 
 A topic and timeout can optionally be given.

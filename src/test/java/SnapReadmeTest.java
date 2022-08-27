@@ -69,6 +69,36 @@ public class SnapReadmeTest {
         assertContains(packet.message,senderName);
     }
 
+    @Test
+    public void light_is_turned_on_when_motion_is_detected() {
+        fail();
+    }
+
+    @Test
+    public void light_turns_off_5_seconds_after_last_motion() {
+        fail();
+    }
+
+    @Test
+    public void ping_lists_all_devices_listening_for_events() {
+        fail();
+    }
+
+    @Test
+    public void ping_lists_all_devices_generating_events() {
+        fail();
+    }
+
+    @Test
+    public void ping_with_topic_only_lists_devices_listening_to_that_topic() {
+        fail();
+    }
+
+    @Test
+    public void ping_with_topic_only_lists_devices_broadcasting_to_that_topic() {
+        fail();
+    }
+
     private void assertContains(String text, String substring) {
         assertTrue(text + " does not contain " + substring ,text.contains(substring));
     }
