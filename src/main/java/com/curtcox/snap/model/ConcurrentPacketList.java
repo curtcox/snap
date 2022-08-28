@@ -15,8 +15,8 @@ final class ConcurrentPacketList
     }
 
     @Override
-    synchronized public void add(Packet packet) {
-        list.add(packet);
+    synchronized public boolean add(Packet packet) {
+        return list.add(packet);
     }
 
     @Override

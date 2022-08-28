@@ -40,7 +40,7 @@ final class Ping {
     }
 
     private void process(Packet packet) {
-        snap.addPacketToRead(packet);
+        //snap.addPacketToRead(packet);
         respondTo(packet);
     }
 

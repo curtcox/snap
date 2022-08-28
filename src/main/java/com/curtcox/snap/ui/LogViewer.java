@@ -86,7 +86,7 @@ public final class LogViewer {
     LogViewer(Topic topic, Snap snap) {
         this.topic = topic;
         frame = new JFrame(topic.toString());
-        table = new JTable();
+        table = new JTable(new PacketTable());
         this.snap = snap;
     }
 
@@ -108,12 +108,14 @@ public final class LogViewer {
         frame.add(new JScrollPane(table));
         frame.pack();
         frame.doLayout();
-        snap.on(topic, packet -> add(packet));
+        snap.on(packet -> { return add(packet); });
     }
 
-    private void add(Packet packet) {
-        packets.add(packet);
-        table.invalidate();
+    private boolean add(Packet packet) {
+        System.out.println("Added " + packet);
+        boolean added = packets.add(packet);
+        table.tableChanged(null);
+        return added;
     }
 
     void show() {

@@ -65,7 +65,7 @@ public class SnapReadmeTest {
         Packet packet = snap1.reader().read(ANY);
 
         String senderName = snap2.whoami();
-        assertEquals(senderName,packet.sender);
+        assertEquals(senderName,packet.sender.toString());
         assertContains(packet.message,senderName);
     }
 

@@ -115,11 +115,17 @@ public final class Packet {
     }
 
     /**
-     * Something that accepts packets.
+     * Something that accepts packets -- although not necessarily all packets.
      * Perhaps this should be the same interface as Writer.
      */
     public interface Sink {
-        void add(Packet packet);
+        /**
+         * Return true if and only if the packet was accepted.
+         */
+        boolean add(Packet packet);
+        interface Acceptor {
+            void on(Sink sink);
+        }
     }
 
     /**

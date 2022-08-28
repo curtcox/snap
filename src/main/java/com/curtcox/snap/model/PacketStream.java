@@ -24,9 +24,9 @@ final class PacketStream
     }
 
     @Override
-    public void add(Packet packet) {
+    public boolean add(Packet packet) {
         at = at + 1;
-        packets.add(new PacketAndPosition(packet,new Position(at)));
+        return packets.add(new PacketAndPosition(packet,new Position(at)));
     }
 
     static final class Position {

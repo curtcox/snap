@@ -30,8 +30,8 @@ final class PacketReaderFactory
 
     // network or other
     @Override
-    public void add(Packet packet) {
-        list.add(packet);
+    public boolean add(Packet packet) {
+        return list.add(packet);
     }
 
 }

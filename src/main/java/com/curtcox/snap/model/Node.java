@@ -7,10 +7,11 @@ import com.curtcox.snap.model.Packet.*;
  * A node will normally be used by at least two different threads.
  * NodeS are stateless and delegate state logic to PacketListS.
  */
-final class Node implements Reader.Factory {
+final class Node implements Reader.Factory, Sink.Acceptor {
 
     private final PacketReaderFactory fromNetwork = new PacketReaderFactory();
     private final PacketReaderFactory fromOther = new PacketReaderFactory();
+    private final CombinedSink sinks = new CombinedSink();
 
     static Node on(Network network) {
         final Node node = new Node();
@@ -26,6 +27,7 @@ final class Node implements Reader.Factory {
             }
             @Override public void write(Packet packet) {
                 fromNetwork.add(packet);
+                sinks.add(packet);
             }
         };
     }
@@ -40,4 +42,8 @@ final class Node implements Reader.Factory {
         return fromNetwork.reader(filter);
     }
 
+    @Override
+    public void on(Sink sink) {
+        sinks.add(sink);
+    }
 }

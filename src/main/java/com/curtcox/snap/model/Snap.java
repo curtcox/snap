@@ -6,13 +6,13 @@ import static com.curtcox.snap.util.Check.notNull;
 import com.curtcox.snap.model.Packet.*;
 
 // Potential future API
-public final class Snap implements Reader.Factory {
+public final class Snap implements Reader.Factory, Sink.Acceptor {
 
     final Node node;
 
     private String name;
 
-    private final ConcurrentPacketList toRead = new ConcurrentPacketList();
+//    private final ConcurrentPacketList toRead = new ConcurrentPacketList();
 
     private Snap(Node node) {
         this.node = notNull(node);
@@ -49,8 +49,9 @@ public final class Snap implements Reader.Factory {
         return reader(new TopicPacketFilter(topic));
     }
 
-    public void on(Topic topic, Sink sink) {
-
+    @Override
+    public void on(Sink sink) {
+        node.on(sink);
     }
 
     public Reader reader() {
@@ -90,10 +91,11 @@ public final class Snap implements Reader.Factory {
 
     @Override
     public Reader reader(Packet.Filter filter) {
-        return new CombinedReader(toRead,node.reader(filter));
+        return node.reader(filter);
+//        return new CombinedReader(toRead,node.reader(filter));
     }
 
-    void addPacketToRead(Packet packet) {
-        toRead.add(packet);
-    }
+//    void addPacketToRead(Packet packet) {
+//        toRead.add(packet);
+//    }
 }
