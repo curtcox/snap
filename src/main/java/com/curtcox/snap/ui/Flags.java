@@ -8,6 +8,9 @@ final class Flags {
     String message() {
         return after("message");
     }
+    String[] messages() {
+        return after("messages").split(",");
+    }
 
     private String after(String key) {
         for (int i=0; i<args.length; i++) {
