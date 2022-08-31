@@ -25,12 +25,17 @@ public final class Snap implements Reader.Factory, Sink.Acceptor {
     }
 
     public static Snap on(Network network) {
-        return Snap.of(Node.on(network),Runner.of());
+        return Snap.of(Node.on(network));
     }
 
-    public static Snap of(Node node, Runner runner) {
+    public static Snap of(final Node node) {
         Snap snap = new Snap(node);
-        Ping.of(snap,node,runner);
+        node.on(packet -> {
+            if (Ping.REQUEST.equals(packet.message)) {
+                snap.sendPingResponse(packet);
+            }
+            return false;
+        });
         return snap;
     }
 
@@ -85,6 +90,17 @@ public final class Snap implements Reader.Factory, Sink.Acceptor {
 
     public void ping(Topic topic,Sink sink) {
         node.on(sink);
+        send(topic,Ping.REQUEST);
+    }
+
+    private void sendPingResponse(Packet packet) {
+        node.write(Packet.builder()
+                .sender(new Packet.Sender(whoami()))
+                .topic(packet.topic)
+                .message(Ping.RESPONSE)
+                .trigger(Trigger.from(packet))
+                .build()
+        );
     }
 
     @Override

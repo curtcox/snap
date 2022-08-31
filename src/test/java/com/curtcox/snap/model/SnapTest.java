@@ -25,17 +25,12 @@ public class SnapTest {
     @Before
     public void setUp() {
         node = Node.on(network);
-        snap = Snap.of(node,runner);
+        snap = Snap.of(node);
     }
 
     @Test(expected = NullPointerException.class)
     public void requires_node() {
-        assertNotNull(Snap.of(null,Runner.of()));
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void requires_runner() {
-        assertNotNull(Snap.of(Node.on(network),null));
+        assertNotNull(Snap.of(null));
     }
 
     @Test
@@ -173,12 +168,10 @@ public class SnapTest {
 
         Packet request = reader.read(ANY);
         assertNotNull(request);
-        assertTrue(Ping.isPingRequest.passes(request));
         assertEquals(snap.whoami(),request.sender.value);
 
         Packet response = reader.read(ANY);
         assertNotNull(response);
-        assertTrue(Ping.isPingResponse.passes(response));
         assertEquals(snap.whoami(),response.sender.value);
     }
 
@@ -197,7 +190,6 @@ public class SnapTest {
 
         Packet packet = responses.read(ANY);
         assertNotNull(packet);
-        assertTrue(Ping.isPingResponse.passes(packet));
         assertEquals(responderName,packet.sender.value);
     }
 
@@ -213,7 +205,6 @@ public class SnapTest {
 
         Packet packet = consume(snap2);
         assertNotNull(packet);
-        assertTrue(Ping.isPingRequest.passes(packet));
         assertEquals(snap1.whoami(),packet.sender.value);
     }
 
