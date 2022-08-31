@@ -1,5 +1,5 @@
 import com.curtcox.snap.model.*;
-import org.junit.Test;
+import org.junit.*;
 
 import java.io.IOException;
 import static com.curtcox.snap.model.Packet.*;
@@ -7,6 +7,7 @@ import static com.curtcox.snap.model.Packet.*;
 import static com.curtcox.snap.model.Clock.tick;
 import static org.junit.Assert.*;
 
+@Ignore
 // Direct tests for things in the Readme.
 public class SnapReadmeTest {
 
