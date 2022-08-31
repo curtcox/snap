@@ -1,5 +1,7 @@
 package com.curtcox.snap.shell;
 
+import com.curtcox.snap.model.*;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -13,8 +15,7 @@ final class SwingShell {
     final JTextArea area = new JTextArea();
 
     final Timer timer = new Timer(100, e -> pollRunner());
-
-
+    
     final CommandRunner runner;
 
     SwingShell(CommandRunner runner) {
@@ -87,6 +88,7 @@ final class SwingShell {
     }
 
     private void addWindowListener() {
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.addWindowListener(new WindowAdapter() {
                                     public void windowClosing(WindowEvent we) {
                                         timer.stop();
@@ -94,6 +96,10 @@ final class SwingShell {
                                     }
                                 }
         );
+    }
+
+    public static void main(String args[]) {
+        new SwingShell(new SnapCommandRunner(Snap.newInstance())).init();
     }
 
 }

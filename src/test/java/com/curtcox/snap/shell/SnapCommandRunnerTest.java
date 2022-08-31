@@ -1,6 +1,6 @@
 package com.curtcox.snap.shell;
 
-import com.curtcox.snap.model.Snap;
+import com.curtcox.snap.model.*;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -17,7 +17,7 @@ public class SnapCommandRunnerTest {
 
     @Test
     public void unknown_command_returns_null() {
-        assertEquals(null,runner.execute("what's all this then"));
+        assertEquals("error : what's all this then",runner.execute("what's all this then"));
     }
 
     @Test
@@ -28,6 +28,20 @@ public class SnapCommandRunnerTest {
     @Test
     public void whoami_ignores_whitespace() {
         assertEquals(snap.whoami(),runner.execute("    whoami    "));
+    }
+
+    @Test
+    public void whoami_returns_name_set() {
+        String name = Random.random("name");
+        assertEquals("",runner.execute("name="+name));
+        assertEquals(name,runner.execute("whoami"));
+    }
+
+    @Test
+    public void whoami_returns_trimmed_name_set() {
+        String name = Random.random("name");
+        assertEquals("",runner.execute("  name  =  " + name + "   "));
+        assertEquals(name,runner.execute("whoami"));
     }
 
 }

@@ -99,8 +99,7 @@ final class AwtShell {
     }
 
     public static void main(String args[]) {
-        AwtShell shell = new AwtShell(new SnapCommandRunner(Snap.newInstance()));
-        shell.init();
+        new AwtShell(new SnapCommandRunner(Snap.newInstance())).init();
     }
 
 }
