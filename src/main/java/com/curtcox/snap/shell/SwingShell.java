@@ -15,7 +15,7 @@ final class SwingShell {
     final JTextArea area = new JTextArea();
 
     final Timer timer = new Timer(100, e -> pollRunner());
-    
+
     final CommandRunner runner;
 
     SwingShell(CommandRunner runner) {

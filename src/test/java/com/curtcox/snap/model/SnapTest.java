@@ -167,7 +167,8 @@ public class SnapTest {
         Node.on(network);
 
         Topic topic = Random.topic();
-        Reader reader = snap.ping(topic);
+        SinkReader reader = new SinkReader();
+        snap.ping(topic,reader);
         tick(3);
 
         Packet request = reader.read(ANY);
@@ -190,7 +191,8 @@ public class SnapTest {
         responder.setName(responderName);
 
         Topic topic = Random.topic();
-        Reader responses = Snap.on(network).ping(topic);
+        SinkReader responses = new SinkReader();
+        Snap.on(network).ping(topic,responses);
         tick(3);
 
         Packet packet = responses.read(ANY);
@@ -206,7 +208,7 @@ public class SnapTest {
         Snap snap2 = Snap.on(network);
         Topic topic = Random.topic();
 
-        snap1.ping(topic);
+        snap1.ping(topic,new SinkReader());
         tick(3);
 
         Packet packet = consume(snap2);

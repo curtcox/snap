@@ -1,12 +1,12 @@
 package com.curtcox.snap.model;
 
 import java.util.*;
-
+import static com.curtcox.snap.model.Packet.*;
 /**
  * A mutable list of packets that can be accessed by multiple threads concurrently.
  */
 final class ConcurrentPacketList
-        implements Packet.Reader, Packet.Sink
+        implements Reader, Sink
 {
     private final List<Packet> list = new ArrayList<>();
 

@@ -36,7 +36,8 @@ public class SnapReadmeTest {
     @Test
     public void ping_returns_whoami_names() throws IOException {
         Topic topic = Random.topic();
-        Reader reader = snap1.ping(topic);
+        SinkReader reader = new SinkReader();
+        snap1.ping(topic,reader);
         tick(3);
 
         Packet packet = reader.read(ANY);
@@ -47,7 +48,7 @@ public class SnapReadmeTest {
     @Test
     public void listening_after_ping_returns_whoami_names() throws IOException {
         Topic topic = Random.topic();
-        snap1.ping(topic);
+        snap1.ping(topic,new SinkReader());
         tick(3);
 
         Packet packet = snap1.reader().read(ANY);
@@ -59,7 +60,7 @@ public class SnapReadmeTest {
     public void listening_after_ping_returns_response_time() throws IOException {
         Topic topic = Random.topic();
 
-        snap1.ping(topic);
+        snap1.ping(topic,new SinkReader());
         tick(3);
 
         Packet packet = snap1.reader().read(ANY);

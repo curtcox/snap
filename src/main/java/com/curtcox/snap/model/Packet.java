@@ -41,6 +41,22 @@ public final class Packet {
             Topic that = (Topic) o;
             return value.equals(that.value);
         }
+
+    }
+
+    static final class TopicSink implements Sink {
+        final Topic topic;
+        final Sink sink;
+
+        TopicSink(Topic topic, Sink sink) {
+            this.topic = topic;
+            this.sink = sink;
+        }
+
+        @Override
+        public boolean add(Packet packet) {
+            return false;
+        }
     }
 
     /**

@@ -4,11 +4,12 @@ import java.io.IOException;
 import java.util.*;
 
 import static com.curtcox.snap.util.Check.notNull;
+import static com.curtcox.snap.model.Packet.*;
 
 /**
  * An in-memory network.
  */
-final class SimpleNetwork implements Packet.Network {
+final class SimpleNetwork implements Network {
 
     private final List<Packet.IO> ios = new ArrayList<>();
 
@@ -39,13 +40,13 @@ final class SimpleNetwork implements Packet.Network {
     }
 
     synchronized private void exchange() throws IOException {
-        Map<Packet.IO,Packet> in = readIncoming();
-        for (Packet.IO out : ios) {
+        Map<IO,Packet> in = readIncoming();
+        for (IO out : ios) {
             writeOutgoing(in,out);
         }
     }
 
-    private void writeOutgoing(Map<Packet.IO,Packet> ins, Packet.IO out) throws IOException {
+    private void writeOutgoing(Map<IO,Packet> ins, IO out) throws IOException {
         for (Packet packet : combineWithout(ins,out)) {
             if (packet!=null) {
                 out.write(packet);
@@ -53,9 +54,9 @@ final class SimpleNetwork implements Packet.Network {
         }
     }
 
-    private List<Packet> combineWithout(Map<Packet.IO,Packet> ins, Packet.IO excluded) {
+    private List<Packet> combineWithout(Map<IO,Packet> ins, IO excluded) {
         List<Packet> packets = new ArrayList<>();
-        for (Packet.IO in : ins.keySet()) {
+        for (IO in : ins.keySet()) {
             if (in!=excluded) {
                 packets.add(ins.get(in));
             }
@@ -64,14 +65,14 @@ final class SimpleNetwork implements Packet.Network {
     }
 
     synchronized private Map<Packet.IO,Packet> readIncoming() throws IOException {
-        Map<Packet.IO,Packet> in = new HashMap<>();
-        for (Packet.IO input : ios) {
+        Map<IO,Packet> in = new HashMap<>();
+        for (IO input : ios) {
             in.put(input,input.read(Packet.ANY));
         }
         return in;
     }
 
-    synchronized public void add(Packet.IO io) {
+    synchronized public void add(IO io) {
         ios.add(io);
     }
 

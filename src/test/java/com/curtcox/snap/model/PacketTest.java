@@ -3,11 +3,12 @@ package com.curtcox.snap.model;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
+import com.curtcox.snap.model.Packet.*;
 
 public class PacketTest {
 
-    Packet.Trigger t0 = Packet.Trigger.from(0);
-    Packet.Trigger t1 = Packet.Trigger.from(1);
+    Trigger t0 = Trigger.from(0);
+    Trigger t1 = Trigger.from(1);
 
     @Test
     public void equal() {
@@ -50,7 +51,7 @@ public class PacketTest {
         assertNotEquals(a.hashCode(),b.hashCode());
     }
 
-    private Packet packet(String sender, String topic, String message, long timestamp, Packet.Trigger trigger) {
+    private Packet packet(String sender, String topic, String message, long timestamp, Trigger trigger) {
         return Packet.builder()
                 .sender(new Packet.Sender(sender))
                 .topic(new Packet.Topic(topic))

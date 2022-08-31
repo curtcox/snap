@@ -12,8 +12,6 @@ public final class Snap implements Reader.Factory, Sink.Acceptor {
 
     private String name;
 
-//    private final ConcurrentPacketList toRead = new ConcurrentPacketList();
-
     private Snap(Node node) {
         this.node = notNull(node);
     }
@@ -85,17 +83,13 @@ public final class Snap implements Reader.Factory, Sink.Acceptor {
         this.name = name;
     }
 
-    public Reader ping(Topic topic) {
-        return Ping.ping(topic,this);
+    public void ping(Topic topic,Sink sink) {
+        node.on(sink);
     }
 
     @Override
     public Reader reader(Packet.Filter filter) {
         return node.reader(filter);
-//        return new CombinedReader(toRead,node.reader(filter));
     }
 
-//    void addPacketToRead(Packet packet) {
-//        toRead.add(packet);
-//    }
 }

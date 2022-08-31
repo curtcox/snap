@@ -2,6 +2,7 @@ package com.curtcox.snap.model;
 
 import java.util.LinkedList;
 import java.util.List;
+import static com.curtcox.snap.model.Packet.*;
 
 /**
  * An ordered sequence of packets.
@@ -13,7 +14,7 @@ final class PacketStream
 
     private long at;
     private final List<PacketAndPosition> packets = new LinkedList<>();
-    PacketAndPosition after(Position position, Packet.Filter filter) {
+    PacketAndPosition after(Position position, Filter filter) {
         for (PacketAndPosition packetAndPosition : packets) {
             if ((position==null || packetAndPosition.position.after(position)) &&
                     filter.passes(packetAndPosition.packet)) {

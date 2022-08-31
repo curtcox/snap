@@ -1,15 +1,18 @@
 package com.curtcox.snap.model;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import static com.curtcox.snap.util.Check.notNull;
+import static com.curtcox.snap.model.Packet.*;
 
-final class PacketReaderWriter implements Packet.IO {
+final class PacketReaderWriter implements IO {
 
-    final Packet.Reader input;
-    final Packet.Writer output;
+    final Reader input;
+    final Writer output;
 
-    PacketReaderWriter(Packet.Reader input, Packet.Writer output) {
+    PacketReaderWriter(Reader input, Writer output) {
         this.input = notNull(input);
         this.output = notNull(output);
     }
@@ -19,7 +22,7 @@ final class PacketReaderWriter implements Packet.IO {
     }
 
     @Override
-    public Packet read(Packet.Filter filter) throws IOException {
+    public Packet read(Filter filter) throws IOException {
         return input.read(filter);
     }
 

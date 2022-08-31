@@ -3,11 +3,12 @@ package com.curtcox.snap.model;
 import java.io.IOException;
 
 import static com.curtcox.snap.util.Check.notNull;
+import static com.curtcox.snap.model.Packet.*;
 
 /**
  * A network that reflects every packet written back to the writer.
  */
-final class ReflectorNetwork implements Packet.Network {
+final class ReflectorNetwork implements Network {
 
     private final Runner runner;
 
@@ -28,7 +29,7 @@ final class ReflectorNetwork implements Packet.Network {
          runner.periodically(() -> reflect(io));
     }
 
-    void reflect(Packet.IO io) {
+    void reflect(IO io) {
         try {
             Packet packet = io.read(Packet.ANY);
             if (packet!=null) {
