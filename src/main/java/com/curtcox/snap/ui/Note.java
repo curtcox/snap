@@ -1,24 +1,45 @@
 package com.curtcox.snap.ui;
 
-enum Note {
+final class Note {
 
-    A4, A4$, B4, C4, C4$, D4, D4$, E4, F4, F4$, G4, G4$, A5;
-    static final int SAMPLE_RATE = 16 * 1024; // ~16KHz
-    static final int SECONDS = 2;
-    private final byte[] sin = new byte[SECONDS * SAMPLE_RATE];
+    private final int n;
+    private final byte[] samples;
 
-    Note() {
-        int n = this.ordinal();
-        double exp = ((double) n) / 12d;
-        double f = 440d * Math.pow(2d, exp);
-        for (int i = 0; i < sin.length; i++) {
-            double period = (double)SAMPLE_RATE / f;
-            double angle = 2.0 * Math.PI * i / period;
-            sin[i] = (byte)(Math.sin(angle) * 127f);
+    static final int SAMPLE_RATE = 32 * 1024; // ~16KHz
+
+    Note(int n, int size) {
+        this.n = n;
+        samples = new byte[size];
+        for (int i = 0; i < samples.length; i++) {
+            samples[i] = at(i);
         }
     }
 
+    private double wave(int i) {
+        return Math.sin(angle(i));
+    }
+
+    private double volume(int i) {
+        double x = ((double)(samples.length - i)) / (double) samples.length; //    0 .. 1.0
+        double v = Math.abs(x - 0.5d) + 0.5d;                                //  0.5 .. 1.0 .. 0.5
+        return Math.pow(v, 6);                                               // shape the curve
+    }
+
+    private byte at(int i) {
+        return (byte)(wave(i) * volume(i) * 127f);
+    }
+
+    private double angle(int i) {
+        return i * 2.0 * Math.PI / period();
+    }
+
+    private double period() {
+        double exp = ((double) n) / 12d;
+        double f = 440d * Math.pow(2d, exp);
+        return (double) SAMPLE_RATE / f;
+    }
+
     public byte[] data() {
-        return sin;
+        return samples;
     }
 }

@@ -1,13 +1,12 @@
 package com.curtcox.snap.ui;
 
-import javax.sound.sampled.*;
-
 final class SoundDemo {
 
-    public static void main(String[] args) throws LineUnavailableException {
-        Sound sound = Sound.of();
-        sound.playNotes();
-        sound.close();
+    public static void main(String[] args) {
+        System.out.println("starting");
+        Sound sound = new Sound();
+        sound.ping();
+        System.out.println("closed");
     }
 
 }
