@@ -42,6 +42,9 @@ public final class Packet {
             return value.equals(that.value);
         }
 
+        public boolean matches(Topic b) {
+            return equals(b);
+        }
     }
 
     static final class TopicSink implements Sink {
