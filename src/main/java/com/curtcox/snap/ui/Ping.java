@@ -3,7 +3,7 @@ package com.curtcox.snap.ui;
 import com.curtcox.snap.model.*;
 import com.curtcox.snap.model.Packet.*;
 
-final class Ping {
+public final class Ping {
 
     final Topic topic;
     final Snap snap;
@@ -13,7 +13,7 @@ final class Ping {
         this.snap = snap;
     }
 
-    static Ping on(Topic topic, Snap snap) {
+    public static Ping on(Topic topic, Snap snap) {
         Ping ping = new Ping(topic,snap);
         snap.on(packet -> {
             new Sound().ping();

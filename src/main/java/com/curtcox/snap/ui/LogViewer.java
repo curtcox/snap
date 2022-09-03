@@ -11,7 +11,7 @@ public final class LogViewer extends TopicFrame {
     final JTable table;
     final List<Packet> packets;
 
-    LogViewer(Topic topic, Snap snap) {
+    public LogViewer(Topic topic, Snap snap) {
         super(topic,new JScrollPane(new JTable(new PacketTable())),snap);
         table = (JTable) ((JScrollPane) component).getViewport().getView();
         packets = ((PacketTable) table.getModel()).packets;

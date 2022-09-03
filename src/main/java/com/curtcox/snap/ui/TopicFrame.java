@@ -35,7 +35,7 @@ abstract class TopicFrame {
         factory.from(flags,snap).launch();
     }
 
-    void launch() {
+    public void launch() {
         init();
         show();
     }

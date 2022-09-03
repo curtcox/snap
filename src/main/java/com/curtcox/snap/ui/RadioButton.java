@@ -9,7 +9,7 @@ import com.curtcox.snap.model.Packet.*;
 public final class RadioButton extends TopicFrame {
 
     final String[] messages;
-    RadioButton(Topic topic, String[] messages, Snap snap) {
+    public RadioButton(Topic topic, String[] messages, Snap snap) {
         super(topic,new RadioButtonPanel(topic,messages,snap),snap);
         this.messages = messages;
     }

@@ -9,7 +9,7 @@ import com.curtcox.snap.model.Packet.*;
 public final class Button extends TopicFrame {
 
     final String message;
-    Button(Topic topic, String message, Snap snap) {
+    public Button(Topic topic, String message, Snap snap) {
         super(topic,new JButton(message),snap);
         this.message = message;
     }
