@@ -2,6 +2,8 @@ package com.curtcox.snap.shell;
 
 import com.curtcox.snap.model.Snap;
 
+import java.util.LinkedList;
+
 final class SnapCommandRunner implements CommandRunner {
 
     final Snap snap;
@@ -9,10 +11,18 @@ final class SnapCommandRunner implements CommandRunner {
     static final String whoami = "whoami";
     static final String name = "name";
 
-    static final String helpText = "To see this text type help";
+    final LinkedList<String> moreLines = new LinkedList<>();
+
+    static final String helpText =
+            "To see this text type help\n" +
+            "whoami -- show the current name of this node.\n" +
+            "name   -- set the current name of this node.\n"
+    ;
+
 
     SnapCommandRunner(Snap snap) {
         this.snap = snap;
+        moreLines.add(helpText);
     }
 
     @Override
@@ -44,6 +54,6 @@ final class SnapCommandRunner implements CommandRunner {
 
     @Override
     public String more() {
-        return null;
+        return moreLines.isEmpty() ? null : moreLines.removeFirst();
     }
 }
