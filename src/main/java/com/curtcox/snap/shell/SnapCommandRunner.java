@@ -5,8 +5,11 @@ import com.curtcox.snap.model.Snap;
 final class SnapCommandRunner implements CommandRunner {
 
     final Snap snap;
+    static final String help = "help";
     static final String whoami = "whoami";
     static final String name = "name";
+
+    static final String helpText = "To see this text type help";
 
     SnapCommandRunner(Snap snap) {
         this.snap = snap;
@@ -14,6 +17,9 @@ final class SnapCommandRunner implements CommandRunner {
 
     @Override
     public String execute(String command) {
+        if (is(help,command)) {
+            return helpText;
+        }
         if (is(whoami,command)) {
             return snap.whoami();
         }

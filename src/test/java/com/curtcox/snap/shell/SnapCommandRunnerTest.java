@@ -44,4 +44,18 @@ public class SnapCommandRunnerTest {
         assertEquals(name,runner.execute("whoami"));
     }
 
+    @Test
+    public void initially_shows_help_text_once() {
+        String text = runner.more();
+        assertTrue(text.contains("To see this text type help"));
+        assertNull(runner.more());
+    }
+
+    @Test
+    public void shows_help_text_once_after_typing_help() {
+        String text = runner.execute("help");
+        assertTrue(text.contains("To see this text type help"));
+        assertNull(runner.more());
+    }
+
 }
