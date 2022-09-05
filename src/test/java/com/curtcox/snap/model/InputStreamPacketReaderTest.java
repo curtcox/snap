@@ -91,7 +91,7 @@ public class InputStreamPacketReaderTest {
                 bytes(sizePlusValue("")).value(),
                 bytes(sizePlusValue("")).value()
         ));
-        assertEquals(0L,packet.timestamp);
+        assertEquals(0L,packet.timestamp.value);
         assertEquals(0L,packet.trigger.toLong());
         assertEquals("",packet.sender.value);
         assertEquals("",packet.topic.value);
@@ -147,7 +147,7 @@ public class InputStreamPacketReaderTest {
         int expectedLength = Packet.MAGIC.length + Long.BYTES + Long.BYTES + sender.length() + topic.length() + message.length() + (3 * 2);
         assertEquals(expectedLength,bytes.length);
         Packet packet = read(bytes);
-        assertEquals(timestamp,packet.timestamp);
+        assertEquals(timestamp,packet.timestamp.value);
         assertEquals(trigger,packet.trigger.toLong());
         assertEquals(sender,packet.sender.value);
         assertEquals(topic,packet.topic.value);

@@ -26,7 +26,7 @@ public final class Packet {
     public final Timestamp timestamp;
     public final Trigger trigger;
 
-    public static class Timestamp {
+    public static final class Timestamp {
         final long value;
 
         public Timestamp(long value) {
@@ -281,7 +281,7 @@ public final class Packet {
     public boolean equals(Object o) {
         Packet that  = (Packet) o;
         return topic.equals(that.topic) && message.equals(that.message) && sender.equals(that.sender) &&
-                timestamp == that.timestamp && trigger.equals(that.trigger);
+                timestamp.equals(that.timestamp) && trigger.equals(that.trigger);
     }
 
     public int hashCode() {

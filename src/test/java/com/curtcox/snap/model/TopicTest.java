@@ -14,13 +14,13 @@ public class TopicTest {
 
     @Test
     public void not_equal() {
-        assertNotEqual(new Topic.Spec("a"),new Topic("b"));
+        assertNotEqual(new Topic("a"),new Topic("b"));
     }
 
     @Test
     public void equal() {
-        assertEqual(new Topic.Spec("a"),new Topic("a"));
-        assertEqual(new Topic.Spec("b"),new Topic("b"));
+        assertEqual(new Topic("a"),new Topic("a"));
+        assertEqual(new Topic("b"),new Topic("b"));
     }
 
     @Test
@@ -40,13 +40,13 @@ public class TopicTest {
         assertMatch(new Topic.Spec("*"),new Topic("b"));
     }
 
-    private void assertNotEqual(Topic.Spec a, Topic b) {
+    private void assertNotEqual(Topic a, Topic b) {
         assertNotEquals(a,b);
         assertNotEquals(b,a);
         assertNotEquals(a.hashCode(),b.hashCode());
     }
 
-    private void assertEqual(Topic.Spec a, Topic b) {
+    private void assertEqual(Topic a, Topic b) {
         assertEquals(a,b);
         assertEquals(b,a);
         assertEquals(a.hashCode(),b.hashCode());
