@@ -1,8 +1,10 @@
 package com.curtcox.snap.shell;
 
+import com.curtcox.snap.model.Packet;
 import com.curtcox.snap.model.Snap;
 
 import java.util.LinkedList;
+import static com.curtcox.snap.model.Packet.*;
 
 final class SnapCommandRunner implements CommandRunner {
 
@@ -10,19 +12,36 @@ final class SnapCommandRunner implements CommandRunner {
     static final String help = "help";
     static final String whoami = "whoami";
     static final String name = "name";
+    static final String monitor = "monitor";
 
     final LinkedList<String> moreLines = new LinkedList<>();
 
+    private Topic monitorTopic;
+
+    private final Sink sinkMonitor = new Sink() {
+
+        @Override
+        public boolean add(Packet packet) {
+            if (monitorTopic!=null && packet.topic.matches(monitorTopic)) {
+                moreLines.add(packet.toString());
+                return true;
+            }
+            return false;
+        }
+    };
+
     static final String helpText =
             "To see this text type help\n" +
-            "whoami -- show the current name of this node.\n" +
-            "name   -- set the current name of this node.\n"
+            "whoami          -- show the current name of this node.\n" +
+            "name            -- set the current name of this node.\n" +
+            "monitor {topic} -- show messages posted to the given topic.\n"
     ;
 
 
     SnapCommandRunner(Snap snap) {
         this.snap = snap;
         moreLines.add(helpText);
+        snap.on(sinkMonitor);
     }
 
     @Override
@@ -33,19 +52,42 @@ final class SnapCommandRunner implements CommandRunner {
         if (is(whoami,command)) {
             return snap.whoami();
         }
+        if (wasMonitorAssignment(command)) {
+            return "";
+        }
         if (wasNameAssignment(command)) {
             return "";
         }
         return "error : " + command;
     }
 
-    boolean wasNameAssignment(String command) {
+    private static class Assignment {
+
+    }
+    String isAssignment(String command,String key) {
         String[] parts = command.split("=");
-        if (parts.length==2 && is(name,parts[0])) {
-            snap.setName(parts[1].trim());
-            return true;
+        if (parts.length==2 && is(key,parts[0])) {
+            return parts[1].trim();
         }
-        return false;
+        return null;
+    }
+
+    boolean wasNameAssignment(String command) {
+        String value = isAssignment(command,name);
+        if (value==null) {
+            return false;
+        }
+        snap.setName(value);
+        return true;
+    }
+
+    boolean wasMonitorAssignment(String command) {
+        String value = isAssignment(command,monitor);
+        if (value==null) {
+            return false;
+        }
+        monitorTopic = new Topic(value);
+        return true;
     }
 
     boolean is(String command, String input) {

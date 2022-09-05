@@ -34,6 +34,12 @@ public class TopicTest {
         assertMatch(new Topic("b"),new Topic("b"));
     }
 
+    @Test
+    public void star_matches_everything() {
+        assertMatch(new Topic("*"),new Topic("a"));
+        assertMatch(new Topic("*"),new Topic("b"));
+    }
+
     private void assertNotEqual(Topic a, Topic b) {
         assertNotEquals(a,b);
         assertNotEquals(b,a);
