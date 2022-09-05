@@ -32,7 +32,6 @@ public final class Packet {
      */
     public static final class Topic {
         final String value;
-        static final String star = "*";
         public Topic(String value) {
             this.value = value;
         }
@@ -40,11 +39,23 @@ public final class Packet {
         @Override public int hashCode() { return value.hashCode(); }
         @Override public boolean equals(Object o) {
             Topic that = (Topic) o;
-            return value.equals(star) || that.value.equals(star) || value.equals(that.value);
+            return value.equals(that.value);
         }
 
-        public boolean matches(Topic b) {
-            return equals(b);
+        public boolean matches(Topic.Spec b) {
+            return b.matches(this);
+        }
+
+        public static final class Spec {
+            final String value;
+            static final String star = "*";
+
+            public Spec(String value) {
+                this.value = value;
+            }
+            public boolean matches(Topic b) {
+                return value.equals(star) || value.equals(b.value);
+            }
         }
     }
 

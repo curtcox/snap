@@ -16,7 +16,7 @@ final class SnapCommandRunner implements CommandRunner {
 
     final LinkedList<String> moreLines = new LinkedList<>();
 
-    private Topic monitorTopic;
+    private Topic.Spec monitorTopic;
 
     private final Sink sinkMonitor = new Sink() {
 
@@ -86,7 +86,7 @@ final class SnapCommandRunner implements CommandRunner {
         if (value==null) {
             return false;
         }
-        monitorTopic = new Topic(value);
+        monitorTopic = new Topic.Spec(value);
         return true;
     }
 
