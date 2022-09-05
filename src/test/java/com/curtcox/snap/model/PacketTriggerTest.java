@@ -3,27 +3,28 @@ package com.curtcox.snap.model;
 import org.junit.*;
 
 import static org.junit.Assert.*;
+import static com.curtcox.snap.model.Packet.*;
 
 public class PacketTriggerTest {
 
     @Test
     public void can_create_from_packet() {
-        assertNotNull(Packet.Trigger.from(Random.packet()));
+        assertNotNull(Trigger.from(Random.packet()));
     }
 
     @Test
     public void equal_when_packets_are_the_same() {
         Packet packet = Random.packet();
-        assertEquals(Packet.Trigger.from(packet),Packet.Trigger.from(packet));
-        assertEquals(Packet.Trigger.from(packet).hashCode(),Packet.Trigger.from(packet).hashCode());
+        assertEquals(Trigger.from(packet),Trigger.from(packet));
+        assertEquals(Trigger.from(packet).hashCode(),Trigger.from(packet).hashCode());
     }
 
     @Test
     public void equal_when_packets_are_equivalent() {
         Packet packet1 = Random.packet();
         Packet packet2 = new Packet(packet1.sender,packet1.topic,packet1.message,packet1.timestamp,packet1.trigger);
-        assertEquals(Packet.Trigger.from(packet1),Packet.Trigger.from(packet2));
-        assertEquals(Packet.Trigger.from(packet1).hashCode(),Packet.Trigger.from(packet2).hashCode());
+        assertEquals(Trigger.from(packet1),Trigger.from(packet2));
+        assertEquals(Trigger.from(packet1).hashCode(),Trigger.from(packet2).hashCode());
     }
 
     @Test
@@ -36,7 +37,7 @@ public class PacketTriggerTest {
             .timestamp(packet1.timestamp)
             .trigger(packet1.trigger)
             .build();
-        assertNotEquals(Packet.Trigger.from(packet1),Packet.Trigger.from(packet2));
+        assertNotEquals(Trigger.from(packet1),Trigger.from(packet2));
     }
 
     @Test
@@ -49,21 +50,21 @@ public class PacketTriggerTest {
                 .timestamp(packet1.timestamp)
                 .trigger(packet1.trigger)
                 .build();
-        assertNotEquals(Packet.Trigger.from(packet1),Packet.Trigger.from(packet2));
+        assertNotEquals(Trigger.from(packet1),Trigger.from(packet2));
     }
 
     @Test
     public void not_equal_when_message_is_different() {
         Packet packet1 = Random.packet();
         Packet packet2 = new Packet(packet1.sender,packet1.topic,packet1.message + "2",packet1.timestamp,packet1.trigger);
-        assertNotEquals(Packet.Trigger.from(packet1),Packet.Trigger.from(packet2));
+        assertNotEquals(Trigger.from(packet1),Trigger.from(packet2));
     }
 
     @Test
     public void not_equal_when_timestamp_is_different() {
         Packet packet1 = Random.packet();
-        Packet packet2 = new Packet(packet1.sender,packet1.topic,packet1.message,packet1.timestamp+1,packet1.trigger);
-        assertNotEquals(Packet.Trigger.from(packet1),Packet.Trigger.from(packet2));
+        Packet packet2 = new Packet(packet1.sender,packet1.topic,packet1.message,new Timestamp(packet1.timestamp.value+1),packet1.trigger);
+        assertNotEquals(Trigger.from(packet1),Trigger.from(packet2));
     }
 
     @Test
@@ -71,15 +72,15 @@ public class PacketTriggerTest {
         Packet packet1 = Random.packet();
         Packet packet2 = new Packet(
                 packet1.sender,packet1.topic,packet1.message,packet1.timestamp,
-                Packet.Trigger.from(packet1.trigger.toLong() + 1)
+                Trigger.from(packet1.trigger.toLong() + 1)
         );
-        assertNotEquals(Packet.Trigger.from(packet1),Packet.Trigger.from(packet2));
+        assertNotEquals(Trigger.from(packet1),Trigger.from(packet2));
     }
 
     @Test
     public void toLong_returns_value_from() {
         long value = System.currentTimeMillis();
-        Packet.Trigger trigger = Packet.Trigger.from(value);
+        Trigger trigger = Trigger.from(value);
         assertEquals(value,trigger.toLong());
     }
 }

@@ -12,6 +12,7 @@ import java.io.PipedOutputStream;
 import static com.curtcox.snap.model.Bytes.*;
 import static com.curtcox.snap.model.OutputStreamPacketWriter.sizePlusValue;
 import static com.curtcox.snap.model.Random.random;
+import static com.curtcox.snap.model.Packet.*;
 import static org.junit.Assert.*;
 
 public class InputStreamPacketReaderTest {
@@ -19,8 +20,8 @@ public class InputStreamPacketReaderTest {
     Packet.Topic topic = Random.topic();
     String message = random("message");
     Packet.Sender sender = Random.sender();
-    long timestamp = System.currentTimeMillis();
-    Packet.Trigger trigger = randomTrigger();
+    Timestamp timestamp = Timestamp.now();
+    Trigger trigger = randomTrigger();
 
     private static Packet.Trigger randomTrigger() {
         return Packet.Trigger.from(System.currentTimeMillis());
@@ -67,7 +68,7 @@ public class InputStreamPacketReaderTest {
     public void read_short_topic_and_message() throws IOException {
         Packet packet = read(Bytes.from(
                 Packet.MAGIC.value(),
-                from(timestamp).value(),
+                from(timestamp.value).value(),
                 from(trigger.toLong()).value(),
                 bytes(sizePlusValue(sender.value)).value(),
                 bytes(sizePlusValue(topic.value)).value(),

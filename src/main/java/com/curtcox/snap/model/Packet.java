@@ -23,8 +23,32 @@ public final class Packet {
     public final Topic topic;
     public final String message;
     public final Sender sender;
-    public final long timestamp;
+    public final Timestamp timestamp;
     public final Trigger trigger;
+
+    public static class Timestamp {
+        final long value;
+
+        public Timestamp(long value) {
+            this.value = value;
+        }
+
+        @Override
+        public int hashCode() {
+            return Long.hashCode(value);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+             Timestamp that = (Timestamp) o;
+             return value == that.value;
+        }
+
+        public static Timestamp now() {
+            return new Timestamp(System.currentTimeMillis());
+        }
+
+    }
 
     /**
      * Typesafe string for the name of group of packets about the same thing.
@@ -199,7 +223,7 @@ public final class Packet {
         this(sender,topic,message,now(),Trigger.NONE);
     }
 
-    public Packet(Sender sender,Topic topic, String message, Long timestamp, Trigger trigger) {
+    public Packet(Sender sender,Topic topic, String message, Timestamp timestamp, Trigger trigger) {
         this.timestamp = timestamp == null ? now() : timestamp;
         this.trigger = trigger == null ? Trigger.NONE : trigger;
         this.sender = notNull(sender);
@@ -217,7 +241,7 @@ public final class Packet {
         private Topic topic;
         private String message;
         private Trigger trigger;
-        private Long timestamp;
+        private Timestamp timestamp;
         Builder sender(Sender sender) {
             this.sender = sender;
             return this;
@@ -230,7 +254,7 @@ public final class Packet {
             this.message = message;
             return this;
         }
-        Builder timestamp(Long timestamp) {
+        Builder timestamp(Timestamp timestamp) {
             this.timestamp = timestamp;
             return this;
         }
@@ -250,8 +274,8 @@ public final class Packet {
         }
     }
 
-    private static long now() {
-        return System.currentTimeMillis();
+    private static Timestamp now() {
+        return Timestamp.now();
     }
 
     public boolean equals(Object o) {
@@ -261,7 +285,7 @@ public final class Packet {
     }
 
     public int hashCode() {
-        return topic.hashCode() ^ message.hashCode() ^ sender.hashCode() ^ Long.hashCode(timestamp) ^ trigger.hashCode();
+        return topic.hashCode() ^ message.hashCode() ^ sender.hashCode() ^ timestamp.hashCode() ^ trigger.hashCode();
     }
 
     @Override

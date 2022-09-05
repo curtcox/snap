@@ -6,8 +6,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import static com.curtcox.snap.util.Check.notNull;
+import static com.curtcox.snap.model.Packet.*;
 
-final class InputStreamPacketReader implements Packet.Reader {
+final class InputStreamPacketReader implements Reader {
 
     final InputStream input;
     final byte[] buffer = new byte[Packet.MAX_SIZE];
@@ -40,7 +41,7 @@ final class InputStreamPacketReader implements Packet.Reader {
                 .sender(new Packet.Sender(sender))
                 .topic(new Packet.Topic(topic))
                 .message(message)
-                .timestamp(timestamp).trigger(trigger)
+                .timestamp(new Packet.Timestamp(timestamp)).trigger(trigger)
                 .build();
     }
 

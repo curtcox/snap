@@ -49,7 +49,7 @@ public class OutputStreamPacketWriterTest {
         Bytes bytes = new Bytes(outputStream.toByteArray());
         assertTrue(bytes.startsWith(Bytes.from(
                 Packet.MAGIC.value(),
-                from(packet.timestamp).value(),
+                from(packet.timestamp.value).value(),
                 from(packet.trigger.toLong()).value(),
                 bytes(0,sender.value.length()).value(),
                 sender.value.getBytes(StandardCharsets.UTF_8),
@@ -68,7 +68,7 @@ public class OutputStreamPacketWriterTest {
         Bytes bytes = new Bytes(outputStream.toByteArray());
         assertEquals(Bytes.from(
                 Packet.MAGIC.value(),
-                from(packet.timestamp).value(),
+                from(packet.timestamp.value).value(),
                 from(packet.trigger.toLong()).value(),
                 bytes(0,sender.value.length()).value(),
                 sender.value.getBytes(StandardCharsets.UTF_8),
@@ -95,7 +95,7 @@ public class OutputStreamPacketWriterTest {
         assertEquals(expectedLength, bytes.length);
         assertEquals(Bytes.from(
                 Packet.MAGIC.value(),
-                from(packet.timestamp).value(),
+                from(packet.timestamp.value).value(),
                 from(packet.trigger.toLong()).value(),
                 bytes(1,sender.length() % 0xFF).value(),
                 sender.getBytes(StandardCharsets.UTF_8),

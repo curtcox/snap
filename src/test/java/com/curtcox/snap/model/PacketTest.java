@@ -53,10 +53,10 @@ public class PacketTest {
 
     private Packet packet(String sender, String topic, String message, long timestamp, Trigger trigger) {
         return Packet.builder()
-                .sender(new Packet.Sender(sender))
-                .topic(new Packet.Topic(topic))
+                .sender(new Sender(sender))
+                .topic(new Topic(topic))
                 .message(message)
-                .timestamp(timestamp)
+                .timestamp(new Timestamp(timestamp))
                 .trigger(trigger)
                 .build();
     }
