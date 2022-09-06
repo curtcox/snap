@@ -44,6 +44,7 @@ public final class Packet {
              Timestamp that = (Timestamp) o;
              return value == that.value;
         }
+        @Override public String toString() { return Long.toHexString(value); }
 
         public static Timestamp now() {
             return new Timestamp(System.currentTimeMillis());
@@ -137,6 +138,9 @@ public final class Packet {
             Trigger that = (Trigger) o;
             return value == that.value;
         }
+
+        @Override public String toString() { return Long.toHexString(value); }
+
     }
 
     /**
