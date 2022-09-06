@@ -18,10 +18,10 @@ snap listen "topic name"
 
 Which will listen indefinitely and return topic responses as they are received:
 ```
-topic bedroom/light/brightness
+topic "bedroom light brightness"
 value 75
 time 2022/03/31 06:49:34.2088
-topic bedroom/light/brightness
+topic "bedroom light brightness"
 value 0
 time 2022/03/31 14:49:34.2088
 ```
@@ -31,10 +31,11 @@ You can specify a timeout:
 snap listen "topic name" --timeout 100s
 ```
 
-### Wildcards
+### Topic Matching
 
-Topic names can contain arbitrary text. Wildcards (* and ?) can be used to partially specify a topic name
-and thus match multiple topic names.
+Topic names can contain arbitrary text. Treating this text as a set of space separated tags will be used in hopes of
+providing a convenient and flexible mechanism to filter packets. This doesn't prevent the use of other methods such as
+literals, globs, picture strings, or regular expressions when more convenient.
 
 ### Finding Listeners
 To find all current listeners send a ping request.
@@ -72,9 +73,9 @@ Security is intentionally being deferred until there is something that might nee
 >whoami
 rufus
 >ping
-pluto 15ms listening to /nasa/mission/announce
+pluto 15ms listening to "nasa mission announce"
 socrates 22ms listening to *
-pinta 30ms listening to /noaa/forecast/atlantic
+pinta 30ms listening to "noaa forecast atlantic"
 ```
 
 ### Defaults

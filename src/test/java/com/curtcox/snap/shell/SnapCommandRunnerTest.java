@@ -38,6 +38,25 @@ public class SnapCommandRunnerTest {
     }
 
     @Test
+    public void monitor_returns_monitor_set() {
+        String name = Random.random("name");
+        assertEquals("",runner.execute("monitor="+name));
+        assertEquals(name,runner.execute("monitor"));
+    }
+
+    @Test
+    public void monitor_returns_monitor_set_when_set_to_empty() {
+        assertEquals("",runner.execute("monitor="));
+        assertEquals("",runner.execute("monitor"));
+    }
+
+    @Test
+    public void monitor_returns_monitor_set_when_set_to_not() {
+        assertEquals("",runner.execute("monitor=!"));
+        assertEquals("!",runner.execute("monitor"));
+    }
+
+    @Test
     public void whoami_returns_trimmed_name_set() {
         String name = Random.random("name");
         assertEquals("",runner.execute("  name  =  " + name + "   "));

@@ -3,6 +3,7 @@ package com.curtcox.snap.model;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 import static com.curtcox.snap.util.Check.notNull;
 
@@ -71,32 +72,17 @@ public final class Packet {
         }
 
         public static final class Spec {
-            final String value;
-            static final String star = "*";
+            public final String value;
 
             public Spec(String value) {
                 this.value = value;
             }
             public boolean matches(Topic b) {
-                return value.equals(star) || value.equals(b.value);
+                return value.isEmpty() || Arrays.asList(b.value.split(" ")).contains(value);
             }
+            @Override public String toString() { return value; }
         }
     }
-
-//    static final class TopicSink implements Sink {
-//        final Topic topic;
-//        final Sink sink;
-//
-//        TopicSink(Topic topic, Sink sink) {
-//            this.topic = topic;
-//            this.sink = sink;
-//        }
-//
-//        @Override
-//        public boolean add(Packet packet) {
-//            return false;
-//        }
-//    }
 
     /**
      * The name of who sent a packet.

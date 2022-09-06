@@ -16,25 +16,21 @@ final class SnapCommandRunner implements CommandRunner {
 
     final LinkedList<String> moreLines = new LinkedList<>();
 
-    private Topic.Spec monitorTopic;
+    private Topic.Spec monitorTopic = new Topic.Spec("!");
 
-    private final Sink sinkMonitor = new Sink() {
-
-        @Override
-        public boolean add(Packet packet) {
-            if (monitorTopic!=null && packet.topic.matches(monitorTopic)) {
-                moreLines.add(packet.toString());
-                return true;
-            }
-            return false;
+    private final Sink sinkMonitor = packet -> {
+        if (packet.topic.matches(monitorTopic)) {
+            moreLines.add(packet.toString());
+            return true;
         }
+        return false;
     };
 
     static final String helpText =
             "To see this text type help\n" +
-            "whoami          -- show the current name of this node.\n" +
-            "name            -- set the current name of this node.\n" +
-            "monitor {topic} -- show messages posted to the given topic.\n"
+            "whoami       -- show the current name of this node.\n" +
+            "name         -- set the current name of this node.\n" +
+            "monitor=spec -- show messages posted to the given topic.\n"
     ;
 
 
@@ -48,6 +44,9 @@ final class SnapCommandRunner implements CommandRunner {
     public String execute(String command) {
         if (is(help,command)) {
             return helpText;
+        }
+        if (is(monitor,command)) {
+            return monitorTopic.value;
         }
         if (is(whoami,command)) {
             return snap.whoami();
@@ -66,8 +65,9 @@ final class SnapCommandRunner implements CommandRunner {
     }
     String isAssignment(String command,String key) {
         String[] parts = command.split("=");
-        if (parts.length==2 && is(key,parts[0])) {
-            return parts[1].trim();
+        if (is(key,parts[0])) {
+            if (parts.length==1) return "";
+            if (parts.length==2) return parts[1].trim();
         }
         return null;
     }
