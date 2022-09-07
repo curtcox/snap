@@ -9,7 +9,7 @@ import static com.curtcox.snap.model.Packet.*;
 /**
  * An in-memory network.
  */
-final class SimpleNetwork implements Network {
+public final class SimpleNetwork implements Network {
 
     private final List<Packet.IO> ios = new ArrayList<>();
 
@@ -19,7 +19,7 @@ final class SimpleNetwork implements Network {
         this.runner = notNull(executor);
     }
 
-    static SimpleNetwork newPolling() {
+    public static SimpleNetwork newPolling() {
         return newPolling(Runner.of());
     }
 

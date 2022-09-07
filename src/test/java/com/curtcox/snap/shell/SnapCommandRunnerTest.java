@@ -2,12 +2,14 @@ package com.curtcox.snap.shell;
 
 import com.curtcox.snap.model.*;
 import org.junit.Test;
+import static com.curtcox.snap.model.Clock.tick;
 
 import static org.junit.Assert.*;
 
 public class SnapCommandRunnerTest {
 
-    Snap snap = Snap.newInstance();
+    SimpleNetwork network = SimpleNetwork.newPolling();
+    Snap snap = Snap.on(network);
     SnapCommandRunner runner = new SnapCommandRunner(snap);
 
     @Test
@@ -64,19 +66,33 @@ public class SnapCommandRunnerTest {
     }
 
     @Test
+    public void ping_returns_responses() {
+        Snap.on(network);
+        runner.more();
+        assertEquals("",runner.execute("ping"));
+        tick(2);
+
+        assertContains(runner.more(),"ping response");
+    }
+
+    private void assertContains(String text, String part) {
+        assertTrue(text + " should contain " + part,text.contains(part));
+    }
+
+    @Test
     public void initially_shows_help_text_once() {
         String text = runner.more();
-        assertTrue(text.contains("To see this text type help"));
-        assertTrue(text.contains("whoami"));
-        assertTrue(text.contains("name"));
+        assertContains(text,"To see this text type help");
+        assertContains(text,"whoami");
+        assertContains(text,"name");
         assertNull(runner.more());
     }
 
     @Test
     public void shows_help_text_once_after_typing_help() {
-        assertTrue(runner.more().contains("To see this text type help"));
+        assertContains(runner.more(),"To see this text type help");
         String text = runner.execute("help");
-        assertTrue(text.contains("To see this text type help"));
+        assertContains(text,"To see this text type help");
         assertNull(runner.more());
     }
 

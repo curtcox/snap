@@ -13,6 +13,7 @@ final class SnapCommandRunner implements CommandRunner {
     static final String whoami = "whoami";
     static final String name = "name";
     static final String monitor = "monitor";
+    static final String ping = "ping";
 
     final LinkedList<String> moreLines = new LinkedList<>();
 
@@ -30,6 +31,7 @@ final class SnapCommandRunner implements CommandRunner {
             "To see this text type help\n" +
             "whoami       -- show the current name of this node.\n" +
             "name         -- set the current name of this node.\n" +
+            "ping [topic] -- ask who is listening.\n" +
             "monitor=spec -- show messages posted to the given topic.\n"
     ;
 
@@ -48,6 +50,11 @@ final class SnapCommandRunner implements CommandRunner {
         if (is(monitor,command)) {
             return monitorTopic.value;
         }
+        if (is(ping,command)) {
+            monitorTopic = new Topic.Spec("");
+            snap.ping(new Topic(""), sinkMonitor);
+            return "";
+        }
         if (is(whoami,command)) {
             return snap.whoami();
         }
@@ -60,9 +67,6 @@ final class SnapCommandRunner implements CommandRunner {
         return "error : " + command;
     }
 
-    private static class Assignment {
-
-    }
     String isAssignment(String command,String key) {
         String[] parts = command.split("=");
         if (is(key,parts[0])) {
