@@ -6,7 +6,7 @@ import javax.swing.*;
 
 import com.curtcox.snap.model.Packet.*;
 
-public final class RadioButton implements TopicFrame.Factory {
+public final class RadioButton implements UIFrame.ComponentFactory {
     @Override
     public JComponent newComponent(Flags flags, Snap snap) {
         return new RadioButtonPanel(flags.topic(),flags.messages(),snap);

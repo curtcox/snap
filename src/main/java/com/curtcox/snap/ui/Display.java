@@ -6,7 +6,7 @@ import com.curtcox.snap.model.Snap;
 
 import javax.swing.*;
 
-public final class Display implements TopicFrame.Factory {
+public final class Display implements UIFrame.ComponentFactory {
     @Override
     public JComponent newComponent(Flags flags, Snap snap) {
         JTextArea textArea = new JTextArea();
@@ -16,7 +16,7 @@ public final class Display implements TopicFrame.Factory {
     }
 
     private boolean show(JTextArea textArea,Packet packet) {
-        System.out.println("Added " + packet);
+        System.out.println("Display added " + packet);
         textArea.setText(packet.message);
         return true;
     }

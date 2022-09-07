@@ -5,33 +5,33 @@ import com.curtcox.snap.model.*;
 import javax.swing.*;
 import java.awt.*;
 
-public final class TopicFrame {
+public final class UIFrame {
 
     final JFrame frame;
     final JComponent component;
     final Flags flags;
     final Snap snap;
 
-    public TopicFrame(String title, JComponent component, Flags flags, Snap snap) {
+    public UIFrame(String title, JComponent component, Flags flags, Snap snap) {
         frame = new JFrame(title);
         this.component = component;
         this.flags = flags;
         this.snap = snap;
     }
 
-    public interface Factory {
+    public interface ComponentFactory {
         JComponent newComponent(Flags flags, Snap snap);
     }
 
-    static void main(Factory factory, String... args) {
+    static void main(ComponentFactory factory, String... args) {
         EventQueue.invokeLater(() -> main0(factory,args));
     }
 
-    static void main0(Factory factory, String[] args) {
+    static void main0(ComponentFactory factory, String[] args) {
         Flags flags = Flags.from(args);
         Snap snap = Snap.newInstance();
         JComponent component = factory.newComponent(flags,snap);
-        TopicFrame frame = new TopicFrame(flags.title(),component,flags,snap);
+        UIFrame frame = new UIFrame(flags.title(),component,flags,snap);
         frame.launch();
     }
 

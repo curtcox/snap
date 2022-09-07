@@ -12,8 +12,6 @@ public class ShellIntegrationDemo {
     final Network network = Snap.newNetwork(Network.Type.memory);
     final SwingShell swingShell = new SwingShell(new SnapCommandRunner(Snap.on(network)));
 
-    final Topic topic = new Topic("button");
-
     void start() {
         String color = "color";
         String frequency = "frequency";
@@ -23,14 +21,14 @@ public class ShellIntegrationDemo {
         launch("Color",new Display(),"topic",color);
         launch("Frequency",new Display(),"topic",frequency);
         swingShell.init();
-        Ping.on(topic,Snap.on(network));
+        Ping.on(new Topic.Spec(new Topic(frequency)),Snap.on(network));
     }
 
-    void launch(String title, TopicFrame.Factory factory, String... args) {
+    void launch(String title, UIFrame.ComponentFactory factory, String... args) {
         Flags flags = Flags.from(args);
         Snap snap = Snap.on(network);
         JComponent component = factory.newComponent(flags,snap);
-        new TopicFrame(title,component,flags,snap).launch();
+        new UIFrame(title,component,flags,snap).launch();
     }
 
     public static void main(String[] args) {

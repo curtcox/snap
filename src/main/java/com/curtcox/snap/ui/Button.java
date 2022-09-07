@@ -6,7 +6,7 @@ import javax.swing.*;
 
 import com.curtcox.snap.model.Packet.*;
 
-public final class Button implements TopicFrame.Factory {
+public final class Button implements UIFrame.ComponentFactory {
 
     Snap snap;
     String message;
@@ -20,7 +20,7 @@ public final class Button implements TopicFrame.Factory {
     }
 
     public static void main(String... args) {
-        TopicFrame.main(new Button(),args);
+        UIFrame.main(new Button(),args);
     }
 
     void onPress(Topic topic) {
