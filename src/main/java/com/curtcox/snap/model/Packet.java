@@ -78,10 +78,34 @@ public final class Packet {
             public Spec(String value) {
                 this.value = value;
             }
+
+            public Spec(Topic topic) {
+                this(topic.value);
+            }
+
             public boolean matches(Topic b) {
                 return value.isEmpty() || Arrays.asList(b.value.split(" ")).contains(value);
             }
             @Override public String toString() { return value; }
+        }
+    }
+
+    public static final class TopicSink implements Sink {
+        final Topic.Spec topic;
+        final Sink sink;
+
+        public TopicSink(Topic.Spec topic, Sink sink) {
+            this.topic = topic;
+            this.sink = sink;
+        }
+
+        @Override
+        public boolean add(Packet packet) {
+            if (topic.matches(packet.topic)) {
+                sink.add(packet);
+                return true;
+            }
+            return false;
         }
     }
 
@@ -149,7 +173,7 @@ public final class Packet {
     public interface Reader {
         /**
          * Immediately return a packet or null if there is none.
-         * Reading a packet prevents others from reading it, so clients should generally use filters to only read
+         * Reading a packet may prevent others from reading it, so clients should generally use filters to only read
          * what they are interested in processing.
          */
         Packet read(Filter filter) throws IOException;

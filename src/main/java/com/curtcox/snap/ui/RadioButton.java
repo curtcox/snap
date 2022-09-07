@@ -6,12 +6,10 @@ import javax.swing.*;
 
 import com.curtcox.snap.model.Packet.*;
 
-public final class RadioButton extends TopicFrame {
-
-    final String[] messages;
-    public RadioButton(Topic topic, String[] messages, Snap snap) {
-        super(topic,new RadioButtonPanel(topic,messages,snap),snap);
-        this.messages = messages;
+public final class RadioButton implements TopicFrame.Factory {
+    @Override
+    public JComponent newComponent(Flags flags, Snap snap) {
+        return new RadioButtonPanel(flags.topic(),flags.messages(),snap);
     }
 
     static class RadioButtonPanel extends JPanel {
@@ -34,10 +32,6 @@ public final class RadioButton extends TopicFrame {
             snap.send(topic,message);
             System.out.println(topic + " " + message);
         }
-    }
-
-    public static void main(String... args) {
-        TopicFrame.main((flags, snap) -> new RadioButton(flags.topic(),flags.messages(),snap));
     }
 
 }

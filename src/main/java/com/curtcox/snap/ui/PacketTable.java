@@ -7,7 +7,11 @@ import javax.swing.table.*;
 import java.util.*;
 
 final class PacketTable implements TableModel {
-    final List<Packet> packets = new ArrayList<>();
+    final List<Packet> packets;
+
+    PacketTable(List<Packet> packets) {
+        this.packets = packets;
+    }
 
     @Override
     public int getRowCount() {

@@ -1,25 +1,36 @@
 package com.curtcox.snap.shell;
 
 import com.curtcox.snap.model.*;
+import com.curtcox.snap.model.Packet.*;
 import com.curtcox.snap.ui.*;
 import com.curtcox.snap.ui.Ping;
 
+import javax.swing.*;
+
 public class ShellIntegrationDemo {
 
-    final Packet.Network network = Snap.newNetwork(Packet.Network.Type.memory);
-    final Packet.Topic topic = new Packet.Topic("/buttons");
-    final LogViewer viewer = new LogViewer(topic,Snap.on(network));
-    final Button button = new Button(topic,"Button",Snap.on(network));
-    final RadioButton radio = new RadioButton(topic,new String[]{"90.7","91.9"},Snap.on(network));
-
+    final Network network = Snap.newNetwork(Network.Type.memory);
     final SwingShell swingShell = new SwingShell(new SnapCommandRunner(Snap.on(network)));
 
+    final Topic topic = new Topic("button");
+
     void start() {
-        viewer.launch();
-        button.launch();
-        radio.launch();
+        String color = "color";
+        String frequency = "frequency";
+        launch("Viewer",new LogViewer());
+        launch("Color", new RadioButton(), "topic", color,"messages", "red,green,blue");
+        launch("Frequency", new RadioButton(), "topic", frequency,"messages", "90.7,91.9");
+        launch("Color",new Display(),"topic",color);
+        launch("Frequency",new Display(),"topic",frequency);
         swingShell.init();
         Ping.on(topic,Snap.on(network));
+    }
+
+    void launch(String title, TopicFrame.Factory factory, String... args) {
+        Flags flags = Flags.from(args);
+        Snap snap = Snap.on(network);
+        JComponent component = factory.newComponent(flags,snap);
+        new TopicFrame(title,component,flags,snap).launch();
     }
 
     public static void main(String[] args) {

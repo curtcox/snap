@@ -5,24 +5,22 @@ import com.curtcox.snap.model.*;
 import javax.swing.*;
 import java.awt.*;
 
-import com.curtcox.snap.model.Packet.*;
-
-abstract class TopicFrame {
+public final class TopicFrame {
 
     final JFrame frame;
     final JComponent component;
-    final Topic topic;
+    final Flags flags;
     final Snap snap;
 
-    TopicFrame(Topic topic, JComponent component, Snap snap) {
-        this.topic = topic;
-        frame = new JFrame(topic.toString());
+    public TopicFrame(String title, JComponent component, Flags flags, Snap snap) {
+        frame = new JFrame(title);
         this.component = component;
+        this.flags = flags;
         this.snap = snap;
     }
 
-    interface Factory {
-        TopicFrame from(Flags flags,Snap snap);
+    public interface Factory {
+        JComponent newComponent(Flags flags, Snap snap);
     }
 
     static void main(Factory factory, String... args) {
@@ -32,7 +30,9 @@ abstract class TopicFrame {
     static void main0(Factory factory, String[] args) {
         Flags flags = Flags.from(args);
         Snap snap = Snap.newInstance();
-        factory.from(flags,snap).launch();
+        JComponent component = factory.newComponent(flags,snap);
+        TopicFrame frame = new TopicFrame(flags.title(),component,flags,snap);
+        frame.launch();
     }
 
     public void launch() {

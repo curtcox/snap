@@ -2,9 +2,12 @@ package com.curtcox.snap.ui;
 
 import com.curtcox.snap.model.Packet.*;
 
-final class Flags {
+public final class Flags {
 
     String[] args;
+    String title() {
+        return after("title");
+    }
     String message() {
         return after("message");
     }
@@ -29,7 +32,7 @@ final class Flags {
         this.args = args;
     }
 
-    static Flags from(String[] args) {
+    public static Flags from(String[] args) {
         return new Flags(args);
     }
 }

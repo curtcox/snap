@@ -3,19 +3,25 @@ package com.curtcox.snap.ui;
 import com.curtcox.snap.model.*;
 import com.curtcox.snap.model.Packet.*;
 
+import javax.swing.*;
+
 public class ButtonLogViewerDemo {
 
     final Network network = Snap.newNetwork(Network.Type.memory);
-    final Topic topic = new Topic("/buttons");
-    final LogViewer viewer = new LogViewer(topic,Snap.on(network));
-    final Button button = new Button(topic,"Button",Snap.on(network));
-    final RadioButton radio = new RadioButton(topic,new String[]{"90.7","91.9"},Snap.on(network));
 
     void start() {
-        viewer.launch();
-        button.launch();
-        radio.launch();
-        Ping.on(topic,Snap.on(network));
+        String topic = "button";
+        launch("Viewer",new LogViewer());
+        launch("Button",new Button(),"topic",topic,"message","Boo!");
+        launch("Frequency", new RadioButton(), "topic", topic, "messages", "90.7,91.9");
+        Ping.on(new Topic(topic),Snap.on(network));
+    }
+
+    void launch(String title, TopicFrame.Factory factory, String... args) {
+        Flags flags = Flags.from(args);
+        Snap snap = Snap.on(network);
+        JComponent component = factory.newComponent(flags,snap);
+        new TopicFrame(title,component,flags,snap).launch();
     }
 
     public static void main(String[] args) {

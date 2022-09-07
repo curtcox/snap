@@ -6,25 +6,24 @@ import javax.swing.*;
 
 import com.curtcox.snap.model.Packet.*;
 
-public final class Button extends TopicFrame {
+public final class Button implements TopicFrame.Factory {
 
-    final String message;
-    public Button(Topic topic, String message, Snap snap) {
-        super(topic,new JButton(message),snap);
-        this.message = message;
+    Snap snap;
+    String message;
+    @Override
+    public JComponent newComponent(Flags flags,Snap snap) {
+        this.snap = snap;
+        message = flags.message();
+        JButton button = new JButton(message);
+        button.addActionListener(e -> onPress(flags.topic()));
+        return button;
     }
 
     public static void main(String... args) {
-        TopicFrame.main((flags, snap) -> new Button(flags.topic(),flags.message(),snap));
+        TopicFrame.main(new Button(),args);
     }
 
-    @Override
-    void customInit() {
-        JButton button = (JButton) component;
-        button.addActionListener(e -> onPress());
-    }
-
-    void onPress() {
+    void onPress(Topic topic) {
         snap.send(topic,message);
         System.out.println(topic + " " + message);
     }

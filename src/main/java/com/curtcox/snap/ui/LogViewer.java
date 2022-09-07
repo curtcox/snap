@@ -1,29 +1,21 @@
 package com.curtcox.snap.ui;
 
-import com.curtcox.snap.model.Packet.*;
 import com.curtcox.snap.model.*;
 
 import javax.swing.*;
+import java.util.ArrayList;
 import java.util.List;
 
-public final class LogViewer extends TopicFrame {
+public final class LogViewer implements TopicFrame.Factory {
 
-    final JTable table;
-    final List<Packet> packets;
+    final List<Packet> packets = new ArrayList<>();
+    final PacketTable packetTable = new PacketTable(packets);
+    final JTable table = new JTable(packetTable);
 
-    public LogViewer(Topic topic, Snap snap) {
-        super(topic,new JScrollPane(new JTable(new PacketTable())),snap);
-        table = (JTable) ((JScrollPane) component).getViewport().getView();
-        packets = ((PacketTable) table.getModel()).packets;
-    }
+    final JScrollPane scrollPane = new JScrollPane(table);
 
     public static void main(String... args) {
-        TopicFrame.main((flags, snap) -> new LogViewer(flags.topic(),snap));
-    }
-
-    @Override
-    void customInit() {
-        snap.on(packet -> { return add(packet); });
+        TopicFrame.main(new LogViewer(),args);
     }
 
     private boolean add(Packet packet) {
@@ -33,4 +25,9 @@ public final class LogViewer extends TopicFrame {
         return added;
     }
 
+    @Override
+    public JScrollPane newComponent(Flags flags, Snap snap) {
+        snap.on(packet -> { return add(packet); });
+        return scrollPane;
+    }
 }
