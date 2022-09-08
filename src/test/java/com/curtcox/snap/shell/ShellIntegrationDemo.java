@@ -15,11 +15,11 @@ public class ShellIntegrationDemo {
     void start() {
         String color = "color";
         String frequency = "frequency";
-        launch("Viewer",new LogViewer());
-        launch("Color", new RadioButton(), "topic", color,"messages", "red,green,blue");
-        launch("Frequency", new RadioButton(), "topic", frequency,"messages", "90.7,91.9");
-        launch("Color",new Display(),"topic",color);
-        launch("Frequency",new Display(),"topic",frequency);
+        launch("Viewer",    new LogViewer());
+        launch("Color",     new RadioButton(), "name","color radio","topic", color,"messages", "red,green,blue");
+        launch("Frequency", new RadioButton(), "name","freq radio","topic", frequency,"messages", "90.7,91.9");
+        launch("Color",     new Display(),"name","color display","topic",color);
+        launch("Frequency", new Display(),"name","freq display","topic",frequency);
         swingShell.init();
         Ping.on(new Topic.Spec(new Topic(frequency)),Snap.on(network));
     }

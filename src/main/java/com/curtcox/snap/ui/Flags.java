@@ -11,17 +11,28 @@ public final class Flags {
     String message() {
         return after("message");
     }
+    String name() {
+        return afterOrNull("name");
+    }
     String[] messages() {
         return after("messages").split(",");
     }
 
     private String after(String key) {
+        String value = afterOrNull(key);
+        if (value==null) {
+            throw new IllegalArgumentException("Missing " + key);
+        }
+        return value;
+    }
+
+    private String afterOrNull(String key) {
         for (int i=0; i<args.length; i++) {
             if (key.equals(args[i])) {
                 return args[i+1];
             }
         }
-        throw new IllegalArgumentException("Missing " + key);
+        return null;
     }
 
     Topic topic() {

@@ -41,14 +41,18 @@ public final class UIFrame {
     }
 
     void init() {
-        customInit();
+        setSnapName();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.add(component);
         frame.pack();
         frame.doLayout();
     }
 
-    void customInit() {}
+    void setSnapName() {
+        String name = flags.name();
+        String id = name == null ? component.getClass().getSimpleName() : name;
+        snap.setName(id + "@" +snap.whoami());
+    }
 
     void show() {
         frame.setVisible(true);
