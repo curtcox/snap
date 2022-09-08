@@ -14,14 +14,11 @@ public class ButtonLogViewerDemo {
         launch("Viewer",new LogViewer());
         launch("Button",new Button(),"topic",topic,"message","Boo!");
         launch("Frequency", new RadioButton(), "topic", topic, "messages", "90.7,91.9");
-        Ping.on(new Topic.Spec(topic),Snap.on(network));
+        Ping.on(Snap.on(network));
     }
 
     void launch(String title, UIFrame.ComponentFactory factory, String... args) {
-        Flags flags = Flags.from(args);
-        Snap snap = Snap.on(network);
-        JComponent component = factory.newComponent(flags,snap);
-        new UIFrame(title,component,flags,snap).launch();
+        UIFrame.launch(title,network,factory,args);
     }
 
     public static void main(String[] args) {

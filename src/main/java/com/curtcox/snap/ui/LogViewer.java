@@ -3,6 +3,7 @@ package com.curtcox.snap.ui;
 import com.curtcox.snap.model.*;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,17 +18,18 @@ public final class LogViewer implements UIFrame.ComponentFactory {
     public static void main(String... args) {
         UIFrame.main(new LogViewer(),args);
     }
-
-    private boolean add(Packet packet) {
-        System.out.println("LogViewer added " + packet);
-        boolean added = packets.add(packet);
+    
+    private void add0(Packet packet) {
+        packets.add(packet);
         table.tableChanged(null);
-        return added;
     }
 
     @Override
     public JScrollPane newComponent(Flags flags, Snap snap) {
-        snap.on(packet -> { return add(packet); });
+        snap.on(packet -> {
+            EventQueue.invokeLater(() -> add0(packet));
+            return true;
+        });
         return scrollPane;
     }
 }

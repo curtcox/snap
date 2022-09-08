@@ -5,8 +5,6 @@ import com.curtcox.snap.model.Packet.*;
 import com.curtcox.snap.ui.*;
 import com.curtcox.snap.ui.Ping;
 
-import javax.swing.*;
-
 public class ShellIntegrationDemo {
 
     final Network network = Snap.newNetwork(Network.Type.memory);
@@ -16,19 +14,16 @@ public class ShellIntegrationDemo {
         String color = "color";
         String frequency = "frequency";
         launch("Viewer",    new LogViewer());
-        launch("Color",     new RadioButton(), "name","color radio","topic", color,"messages", "red,green,blue");
-        launch("Frequency", new RadioButton(), "name","freq radio","topic", frequency,"messages", "90.7,91.9");
+        launch("Color",     new RadioButton(), "name","color radio","topic", color,"messages", "ping request,red,green,blue");
+        launch("Frequency", new RadioButton(), "name","freq radio","topic", frequency,"messages", "ping request,90.7,91.9");
         launch("Color",     new Display(),"name","color display","topic",color);
         launch("Frequency", new Display(),"name","freq display","topic",frequency);
         swingShell.init();
-        Ping.on(new Topic.Spec(new Topic(frequency)),Snap.on(network));
+        Ping.on(Snap.on(network));
     }
 
     void launch(String title, UIFrame.ComponentFactory factory, String... args) {
-        Flags flags = Flags.from(args);
-        Snap snap = Snap.on(network);
-        JComponent component = factory.newComponent(flags,snap);
-        new UIFrame(title,component,flags,snap).launch();
+        UIFrame.launch(title,network,factory,args);
     }
 
     public static void main(String[] args) {

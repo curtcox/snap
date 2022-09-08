@@ -5,10 +5,14 @@ import com.curtcox.snap.model.Packet.*;
 
 public final class Ping {
 
-    public static void on(Topic.Spec topic, Snap snap) {
+    public static void on(Filter topic, Snap snap) {
         snap.on(new TopicSink(topic,packet -> {
-            new Sound().ping();
+            new Sound().ping(packet.topic.hashCode());
             return true;
         }));
+    }
+
+    public static void on(Snap snap) {
+        on(packet -> packet.message.equals(com.curtcox.snap.model.Ping.REQUEST), snap);
     }
 }

@@ -27,8 +27,8 @@ final class Sound {
         return line;
     }
 
-    void ping() {
-        play(new Note(0,30000));
+    void ping(int tone) {
+        play(new Note((tone % 40) - 10,30000));
     }
 
 }

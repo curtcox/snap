@@ -91,17 +91,17 @@ public final class Packet {
     }
 
     public static final class TopicSink implements Sink {
-        final Topic.Spec topic;
+        final Filter topic;
         final Sink sink;
 
-        public TopicSink(Topic.Spec topic, Sink sink) {
+        public TopicSink(Filter topic, Sink sink) {
             this.topic = topic;
             this.sink = sink;
         }
 
         @Override
         public boolean add(Packet packet) {
-            if (topic.matches(packet.topic)) {
+            if (topic.passes(packet)) {
                 sink.add(packet);
                 return true;
             }
@@ -229,7 +229,7 @@ public final class Packet {
     /**
      * For filtering packets.
      */
-    interface Filter {
+    public interface Filter {
         boolean passes(Packet packet);
     }
 

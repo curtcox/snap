@@ -57,4 +57,12 @@ public final class UIFrame {
     void show() {
         frame.setVisible(true);
     }
+
+    public static void launch(String title, Packet.Network network, UIFrame.ComponentFactory factory, String... args) {
+        Flags flags = Flags.from(args);
+        Snap snap = Snap.on(network);
+        JComponent component = factory.newComponent(flags,snap);
+        new UIFrame(title,component,flags,snap).launch();
+    }
+
 }

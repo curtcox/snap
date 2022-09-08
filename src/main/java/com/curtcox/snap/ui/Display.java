@@ -11,7 +11,8 @@ public final class Display implements UIFrame.ComponentFactory {
     public JComponent newComponent(Flags flags, Snap snap) {
         JTextArea textArea = new JTextArea();
         textArea.setEditable(false);
-        snap.on(new TopicSink(new Topic.Spec(flags.topic()),packet -> { return show(textArea,packet); }));
+        Filter filter = packet -> new Topic.Spec(flags.topic()).matches(packet.topic);
+        snap.on(new TopicSink(filter,packet -> show(textArea,packet)));
         return textArea;
     }
 
