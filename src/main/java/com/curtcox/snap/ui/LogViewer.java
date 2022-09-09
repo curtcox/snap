@@ -18,7 +18,7 @@ public final class LogViewer implements UIFrame.ComponentFactory {
     public static void main(String... args) {
         UIFrame.main(new LogViewer(),args);
     }
-    
+
     private void add0(Packet packet) {
         packets.add(packet);
         table.tableChanged(null);

@@ -12,7 +12,7 @@ public final class Display implements UIFrame.ComponentFactory {
         JTextArea textArea = new JTextArea();
         textArea.setEditable(false);
         Filter filter = packet -> new Topic.Spec(flags.topic()).matches(packet.topic);
-        snap.on(new TopicSink(filter,packet -> show(textArea,packet)));
+        snap.on(new FilteredSink(filter, packet -> show(textArea,packet)));
         return textArea;
     }
 

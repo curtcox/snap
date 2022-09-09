@@ -6,7 +6,7 @@ import com.curtcox.snap.model.Packet.*;
 public final class Ping {
 
     public static void on(Filter topic, Snap snap) {
-        snap.on(new TopicSink(topic,packet -> {
+        snap.on(new FilteredSink(topic, packet -> {
             new Sound().ping(packet.topic.hashCode());
             return true;
         }));

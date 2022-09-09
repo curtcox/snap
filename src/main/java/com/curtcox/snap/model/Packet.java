@@ -90,18 +90,21 @@ public final class Packet {
         }
     }
 
-    public static final class TopicSink implements Sink {
-        final Filter topic;
+    /**
+     * A sink guarded by a filter.
+     */
+    public static final class FilteredSink implements Sink {
+        final Filter filter;
         final Sink sink;
 
-        public TopicSink(Filter topic, Sink sink) {
-            this.topic = topic;
+        public FilteredSink(Filter filter, Sink sink) {
+            this.filter = filter;
             this.sink = sink;
         }
 
         @Override
         public boolean add(Packet packet) {
-            if (topic.passes(packet)) {
+            if (filter.passes(packet)) {
                 sink.add(packet);
                 return true;
             }
