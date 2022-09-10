@@ -9,23 +9,24 @@ import javax.swing.*;
 /**
  * For making a specified announcement after a specified delay.
  */
-public final class Timer implements UIFrame.ComponentFactory {
+public final class Timer {
 
     private int left;
-    private JTextArea textArea = new JTextArea();
+    private final JTextArea textArea = new JTextArea();
 
     private Packet packet;
-    int delay = 1000; //milliseconds
+    private static int delay = 1000; //milliseconds
     javax.swing.Timer timer = new javax.swing.Timer(delay, evt -> tick());
 
-    Snap snap;
-    @Override
-    public JComponent newComponent(Flags flags, Snap snap) {
-        textArea.setEditable(false);
+    final Snap snap;
+
+    private Timer(Flags flags,Snap snap) {
         this.snap = snap;
+        textArea.setEditable(false);
         snap.on(new FilteredSink(filter(flags), packet -> resetUsing(packet)));
-        return textArea;
     }
+
+    public static UIFrame.ComponentFactory factory = (flags, snap) -> new Timer(flags,snap).textArea;
 
     private Filter filter(Flags flags) {
         return packet -> new Topic.Spec(flags.topic()).matches(packet.topic);
@@ -34,17 +35,17 @@ public final class Timer implements UIFrame.ComponentFactory {
     private boolean resetUsing(Packet packet) {
         this.packet = packet;
         timer.start();
-        left = duration(packet);
+        left = duration();
         return true;
     }
 
-    private Flags flags(Packet packet) {
+    private Flags flags() {
         return new Flags(packet.message.split(" "));
     }
 
-    private int   duration(Packet packet) { return flags(packet).time(); }
-    private String message(Packet packet) { return flags(packet).message().replaceAll("_"," "); }
-    private Topic    topic(Packet packet) { return flags(packet).topic();}
+    private int   duration() { return flags().time(); }
+    private String message() { return flags().message().replaceAll("_"," "); }
+    private Topic    topic() { return flags().topic();}
 
     private void tick() {
         textArea.setText("" + left);
@@ -56,11 +57,11 @@ public final class Timer implements UIFrame.ComponentFactory {
 
     private void end() {
         timer.stop();
-        snap.send(topic(packet),message(packet),Trigger.from(packet));
+        snap.send(topic(),message(),Trigger.from(packet));
     }
 
     public static void main(String... args) {
-        UIFrame.main(new Timer(),args);
+        UIFrame.main(factory,args);
     }
 
 }
