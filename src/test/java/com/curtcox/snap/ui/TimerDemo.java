@@ -9,7 +9,7 @@ public class TimerDemo {
 
     void start() {
         String topic = "t";
-        launch("Button",    new Button(),"topic",topic,"message","time 10 topic t2 message ping_request");
+        launch("Button",    Button.factory,"topic",topic,"message","time 10 topic t2 message ping_request");
         launch("Timer",     new Timer(), "topic",topic,"title","Time Left");
         Ping.on(Snap.on(network));
     }

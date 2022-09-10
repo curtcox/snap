@@ -6,6 +6,9 @@ import com.curtcox.snap.model.Snap;
 
 import javax.swing.*;
 
+/**
+ * For making a specified announcement after a specified delay.
+ */
 public final class Timer implements UIFrame.ComponentFactory {
 
     private int left;

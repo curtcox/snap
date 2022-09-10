@@ -12,7 +12,7 @@ public class ButtonLogViewerDemo {
     void start() {
         String topic = "button";
         launch("Viewer",new LogViewer());
-        launch("Button",new Button(),"topic",topic,"message","Boo!");
+        launch("Button",Button.factory,"topic",topic,"message","Boo!");
         launch("Frequency", new RadioButton(), "topic", topic, "messages", "90.7,91.9");
         Ping.on(Snap.on(network));
     }

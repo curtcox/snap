@@ -6,26 +6,33 @@ import javax.swing.*;
 
 import com.curtcox.snap.model.Packet.*;
 
-public final class Button implements UIFrame.ComponentFactory {
+/**
+ * A button that sends announcements when pressed.
+ */
+public final class Button  {
 
-    Snap snap;
-    String message;
-    @Override
-    public JComponent newComponent(Flags flags,Snap snap) {
+    final Snap snap;
+    final String message;
+    final JButton button;
+
+    private Button(Topic topic, String message, Snap snap) {
+        this.message = message;
         this.snap = snap;
-        message = flags.message();
-        JButton button = new JButton(message);
-        button.addActionListener(e -> onPress(flags.topic()));
-        return button;
+        button = new JButton(message);
+        button.addActionListener(e -> onPress(topic));
     }
 
-    public static void main(String... args) {
-        UIFrame.main(new Button(),args);
-    }
-
-    void onPress(Topic topic) {
+    private void onPress(Topic topic) {
         snap.send(topic,message);
         System.out.println(topic + " " + message);
     }
+
+    public static UIFrame.ComponentFactory factory = (flags, snap) ->
+            new Button(flags.topic(), flags.message(),snap).button;
+
+    public static void main(String... args) {
+        UIFrame.main(factory,args);
+    }
+
 
 }
