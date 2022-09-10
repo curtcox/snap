@@ -15,8 +15,8 @@ public class ShellIntegrationDemo {
         String frequency = "frequency";
         String delay = "delay";
         launch("Viewer",    new LogViewer());
-        launch("Color",     new RadioButton(), "name","color radio","topic", color,"messages", "ping request,red,green,blue");
-        launch("Frequency", new RadioButton(), "name","freq radio","topic", frequency,"messages", "ping request,90.7,91.9");
+        launch("Color",     RadioButton.factory, "name","color radio","topic", color,"messages", "ping request,red,green,blue");
+        launch("Frequency", RadioButton.factory, "name","freq radio","topic", frequency,"messages", "ping request,90.7,91.9");
         launch("Color",     Display.factory,"name","color display","topic",color);
         launch("Frequency", Display.factory,"name","freq display","topic",frequency);
         launch("Button",    Button.factory,"topic",delay,"message","time 10 topic color message white");

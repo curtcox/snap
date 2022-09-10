@@ -3,8 +3,6 @@ package com.curtcox.snap.ui;
 import com.curtcox.snap.model.*;
 import com.curtcox.snap.model.Packet.*;
 
-import javax.swing.*;
-
 public class ButtonLogViewerDemo {
 
     final Network network = Snap.newNetwork(Network.Type.memory);
@@ -12,8 +10,8 @@ public class ButtonLogViewerDemo {
     void start() {
         String topic = "button";
         launch("Viewer",new LogViewer());
-        launch("Button",Button.factory,"topic",topic,"message","Boo!");
-        launch("Frequency", new RadioButton(), "topic", topic, "messages", "90.7,91.9");
+        launch("Button",    Button.factory,"topic",topic,"message","Boo!");
+        launch("Frequency", RadioButton.factory, "topic", topic, "messages", "90.7,91.9");
         Ping.on(Snap.on(network));
     }
 
