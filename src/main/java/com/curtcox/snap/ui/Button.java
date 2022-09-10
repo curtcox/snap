@@ -27,7 +27,7 @@ public final class Button  {
         System.out.println(topic + " " + message);
     }
 
-    public static UIFrame.ComponentFactory factory = (flags, snap) ->
+    public static final UIFrame.ComponentFactory factory = (flags, snap) ->
             new Button(flags.topic(), flags.message(),snap).button;
 
     public static void main(String... args) {

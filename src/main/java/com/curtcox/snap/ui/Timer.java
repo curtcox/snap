@@ -11,14 +11,13 @@ import javax.swing.*;
  */
 public final class Timer {
 
+    private Packet packet;
     private int left;
     private final JTextArea textArea = new JTextArea();
+    private static final int delay = 1000; //milliseconds
+    private final javax.swing.Timer timer = new javax.swing.Timer(delay, evt -> tick());
 
-    private Packet packet;
-    private static int delay = 1000; //milliseconds
-    javax.swing.Timer timer = new javax.swing.Timer(delay, evt -> tick());
-
-    final Snap snap;
+    private final Snap snap;
 
     private Timer(Flags flags,Snap snap) {
         this.snap = snap;
@@ -26,7 +25,7 @@ public final class Timer {
         snap.on(new FilteredSink(filter(flags), packet -> resetUsing(packet)));
     }
 
-    public static UIFrame.ComponentFactory factory = (flags, snap) -> new Timer(flags,snap).textArea;
+    public static final UIFrame.ComponentFactory factory = (flags, snap) -> new Timer(flags,snap).textArea;
 
     private Filter filter(Flags flags) {
         return packet -> new Topic.Spec(flags.topic()).matches(packet.topic);
