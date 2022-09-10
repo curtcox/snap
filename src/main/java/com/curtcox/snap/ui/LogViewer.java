@@ -7,29 +7,33 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class LogViewer implements UIFrame.ComponentFactory {
+public final class LogViewer {
 
     final List<Packet> packets = new ArrayList<>();
     final PacketTable packetTable = new PacketTable(packets);
     final JTable table = new JTable(packetTable);
-
     final JScrollPane scrollPane = new JScrollPane(table);
 
+    private LogViewer(Snap snap) {
+        snap.on(packet -> {
+            EventQueue.invokeLater(() -> add(packet));
+            return true;
+        });
+    }
+    public static final UIFrame.ComponentFactory factory = new UIFrame.ComponentFactory() {
+        @Override
+        public JComponent newComponent(Flags flags, Snap snap) {
+            return new LogViewer(snap).scrollPane;
+        }
+    };
+
     public static void main(String... args) {
-        UIFrame.main(new LogViewer(),args);
+        UIFrame.main(factory,args);
     }
 
-    private void add0(Packet packet) {
+    private void add(Packet packet) {
         packets.add(packet);
         table.tableChanged(null);
     }
 
-    @Override
-    public JScrollPane newComponent(Flags flags, Snap snap) {
-        snap.on(packet -> {
-            EventQueue.invokeLater(() -> add0(packet));
-            return true;
-        });
-        return scrollPane;
-    }
 }
