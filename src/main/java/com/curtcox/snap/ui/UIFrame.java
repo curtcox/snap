@@ -31,8 +31,12 @@ public final class UIFrame {
         Flags flags = Flags.from(args);
         Snap snap = Snap.newInstance();
         JComponent component = factory.newComponent(flags,snap);
-        UIFrame frame = new UIFrame(flags.title(),component,flags,snap);
+        UIFrame frame = new UIFrame(title(flags,component),component,flags,snap);
         frame.launch();
+    }
+
+    private static String title(Flags flags,JComponent component) {
+        return flags.title() == null ? component.getClass().getSimpleName() : flags.title();
     }
 
     public void launch() {

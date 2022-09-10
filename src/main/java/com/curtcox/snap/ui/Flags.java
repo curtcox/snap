@@ -6,13 +6,17 @@ public final class Flags {
 
     String[] args;
     String title() {
-        return after("title");
+        return afterOrNull("title");
     }
     String message() {
         return after("message");
     }
     String name() {
         return afterOrNull("name");
+    }
+    Integer time() {
+        String value = afterOrNull("time");
+        return value == null ? null : Integer.parseInt(value);
     }
     String[] messages() {
         return after("messages").split(",");

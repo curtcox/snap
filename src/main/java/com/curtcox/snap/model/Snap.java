@@ -48,6 +48,16 @@ public final class Snap implements Reader.Factory, Sink.Acceptor {
         );
     }
 
+    public void send(Topic topic, String message,Trigger trigger) {
+        node.write(Packet.builder()
+                .sender(new Packet.Sender(whoami()))
+                .topic(topic)
+                .message(message)
+                .trigger(trigger)
+                .build()
+        );
+    }
+
     public Reader reader(Topic topic) {
         return reader(new TopicPacketFilter(topic));
     }
