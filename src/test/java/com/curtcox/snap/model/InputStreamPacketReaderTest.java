@@ -23,12 +23,21 @@ public class InputStreamPacketReaderTest {
     Timestamp timestamp = Timestamp.now();
     Trigger trigger = randomTrigger();
 
-    private static Packet.Trigger randomTrigger() {
-        return Packet.Trigger.from(System.currentTimeMillis());
+    private static Trigger randomTrigger() {
+        return Trigger.from(System.currentTimeMillis());
     }
 
     @Rule
     public Timeout globalTimeout = Timeout.seconds(2);
+
+    @Test
+    public void returns_null_when_there_are_no_packets_to_read() throws IOException {
+        PipedOutputStream externalInput = new PipedOutputStream();
+        PipedInputStream externalOutput = new PipedInputStream(externalInput);
+        InputStreamPacketReader reader = new InputStreamPacketReader(externalOutput);
+
+        assertNull(reader.read(ANY));
+    }
 
     @Test
     public void can_read_packet() throws IOException {
@@ -41,17 +50,55 @@ public class InputStreamPacketReaderTest {
         InputStreamPacketReader reader = new InputStreamPacketReader(externalOutput);
 
         writer.write(packet);
-        Packet read = reader.read(Packet.ANY);
+        Packet read = reader.read(ANY);
 
         assertEquals(timestamp,read.timestamp);
         assertEquals(trigger,read.trigger);
         assertEquals(sender,read.sender);
         assertEquals(topic,read.topic);
         assertEquals(message,read.message);
+        assertNull(reader.read(ANY));
+    }
+
+    @Test
+    public void can_read_2_packets() throws IOException {
+        Packet packet1 = Random.packet();
+        Packet packet2 = Random.packet();
+
+        PipedOutputStream externalInput = new PipedOutputStream();
+        PipedInputStream externalOutput = new PipedInputStream(externalInput);
+        OutputStreamPacketWriter writer = new OutputStreamPacketWriter(externalInput);
+        InputStreamPacketReader reader = new InputStreamPacketReader(externalOutput);
+
+        writer.write(packet1);
+        assertEquals(packet1,reader.read(ANY));
+        writer.write(packet2);
+        assertEquals(packet2,reader.read(ANY));
+        assertNull(reader.read(ANY));
+    }
+
+    @Test
+    public void can_read_3_packets() throws IOException {
+        Packet packet1 = Random.packet();
+        Packet packet2 = Random.packet();
+        Packet packet3 = Random.packet();
+
+        PipedOutputStream externalInput = new PipedOutputStream();
+        PipedInputStream externalOutput = new PipedInputStream(externalInput);
+        OutputStreamPacketWriter writer = new OutputStreamPacketWriter(externalInput);
+        InputStreamPacketReader reader = new InputStreamPacketReader(externalOutput);
+
+        writer.write(packet1);
+        assertEquals(packet1,reader.read(ANY));
+        writer.write(packet2);
+        assertEquals(packet2,reader.read(ANY));
+        writer.write(packet3);
+        assertEquals(packet3,reader.read(ANY));
+        assertNull(reader.read(ANY));
     }
 
     private Packet read(Bytes bytes) throws IOException {
-        return new InputStreamPacketReader(new ByteArrayInputStream(bytes.value())).read(Packet.ANY);
+        return new InputStreamPacketReader(new ByteArrayInputStream(bytes.value())).read(ANY);
     }
 
     @Test(expected = IOException.class)
