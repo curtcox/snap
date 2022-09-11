@@ -2,25 +2,19 @@ package com.curtcox.snap.shell;
 
 import com.curtcox.snap.model.Snap;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
 /**
  * An AWT based shell that can provide a text based UI for a CommandRunner.
  */
-final class AwtShell {
+final class AwtShell extends CommandShell {
 
     final Frame frame = new Frame("Snap");
     final TextArea area = new TextArea();
 
-    final Timer timer = new Timer(100, e -> pollRunner());
-
-
-    final CommandRunner runner;
-
-    AwtShell(com.curtcox.snap.shell.CommandRunner runner) {
-        this.runner = runner;
+    AwtShell(CommandRunner runner) {
+        super(runner);
     }
 
     void init() {
@@ -53,24 +47,13 @@ final class AwtShell {
         outputResult(execute(lastLine()));
     }
 
-    private void pollRunner() {
-        String output = runner.more();
-        if (output!=null) {
-            outputResult(output);
-        }
-    }
-
     private String lastLine() {
         String text = area.getText();
         String[] parts = text.split("\n");
         return parts[parts.length - 1];
     }
 
-    private String execute(String command) {
-        return runner.execute(command);
-    }
-
-    private void outputResult(String result) {
+    @Override void outputResult(String result) {
         area.append(result + "\n");
     }
 

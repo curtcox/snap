@@ -1,6 +1,5 @@
 package com.curtcox.snap.shell;
 
-import com.curtcox.snap.model.Packet;
 import com.curtcox.snap.model.Snap;
 
 import java.util.LinkedList;

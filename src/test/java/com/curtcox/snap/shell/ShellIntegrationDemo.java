@@ -8,7 +8,7 @@ import com.curtcox.snap.ui.Ping;
 public class ShellIntegrationDemo {
 
     final Network network = Snap.newNetwork(Network.Type.memory);
-    final SwingShell swingShell = new SwingShell(new SnapCommandRunner(Snap.on(network)));
+    final SwingShell swingShell = SwingShell.on(network);
 
     void start() {
         String color = "color";
@@ -21,6 +21,7 @@ public class ShellIntegrationDemo {
         launch("Frequency", Display.factory,"name","freq display","topic",frequency);
         launch("Button",    Button.factory,"topic",delay,"message","time 10 topic color message white");
         launch("Timer",     Timer.factory, "topic",delay,"title","Time Left");
+        SystemShell.on(network);
         swingShell.init();
         Ping.on(Snap.on(network));
     }

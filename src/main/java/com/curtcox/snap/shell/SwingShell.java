@@ -1,6 +1,7 @@
 package com.curtcox.snap.shell;
 
 import com.curtcox.snap.model.*;
+import com.curtcox.snap.model.Packet.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,17 +10,17 @@ import java.awt.event.*;
 /**
  * A Swing based shell that can provide a text based UI for a CommandRunner.
  */
-final class SwingShell {
+final class SwingShell extends CommandShell {
 
     final JFrame frame = new JFrame("Snap");
     final JTextArea area = new JTextArea();
 
-    final Timer timer = new Timer(100, e -> pollRunner());
-
-    final CommandRunner runner;
-
     SwingShell(CommandRunner runner) {
-        this.runner = runner;
+        super(runner);
+    }
+
+    public static SwingShell on(Network network) {
+        return new SwingShell(new SnapCommandRunner(Snap.on(network)));
     }
 
     void init() {
@@ -52,24 +53,13 @@ final class SwingShell {
         outputResult(execute(lastLine()));
     }
 
-    private void pollRunner() {
-        String output = runner.more();
-        if (output!=null) {
-            outputResult(output);
-        }
-    }
-
     private String lastLine() {
         String text = area.getText();
         String[] parts = text.split("\n");
         return parts[parts.length - 1];
     }
 
-    private String execute(String command) {
-        return runner.execute(command);
-    }
-
-    private void outputResult(String result) {
+    void outputResult(String result) {
         area.append(result + "\n");
     }
 

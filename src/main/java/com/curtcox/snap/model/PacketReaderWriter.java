@@ -7,7 +7,7 @@ import java.io.OutputStream;
 import static com.curtcox.snap.util.Check.notNull;
 import static com.curtcox.snap.model.Packet.*;
 
-final class PacketReaderWriter implements IO {
+public final class PacketReaderWriter implements IO {
 
     final Reader input;
     final Writer output;
@@ -17,7 +17,7 @@ final class PacketReaderWriter implements IO {
         this.output = notNull(output);
     }
 
-    static PacketReaderWriter from(InputStream in, OutputStream out) {
+    public static PacketReaderWriter from(InputStream in, OutputStream out) {
         return new PacketReaderWriter(new InputStreamPacketReader(in),new OutputStreamPacketWriter(out));
     }
 
