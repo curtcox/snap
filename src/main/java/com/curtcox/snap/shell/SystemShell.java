@@ -45,6 +45,7 @@ public final class SystemShell extends CommandShell {
     }
 
     private void executeCommandsFromInput() {
+        startTimer();
         Scanner input = new Scanner(in);
         while (true) {
             outputResult(execute(input.nextLine()));

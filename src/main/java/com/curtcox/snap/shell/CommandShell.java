@@ -16,6 +16,10 @@ abstract class CommandShell {
         this.runner = runner;
     }
 
+    final void startTimer() {
+        timer.start();
+    }
+
     abstract void outputResult(String result);
 
     final void pollRunner() {

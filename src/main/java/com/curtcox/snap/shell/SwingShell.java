@@ -31,10 +31,6 @@ final class SwingShell extends CommandShell {
         startTimer();
     }
 
-    private void startTimer() {
-        timer.start();
-    }
-
     private void addAreaListener() {
         area.addKeyListener(new KeyListener() {
             @Override public void keyTyped(KeyEvent e) { onKeyTyped(e); }
