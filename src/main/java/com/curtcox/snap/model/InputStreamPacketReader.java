@@ -18,6 +18,9 @@ final class InputStreamPacketReader implements Reader {
     }
 
     public Packet read(Packet.Filter filter) throws IOException {
+        if (input.available()<1) {
+            return null;
+        }
         int count = input.read(buffer);
         if (count<0) {
             return null;

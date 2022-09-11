@@ -12,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.concurrent.*;
 
+import static com.curtcox.snap.model.Clock.tick;
 import static com.curtcox.snap.model.Packet.ANY;
 import static com.curtcox.snap.model.Random.random;
 import static org.junit.Assert.*;
@@ -135,6 +136,7 @@ public class OutputStreamPacketWriterTest {
         ExecutorService service = Executors.newSingleThreadExecutor();
         Future<Packet> submitted = service.submit(() -> reader.read(ANY));
         writer.write(packet);
+        tick(1);
         Packet read = submitted.get();
 
         assertEquals(packet.sender,read.sender);
