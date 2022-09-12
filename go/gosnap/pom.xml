@@ -1,0 +1,76 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.curtcox</groupId>
+  <artifactId>gosnap</artifactId>
+  <version>0.0.7-SNAPSHOT</version>
+  <packaging>mvn-golang</packaging>
+
+  <name>gosnap</name>
+  <description>Snap tools in go.</description>
+  <url>https://github.com/curtcox/snap</url>
+
+  <properties>
+    <mvn.golang.go.version>1.18.3</mvn.golang.go.version>
+    <mvn.golang.get.packages.file>${basedir}${file.separator}packages.txt</mvn.golang.get.packages.file>
+    <go.wrapper.plugin.version>2.3.10</go.wrapper.plugin.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format>
+    <final.extension></final.extension>
+  </properties>
+
+  <inceptionYear>2022</inceptionYear>
+
+  <prerequisites>
+    <maven>${mvn.version}</maven>
+  </prerequisites>
+
+  <build>
+    <defaultGoal>clean package</defaultGoal>
+    <finalName>${project.artifactId}-${maven.build.timestamp}${final.extension}</finalName>
+    <sourceDirectory>${basedir}${file.separator}src</sourceDirectory>
+    <directory>${basedir}${file.separator}bin</directory>
+    <resources>
+      <resource>
+        <directory>${basedir}${file.separator}res</directory>
+      </resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <groupId>com.igormaznitsa</groupId>
+        <artifactId>mvn-golang-wrapper</artifactId>
+        <version>${go.wrapper.plugin.version}</version>
+        <extensions>true</extensions>
+        <configuration>
+          <!--<goPath>${basedir}</goPath>-->
+          <!--<enforceGoPathToEnd>true</enforceGoPathToEnd>-->
+          <!--<verbose>true</verbose>-->
+        </configuration>
+        <executions>
+          <execution>
+            <id>default-build</id>
+            <configuration>
+              <packages>
+                <main>hello.go</main>
+              </packages>
+            </configuration>
+          </execution>
+          <execution>
+            <id>golang-run</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <packages>
+                <app>hello.go</app>
+              </packages>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
