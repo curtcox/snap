@@ -8,15 +8,15 @@ public class ButtonLogViewerDemo {
     final Network network = Snap.newNetwork(Network.Type.memory);
 
     void start() {
-        String topic = "button";
-        launch("Viewer",    LogViewer.factory);
-        launch("Button",    Button.factory,"topic",topic,"message","Boo!");
-        launch("Frequency", RadioButton.factory, "topic", topic, "messages", "90.7,91.9");
+        Flags.Builder flags = new Flags.Builder().topic("button");
+        launch(LogViewer.factory,flags.title("Viewer"));
+        launch(Button.factory,flags.message("Boo!"));
+        launch(RadioButton.factory,flags.messages("90.7,91.9"));
         Ping.on(Snap.on(network));
     }
 
-    void launch(String title, UIFrame.ComponentFactory factory, String... args) {
-        UIFrame.launch(title,network,factory,args);
+    void launch(UIFrame.ComponentFactory factory, Flags.Builder builder) {
+        UIFrame.launch(network,factory,builder.build().args);
     }
 
     public static void main(String[] args) {

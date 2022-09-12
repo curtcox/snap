@@ -12,8 +12,8 @@ public final class UIFrame {
     final Flags flags;
     final Snap snap;
 
-    public UIFrame(String title, JComponent component, Flags flags, Snap snap) {
-        frame = new JFrame(title);
+    public UIFrame(JComponent component, Flags flags, Snap snap) {
+        frame = new JFrame(flags.title());
         this.component = component;
         this.flags = flags;
         this.snap = snap;
@@ -31,7 +31,7 @@ public final class UIFrame {
         Flags flags = Flags.from(args);
         Snap snap = Snap.newInstance();
         JComponent component = factory.newComponent(flags,snap);
-        UIFrame frame = new UIFrame(title(flags,component),component,flags,snap);
+        UIFrame frame = new UIFrame(component,flags,snap);
         frame.launch();
     }
 
@@ -62,11 +62,11 @@ public final class UIFrame {
         frame.setVisible(true);
     }
 
-    public static void launch(String title, Packet.Network network, UIFrame.ComponentFactory factory, String... args) {
+    public static void launch(Packet.Network network, UIFrame.ComponentFactory factory, String... args) {
         Flags flags = Flags.from(args);
         Snap snap = Snap.on(network);
         JComponent component = factory.newComponent(flags,snap);
-        new UIFrame(title,component,flags,snap).launch();
+        new UIFrame(component,flags,snap).launch();
     }
 
 }

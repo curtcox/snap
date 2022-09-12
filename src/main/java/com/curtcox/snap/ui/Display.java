@@ -2,6 +2,7 @@ package com.curtcox.snap.ui;
 
 import com.curtcox.snap.model.Packet;
 import com.curtcox.snap.model.Packet.*;
+import com.curtcox.snap.model.SimpleNetwork;
 import com.curtcox.snap.model.Snap;
 
 import javax.swing.*;
@@ -24,4 +25,11 @@ public final class Display {
         return true;
     }
 
+    public static void main(String[] args) {
+        launch(Flags.from(args).title(), SimpleNetwork.newPolling(),args);
+    }
+
+    public static void launch(String title,Network network, String[] args) {
+        UIFrame.launch(network,factory,args);
+    }
 }

@@ -14,20 +14,24 @@ public class ShellIntegrationDemo {
         String color = "color";
         String frequency = "frequency";
         String delay = "delay";
-        launch("Viewer",    LogViewer.factory);
-        launch("Color",     RadioButton.factory, "name","color radio","topic", color,"messages", "ping request,red,green,blue");
-        launch("Frequency", RadioButton.factory, "name","freq radio","topic", frequency,"messages", "ping request,90.7,91.9");
-        launch("Color",     Display.factory,"name","color display","topic",color);
-        launch("Frequency", Display.factory,"name","freq display","topic",frequency);
-        launch("Button",    Button.factory,"topic",delay,"message","time 10 topic color message white");
-        launch("Timer",     Timer.factory, "topic",delay,"title","Time Left");
+        launch(LogViewer.factory,   flags());
+        launch(RadioButton.factory, flags().topic(color).name("color radio").messages("ping request,red,green,blue"));
+        launch(RadioButton.factory, flags().topic(frequency).name("freq radio").messages("ping request,90.7,91.9"));
+        launch(Display.factory,     flags().topic(color).name("color display"));
+        launch(Display.factory,     flags().topic(frequency).name("freq display"));
+        launch(Button.factory,      flags().topic(delay).message("time 10 topic color message white"));
+        launch(Timer.factory,       flags().topic(delay).title("Time Left"));
         SystemShell.on(network);
         swingShell.init();
         Ping.on(Snap.on(network));
     }
 
-    void launch(String title, UIFrame.ComponentFactory factory, String... args) {
-        UIFrame.launch(title,network,factory,args);
+    Flags.Builder flags() {
+        return Flags.builder();
+    }
+
+    void launch(UIFrame.ComponentFactory factory, Flags.Builder flags) {
+        UIFrame.launch(network,factory,flags.build().args);
     }
 
     public static void main(String[] args) {

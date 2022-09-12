@@ -3,15 +3,14 @@ package com.curtcox.snap.ui;
 import com.curtcox.snap.model.Packet;
 import com.curtcox.snap.model.Snap;
 
-public class TimerDemo {
+public class KeysDemo {
 
     final Packet.Network network = Snap.newNetwork(Packet.Network.Type.memory);
 
     void start() {
-        Flags.Builder builder = Flags.builder().topic("t");
-        launch(Button.factory,builder.message("time 10 topic t2 message ping_request"));
-        launch(Timer.factory,builder.title("Time Left"));
-        Ping.on(Snap.on(network));
+        Flags.Builder flags = Flags.builder().topic("keys");
+        launch(Keys.factory,   flags.name("keys"));
+        launch(Display.factory,flags.name("display"));
     }
 
     void launch(UIFrame.ComponentFactory factory, Flags.Builder builder) {
@@ -19,7 +18,7 @@ public class TimerDemo {
     }
 
     public static void main(String[] args) {
-        new TimerDemo().start();
+        new KeysDemo().start();
     }
 
 }
