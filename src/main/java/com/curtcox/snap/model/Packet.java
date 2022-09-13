@@ -310,7 +310,7 @@ public final class Packet {
        return timestamp + " " + sender + " " + topic + " " + message + " " + trigger;
     }
 
-    Bytes asBytes() {
+    public Bytes asBytes() {
         try {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             OutputStreamPacketWriter writer = new OutputStreamPacketWriter(outputStream);
@@ -319,6 +319,45 @@ public final class Packet {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static Packet from(Bytes bytes) throws IOException {
+        if (!bytes.startsWith(Packet.MAGIC)) {
+            throw new IOException("Snap packet expected");
+        }
+        byte[] raw = bytes.value();
+        int skip1 = Packet.MAGIC.length;
+        long timestamp = longAt(raw,skip1);
+        int skip2 = skip1 + Long.BYTES;
+        Packet.Trigger trigger = Packet.Trigger.from(longAt(raw,skip2));
+        int skip3 = skip2 + Long.BYTES;
+        String sender = stringAt(raw,skip3);
+        int skip4 = skip3 + 2 + sender.length();
+        String topic = stringAt(raw,skip4);
+        int skip5 = skip4 + 2 + topic.length();
+        String message = stringAt(raw,skip5);
+        return Packet.builder()
+                .sender(new Packet.Sender(sender))
+                .topic(new Packet.Topic(topic))
+                .message(message)
+                .timestamp(new Packet.Timestamp(timestamp)).trigger(trigger)
+                .build();
+    }
+
+    private static long longAt(final byte[] b, int offset) {
+        long result = 0;
+        for (int i = 0; i < Long.BYTES; i++) {
+            result <<= Byte.SIZE;
+            result |= (b[i + offset] & 0xFF);
+        }
+        return result;
+    }
+
+    private static String stringAt(byte[] raw, int offset) {
+        int hi = raw[offset] & 0xFF;
+        int lo = raw[offset + 1] & 0xFF;
+        int length = hi * 255 + lo;
+        return new String(raw, offset + 2, length, StandardCharsets.UTF_8);
     }
 
 }

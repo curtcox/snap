@@ -2,7 +2,6 @@ package com.curtcox.snap.model;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import static com.curtcox.snap.util.Check.notNull;
@@ -17,7 +16,7 @@ final class InputStreamPacketReader implements Reader {
         this.input = notNull(input);
     }
 
-    public Packet read(Packet.Filter filter) throws IOException {
+    public Packet read(Filter filter) throws IOException {
         if (input.available()<1) {
             return null;
         }
@@ -27,40 +26,7 @@ final class InputStreamPacketReader implements Reader {
         }
         byte[] raw = Arrays.copyOf(buffer,count);
         Bytes bytes = new Bytes(raw);
-        if (!bytes.startsWith(Packet.MAGIC)) {
-            throw new IOException("Snap packet expected");
-        }
-        int skip1 = Packet.MAGIC.length;
-        long timestamp = longAt(raw,skip1);
-        int skip2 = skip1 + Long.BYTES;
-        Packet.Trigger trigger = Packet.Trigger.from(longAt(raw,skip2));
-        int skip3 = skip2 + Long.BYTES;
-        String sender = stringAt(raw,skip3);
-        int skip4 = skip3 + 2 + sender.length();
-        String topic = stringAt(raw,skip4);
-        int skip5 = skip4 + 2 + topic.length();
-        String message = stringAt(raw,skip5);
-        return Packet.builder()
-                .sender(new Packet.Sender(sender))
-                .topic(new Packet.Topic(topic))
-                .message(message)
-                .timestamp(new Packet.Timestamp(timestamp)).trigger(trigger)
-                .build();
+        return Packet.from(bytes);
     }
 
-    public static long longAt(final byte[] b, int offset) {
-        long result = 0;
-        for (int i = 0; i < Long.BYTES; i++) {
-            result <<= Byte.SIZE;
-            result |= (b[i + offset] & 0xFF);
-        }
-        return result;
-    }
-
-    private String stringAt(byte[] raw, int offset) {
-        int hi = raw[offset] & 0xFF;
-        int lo = raw[offset + 1] & 0xFF;
-        int length = hi * 255 + lo;
-        return new String(raw, offset + 2, length, StandardCharsets.UTF_8);
-    }
 }

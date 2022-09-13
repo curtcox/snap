@@ -9,7 +9,7 @@ import static com.curtcox.snap.util.Check.notNull;
  * An immutable byte array.
  * Bytes are hostile to comparison to other classes.
  */
-final class Bytes {
+public final class Bytes {
 
     private final byte[] bytes;
 
@@ -44,7 +44,7 @@ final class Bytes {
         return new Bytes(bytes);
     }
 
-    static Bytes bytes(byte... values) {
+    public static Bytes bytes(byte... values) {
         byte[] bytes = new byte[values.length];
         for (int i=0; i<values.length; i++) {
             bytes[i] = values[i];
@@ -95,7 +95,7 @@ final class Bytes {
         return bytes.length == 0 ? 0 : bytes[0] * bytes.length;
     }
 
-    byte[] value() {
+    public byte[] value() {
         return Arrays.copyOf(bytes,bytes.length);
     }
 
