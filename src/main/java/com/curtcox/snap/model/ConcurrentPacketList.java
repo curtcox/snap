@@ -5,7 +5,7 @@ import static com.curtcox.snap.model.Packet.*;
 /**
  * A mutable list of packets that can be accessed by multiple threads concurrently.
  */
-final class ConcurrentPacketList
+public final class ConcurrentPacketList
         implements Reader, Sink
 {
     private final List<Packet> list = new ArrayList<>();
@@ -20,7 +20,7 @@ final class ConcurrentPacketList
     }
 
     @Override
-    public synchronized Packet read(Packet.Filter filter) {
+    public synchronized Packet read(Filter filter) {
         for (Packet packet : list) {
             if (filter.passes(packet)) {
                 list.remove(packet);

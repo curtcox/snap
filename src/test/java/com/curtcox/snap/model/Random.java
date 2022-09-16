@@ -16,7 +16,7 @@ public final class Random {
         return new Topic(random("topic"));
     }
 
-    static Packet packet() {
+    public static Packet packet() {
         return Packet.builder()
                 .sender(sender())
                 .topic(topic())

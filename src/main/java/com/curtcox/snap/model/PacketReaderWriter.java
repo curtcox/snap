@@ -12,7 +12,7 @@ public final class PacketReaderWriter implements IO {
     final Reader input;
     final Writer output;
 
-    PacketReaderWriter(Reader input, Writer output) {
+    public PacketReaderWriter(Reader input, Writer output) {
         this.input = notNull(input);
         this.output = notNull(output);
     }
