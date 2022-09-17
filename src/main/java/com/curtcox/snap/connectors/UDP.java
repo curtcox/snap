@@ -8,8 +8,8 @@ import java.net.*;
 
 public final class UDP {
 
-    static InetSocketAddress ADDRESS = socketAddress();
-    static int PORT = 0xe0e0;
+    final static int PORT = 0xe0e0;
+    final static InetSocketAddress ADDRESS = socketAddress();
 
     public static final class Reader implements Packet.Reader {
         private final ConcurrentPacketList packets = new ConcurrentPacketList();
