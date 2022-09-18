@@ -5,6 +5,9 @@ import com.curtcox.snap.model.Packet.*;
 
 import java.io.IOException;
 import java.net.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public final class UDP {
 
@@ -74,8 +77,39 @@ public final class UDP {
     }
 
     static IO io() throws IOException {
-        IO io = new PacketReaderWriter(new Reader(new DatagramSocket(PORT)),new Writer(new DatagramSocket(ADDRESS),ADDRESS));
+        IO io = new PacketReaderWriter(new Reader(newDatagramSocket(ADDRESS)),new Writer(newDatagramSocket(),ADDRESS));
         return io;
+    }
+
+    private static Map<InetSocketAddress,DatagramSocket> sockets = Collections.synchronizedMap(new HashMap<>());
+    static DatagramSocket newDatagramSocket(InetSocketAddress address) throws IOException {
+        try {
+            if (sockets.containsKey(address)) {
+                return sockets.get(address);
+            }
+            DatagramSocket socket = rightSocketType(address);
+            sockets.put(address,socket);
+            return socket;
+        } catch (SocketException e) {
+            throw new IOException("Unable to create socket on address " + address,e);
+        }
+    }
+
+    private static DatagramSocket rightSocketType(InetSocketAddress address) throws IOException {
+        if (address.getAddress().isMulticastAddress()) {
+            MulticastSocket socket = new MulticastSocket(address.getPort());
+            socket.joinGroup(address.getAddress());
+            return socket;
+        }
+        return new DatagramSocket(address);
+    }
+
+     static DatagramSocket newDatagramSocket() throws IOException {
+        try {
+            return new DatagramSocket();
+        } catch (SocketException e) {
+            throw new IOException("Unable to create socket.",e);
+        }
     }
 
     /**
