@@ -5,24 +5,42 @@ import com.curtcox.snap.model.Packet.*;
 
 import java.io.IOException;
 import java.net.*;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public final class UDP {
 
     final static int PORT = 0xe0e0;
     final static InetSocketAddress ADDRESS = socketAddress();
 
+    final static Runner runner = Runner.of();
+
     public static final class Reader implements Packet.Reader {
         private final ConcurrentPacketList packets = new ConcurrentPacketList();
         private final DatagramSocket socket;
 
-        Reader(DatagramSocket socket) {
+        private Reader(DatagramSocket socket) {
             this.socket  = socket;
         }
 
-        void receiveDatagram() throws IOException {
+        public static Reader from(DatagramSocket socket) {
+            return from(socket,runner);
+        }
+
+        static synchronized Reader from(DatagramSocket socket, Runner runner) {
+            Reader reader = new Reader(socket);
+            runner.periodically(() -> reader.receiveDatagram());
+            return reader;
+        }
+
+        private void receiveDatagram() {
+            try {
+                receiveDatagram0();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        private void receiveDatagram0() throws IOException {
             byte[] buf    = new byte[Packet.MAX_SIZE];
             DatagramPacket datagram = new DatagramPacket(buf, buf.length);
             socket.receive(datagram);
@@ -76,9 +94,14 @@ public final class UDP {
         return SimpleNetwork.newPolling();
     }
 
-    static IO io() throws IOException {
-        IO io = new PacketReaderWriter(new Reader(newDatagramSocket(ADDRESS)),new Writer(newDatagramSocket(),ADDRESS));
-        return io;
+    public static IO io() throws IOException {
+        return io(runner);
+    }
+
+    static synchronized IO io(Runner runner) throws IOException {
+        return new PacketReaderWriter(
+                Reader.from(newDatagramSocket(ADDRESS),runner),
+                new Writer(newDatagramSocket(),ADDRESS));
     }
 
     private static Map<InetSocketAddress,DatagramSocket> sockets = Collections.synchronizedMap(new HashMap<>());

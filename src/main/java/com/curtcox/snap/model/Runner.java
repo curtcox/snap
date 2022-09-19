@@ -7,7 +7,7 @@ import static com.curtcox.snap.model.Clock.tick;
 /**
  * For periodically running a Runnable on an ScheduledExecutorService until it shuts down.
  */
-final class Runner {
+public final class Runner {
 
     private final ScheduledExecutorService scheduler;
 
@@ -19,10 +19,9 @@ final class Runner {
         return new Runner(Executors.newScheduledThreadPool(1));
     }
 
-    void periodically(Runnable command) {
+    public void periodically(Runnable command) {
         scheduler.scheduleAtFixedRate(command,tick,tick,TimeUnit.MILLISECONDS);
     }
-
 
     public void stop() {
         scheduler.shutdown();

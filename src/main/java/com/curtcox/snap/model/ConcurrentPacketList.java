@@ -31,7 +31,7 @@ public final class ConcurrentPacketList
     }
 
     @Override
-    public String toString() {
+    public synchronized String toString() {
         return "Concurrent packets " + list;
     }
 }
