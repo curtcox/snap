@@ -28,7 +28,7 @@ public final class Packet {
     public final Trigger trigger;
 
     public static final class Timestamp {
-        final long value;
+        public final long value;
 
         public Timestamp(long value) {
             this.value = value;
@@ -52,6 +52,19 @@ public final class Packet {
 
     }
 
+    /**
+     * A packet and when it was received.
+     */
+    public static class Receipt {
+
+        public final Packet packet;
+        public final Timestamp received;
+
+        public Receipt(Packet packet, Timestamp received) {
+            this.packet = packet;
+            this.received = received;
+        }
+    }
     /**
      * Typesafe string for the name of group of packets about the same thing.
      * Topic as in topic of conversation. What these packets are about.
@@ -168,6 +181,9 @@ public final class Packet {
 
         @Override public String toString() { return Long.toHexString(value); }
 
+        public boolean refersTo(Packet packet) {
+            return value == packet.hashCode();
+        }
     }
 
     /**

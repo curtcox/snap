@@ -1,15 +1,16 @@
 package com.curtcox.snap.ui;
 
 import com.curtcox.snap.model.*;
+import com.curtcox.snap.model.Packet.*;
 
 import javax.swing.event.*;
 import javax.swing.table.*;
 import java.util.*;
 
 final class PacketTable implements TableModel {
-    final List<Packet> packets;
+    final List<Receipt> packets;
 
-    PacketTable(List<Packet> packets) {
+    PacketTable(List<Receipt> packets) {
         this.packets = packets;
     }
 
@@ -20,7 +21,7 @@ final class PacketTable implements TableModel {
 
     @Override
     public int getColumnCount() {
-        return 5;
+        return 7;
     }
 
     @Override
@@ -30,12 +31,14 @@ final class PacketTable implements TableModel {
         if (columnIndex==2) return "Sender";
         if (columnIndex==3) return "Timestamp";
         if (columnIndex==4) return "Trigger";
+        if (columnIndex==5) return "Received";
+        if (columnIndex==6) return "Delta";
         throw new IllegalArgumentException("" + columnIndex);
     }
 
     @Override
     public Class<?> getColumnClass(int columnIndex) {
-        if (columnIndex>=0 && columnIndex<5) return String.class;
+        if (columnIndex>=0 && columnIndex<7) return String.class;
         throw new IllegalArgumentException("" + columnIndex);
     }
 
@@ -49,15 +52,32 @@ final class PacketTable implements TableModel {
         return value(packets.get(rowIndex),columnIndex).toString();
     }
 
-    private Object value(Packet packet, int columnIndex) {
+    private Object value(Receipt receipt, int columnIndex) {
+        Packet packet = receipt.packet;
         if (columnIndex==0) return packet.topic;
         if (columnIndex==1) return packet.message;
         if (columnIndex==2) return packet.sender;
         if (columnIndex==3) return packet.timestamp;
         if (columnIndex==4) return packet.trigger;
+        if (columnIndex==5) return receipt.received;
+        if (columnIndex==6) return delta(receipt);
         throw new IllegalArgumentException("" + columnIndex);
     }
 
+    private String delta(Receipt receipt) {
+        Timestamp at = receipt.received;
+        Packet trigger = trigger(receipt.packet);
+        return (at!=null && trigger!=null) ? (at.value - trigger.timestamp.value) + " ms" : "N/A";
+    }
+
+    private Packet trigger(Packet packet) {
+        for (Receipt t : packets) {
+            if (packet.trigger.refersTo(t.packet)) {
+                return t.packet;
+            }
+        }
+        return null;
+    }
     @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
 
