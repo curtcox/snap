@@ -20,12 +20,7 @@ public final class LogViewer {
             return true;
         });
     }
-    public static final UIFrame.ComponentFactory factory = new UIFrame.ComponentFactory() {
-        @Override
-        public JComponent newComponent(Flags flags, Snap snap) {
-            return new LogViewer(snap).scrollPane;
-        }
-    };
+    public static final UIFrame.ComponentFactory factory = (flags, snap) -> new LogViewer(snap).scrollPane;
 
     public static void main(String... args) {
         UIFrame.main(factory,args);

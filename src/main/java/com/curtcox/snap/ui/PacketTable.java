@@ -35,11 +35,7 @@ final class PacketTable implements TableModel {
 
     @Override
     public Class<?> getColumnClass(int columnIndex) {
-        if (columnIndex==0) return String.class;
-        if (columnIndex==1) return String.class;
-        if (columnIndex==2) return String.class;
-        if (columnIndex==3) return Long.class;
-        if (columnIndex==4) return Long.class;
+        if (columnIndex>=0 && columnIndex<5) return String.class;
         throw new IllegalArgumentException("" + columnIndex);
     }
 
@@ -50,12 +46,15 @@ final class PacketTable implements TableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        Packet packet = packets.get(rowIndex);
-        if (columnIndex==0) return packet.topic.toString();
+        return value(packets.get(rowIndex),columnIndex).toString();
+    }
+
+    private Object value(Packet packet, int columnIndex) {
+        if (columnIndex==0) return packet.topic;
         if (columnIndex==1) return packet.message;
-        if (columnIndex==2) return packet.sender.toString();
+        if (columnIndex==2) return packet.sender;
         if (columnIndex==3) return packet.timestamp;
-        if (columnIndex==4) return packet.trigger.toLong();
+        if (columnIndex==4) return packet.trigger;
         throw new IllegalArgumentException("" + columnIndex);
     }
 
