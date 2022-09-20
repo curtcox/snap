@@ -9,7 +9,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import static com.curtcox.snap.model.Clock.tick;
+import static com.curtcox.snap.model.TestClock.tick;
 import static com.curtcox.snap.model.Random.random;
 import static org.junit.Assert.*;
 

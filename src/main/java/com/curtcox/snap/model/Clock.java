@@ -1,14 +1,24 @@
 package com.curtcox.snap.model;
 
+/**
+ * For globally doing things faster or slower.
+ * This can be useful for testing and debugging.
+ */
 public final class Clock {
 
-    static final long tick = 10;
+    public static final Clock standard = new Clock(10);
 
-    public static void tick() {
+    public Clock(long tick) {
+        this.tick = tick;
+    }
+
+    public final long tick;
+
+    public void tick() {
         tick(1);
     }
 
-    public static void tick(int count) {
+    public void tick(int count) {
         try {
             Thread.sleep(tick *  count);
         } catch (InterruptedException e) {

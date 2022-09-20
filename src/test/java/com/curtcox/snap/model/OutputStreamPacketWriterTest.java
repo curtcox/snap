@@ -12,7 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.concurrent.*;
 
-import static com.curtcox.snap.model.Clock.tick;
+import static com.curtcox.snap.model.TestClock.tick;
 import static com.curtcox.snap.model.Packet.ANY;
 import static com.curtcox.snap.model.Random.random;
 import static org.junit.Assert.*;

@@ -4,7 +4,7 @@ import org.junit.*;
 import java.io.IOException;
 import static com.curtcox.snap.model.Packet.*;
 
-import static com.curtcox.snap.model.Clock.tick;
+import static com.curtcox.snap.model.TestClock.tick;
 import static org.junit.Assert.*;
 
 @Ignore

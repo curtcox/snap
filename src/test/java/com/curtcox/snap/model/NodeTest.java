@@ -5,9 +5,9 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-import static com.curtcox.snap.model.Clock.tick;
 import static com.curtcox.snap.model.Packet.ANY;
 import static com.curtcox.snap.model.Random.random;
+import static com.curtcox.snap.model.TestClock.tick;
 import static com.curtcox.snap.model.TestUtil.consume;
 import static org.junit.Assert.*;
 

@@ -11,7 +11,7 @@ import org.junit.rules.Timeout;
 import java.io.IOException;
 import java.net.*;
 
-import static com.curtcox.snap.model.Clock.tick;
+import static com.curtcox.snap.model.TestClock.tick;
 import static org.junit.Assert.*;
 
 public class UDPTest {

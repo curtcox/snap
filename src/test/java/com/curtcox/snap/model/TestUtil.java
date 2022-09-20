@@ -2,7 +2,6 @@ package com.curtcox.snap.model;
 
 import java.io.IOException;
 
-import static com.curtcox.snap.model.Clock.tick;
 import static org.junit.Assert.*;
 import com.curtcox.snap.model.Packet.*;
 

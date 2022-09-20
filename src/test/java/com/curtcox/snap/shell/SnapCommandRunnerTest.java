@@ -2,7 +2,7 @@ package com.curtcox.snap.shell;
 
 import com.curtcox.snap.model.*;
 import org.junit.Test;
-import static com.curtcox.snap.model.Clock.tick;
+import static com.curtcox.snap.model.TestClock.tick;
 
 import static org.junit.Assert.*;
 
