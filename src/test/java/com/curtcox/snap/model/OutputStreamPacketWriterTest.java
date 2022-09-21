@@ -134,9 +134,8 @@ public class OutputStreamPacketWriterTest {
         Packet packet = packetWithLongTopicAndMessage();
 
         ExecutorService service = Executors.newSingleThreadExecutor();
-        Future<Packet> submitted = service.submit(() -> reader.read(ANY));
+        Future<Packet> submitted = service.submit(() -> Await.packet(reader));
         writer.write(packet);
-        tick(1);
         Packet read = submitted.get();
 
         assertEquals(packet.sender,read.sender);

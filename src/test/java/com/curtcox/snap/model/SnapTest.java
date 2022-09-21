@@ -1,12 +1,18 @@
 package com.curtcox.snap.model;
 
+import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.Timeout;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 import static com.curtcox.snap.model.TestClock.tick;
 import static com.curtcox.snap.model.Random.random;
+import static com.curtcox.snap.model.TestUtil.assertContains;
 import static com.curtcox.snap.model.TestUtil.consume;
 import static com.curtcox.snap.model.Packet.*;
 
@@ -20,12 +26,20 @@ public class SnapTest {
 
     Runner runner = Runner.of();
 
-    ReflectorNetwork network = new ReflectorNetwork();
+    ReflectorNetwork network = new ReflectorNetwork(runner);
+
+    @Rule
+    public Timeout globalTimeout = Timeout.seconds(3);
 
     @Before
     public void setUp() {
         node = Node.on(network);
         snap = Snap.of(node);
+    }
+
+    @After
+    public void stop() {
+        runner.stop();
     }
 
     @Test(expected = NullPointerException.class)
@@ -124,7 +138,7 @@ public class SnapTest {
         tick(2);
 
         assertMatch(sent1,consume(snap,sent1.topic));
-        assertNull(snap.reader(sent1.topic).read(ANY));
+        assertNull(snap.reader(sent1.topic).read(ANY)); // TODO FIXME This failed with expected null, but was:<1836183b4d5 23@coxcu@K39TP7N73K topic 41 message2 625 0>
     }
 
     @Test
@@ -134,7 +148,7 @@ public class SnapTest {
 
         tick(3);
 
-        assertMatch(sent2,consume(snap,sent2.topic));
+        assertMatch(sent2,consume(snap,sent2.topic)); // TODO FIXME This failed with --- Expected :message2 750 Actual   :message1 458 How?
         assertNull(consume(snap,sent2.topic));
     }
 
@@ -206,6 +220,24 @@ public class SnapTest {
         Packet packet = consume(snap2);
         assertNotNull(packet);
         assertEquals(snap1.whoami(),packet.sender.value);
+    }
+
+    @Test
+    public void default_snap_name() {
+        Snap snap = Snap.on(network);
+        String name = snap.whoami();
+        assertContains(name,snap.host());
+        assertContains(name,snap.user());
+    }
+
+    @Test
+    public void default_snap_names_are_distinct() {
+        Set<String> names = new HashSet<>();
+        int count = 100;
+        for (int i=0; i<count; i++) {
+            names.add(Snap.on(network).whoami());
+        }
+        assertEquals(count,names.size());
     }
 
 }

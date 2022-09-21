@@ -64,6 +64,15 @@ public final class Packet {
             this.packet = packet;
             this.received = received;
         }
+
+        public Receipt(Packet packet) {
+            this(packet,Timestamp.now());
+        }
+
+        @Override
+        public String toString() {
+            return packet + " at " + received;
+        }
     }
     /**
      * Typesafe string for the name of group of packets about the same thing.
@@ -211,6 +220,10 @@ public final class Packet {
          * Return true if and only if the packet was accepted.
          */
         boolean add(Packet packet);
+
+        /**
+         * Something that accepts a packet sink.
+         */
         interface Acceptor {
             void on(Sink sink);
         }

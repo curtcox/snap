@@ -45,4 +45,7 @@ public final class TestUtil {
         assertTrue(text + " should start with " + prefix,text.startsWith(prefix));
     }
 
+    static void assertContains(String whole, String part) {
+        assertTrue(whole + " should contain " + part, whole.contains(part));
+    }
 }

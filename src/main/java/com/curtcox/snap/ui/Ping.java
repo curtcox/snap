@@ -7,9 +7,13 @@ public final class Ping {
 
     public static void on(Filter topic, Snap snap) {
         snap.on(new FilteredSink(topic, packet -> {
-            new Sound().ping(packet.topic.hashCode());
+            playPingSound(packet.topic.hashCode());
             return true;
         }));
+    }
+
+    private static void playPingSound(int pitch) {
+        new Thread(() -> new Sound().ping(pitch)).start();
     }
 
     public static void on(Snap snap) {

@@ -16,7 +16,7 @@ final class ReflectorNetwork implements Network {
         this(Runner.of());
     }
 
-    private ReflectorNetwork(Runner runner) {
+    ReflectorNetwork(Runner runner) {
         this.runner = notNull(runner);
     }
 

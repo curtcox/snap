@@ -10,14 +10,17 @@ import org.junit.rules.Timeout;
 
 import java.io.IOException;
 import java.net.*;
+import java.util.ArrayList;
+import java.util.List;
 
+import static com.curtcox.snap.connectors.UDPTestUtil.flush;
 import static com.curtcox.snap.model.TestClock.tick;
 import static org.junit.Assert.*;
 
 public class UDPTest {
 
     @Rule
-    public Timeout globalTimeout = Timeout.seconds(3);
+    public Timeout globalTimeout = Timeout.seconds(30);
 
     Runner runner = Runner.of();
 
@@ -38,7 +41,7 @@ public class UDPTest {
     }
 
     @Test
-    public void can_create_writer() throws SocketException {
+    public void can_create_writer() {
         assertNotNull(new UDP.Writer(null,null));
     }
 
@@ -81,29 +84,31 @@ public class UDPTest {
 
     @Test
     public void can_read_packet_written_to_writer_when_broadcast_address() throws IOException {
-        delay();
         Packet packet = Random.packet();
         InetSocketAddress address = address(224,0,0,222,2222);
         DatagramSocket socket = UDP.newDatagramSocket(address);
         Packet.Writer writer = new UDP.Writer(socket,address);
         UDP.Reader reader = UDP.Reader.from(socket,runner);
+        flush(reader);
 
         writer.write(packet);
         delay();
 
-        Packet received = reader.read(Packet.ANY);
-        assertEquals(packet,received);
+        List<Packet> received = flush(reader);
+        assertTrue(received + " should contain " + packet,received.contains(packet));
     }
 
     @Test
     public void can_read_packet_written_to_io_using_io() throws IOException {
-        delay();
         Packet packet = Random.packet();
         Packet.IO io = UDP.io(runner);
+        flush(io,30);
+
         io.write(packet);
         delay();
-        Packet received = io.read(Packet.ANY);
-        assertEquals(packet,received);
+
+        List<Packet> received = flush(io,30);
+        assertTrue(received + " should contain " + packet,received.contains(packet));
     }
 
     private static void delay() {

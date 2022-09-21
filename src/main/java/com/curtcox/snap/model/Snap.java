@@ -12,8 +12,13 @@ public final class Snap implements Reader.Factory, Sink.Acceptor {
 
     private String name;
 
-    private Snap(Node node) {
+    private final int id;
+
+    private static int counter;
+
+    private Snap(Node node,int id) {
         this.node = notNull(node);
+        this.id = id;
     }
 
     public static Snap newInstance() {
@@ -29,9 +34,10 @@ public final class Snap implements Reader.Factory, Sink.Acceptor {
     }
 
     public static Snap of(final Node node) {
-        Snap snap = new Snap(node);
+        counter++;
+        Snap snap = new Snap(node,counter);
         node.on(packet -> {
-            if (Ping.REQUEST.equals(packet.message)) {
+            if (Ping.isRequest.test(packet)) {
                 snap.sendPingResponse(packet);
             }
             return false;
@@ -79,7 +85,7 @@ public final class Snap implements Reader.Factory, Sink.Acceptor {
     }
 
     private String defaultName() {
-        return user() + "@" + host();
+        return id + "@" + user() + "@" + host();
     }
 
     public String user() {
