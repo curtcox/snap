@@ -138,7 +138,7 @@ public class SnapTest {
         tick(2);
 
         assertMatch(sent1,consume(snap,sent1.topic));
-        assertNull(snap.reader(sent1.topic).read(ANY)); // TODO FIXME This failed with expected null, but was:<1836183b4d5 23@coxcu@K39TP7N73K topic 41 message2 625 0>
+        assertNull(consume(snap,sent1.topic));
     }
 
     @Test
@@ -148,7 +148,7 @@ public class SnapTest {
 
         tick(3);
 
-        assertMatch(sent2,consume(snap,sent2.topic)); // TODO FIXME This failed with --- Expected :message2 750 Actual   :message1 458 How?
+        assertMatch(sent2,consume(snap,sent2.topic));
         assertNull(consume(snap,sent2.topic));
     }
 

@@ -38,13 +38,9 @@ public final class TestUtil {
     }
 
     static Packet consume(Snap snap,Topic topic) throws IOException {
-        return snap.reader(topic).read(Packet.ANY);
+        return Await.packet(snap.reader(topic));
     }
-
-    static void assertStartsWith(String text, String prefix) {
-        assertTrue(text + " should start with " + prefix,text.startsWith(prefix));
-    }
-
+    
     static void assertContains(String whole, String part) {
         assertTrue(whole + " should contain " + part, whole.contains(part));
     }

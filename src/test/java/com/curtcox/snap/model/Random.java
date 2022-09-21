@@ -4,8 +4,11 @@ import com.curtcox.snap.model.Packet.*;
 
 public final class Random {
 
+    private static long counter;
+
     public static String random(String prefix) {
-        return prefix + " " + System.nanoTime() % 1000;
+        counter++;
+        return prefix + " " + Long.toHexString(counter) + Long.toHexString(System.nanoTime() & 0xffff);
     }
 
     static Sender sender() {

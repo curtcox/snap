@@ -10,7 +10,6 @@ import org.junit.rules.Timeout;
 
 import java.io.IOException;
 import java.net.*;
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.curtcox.snap.connectors.UDPTestUtil.flush;
@@ -102,12 +101,15 @@ public class UDPTest {
     public void can_read_packet_written_to_io_using_io() throws IOException {
         Packet packet = Random.packet();
         Packet.IO io = UDP.io(runner);
-        flush(io,30);
+        int annoyinglyHigh = 30;
+        // Lower values seem fine when this test is run alone for some reason.
+        flush(io,annoyinglyHigh);
 
         io.write(packet);
         delay();
 
-        List<Packet> received = flush(io,30);
+        List<Packet> received = flush(io,annoyinglyHigh);
+        // This may contain responses from the live network, since we are using the default port.
         assertTrue(received + " should contain " + packet,received.contains(packet));
     }
 
