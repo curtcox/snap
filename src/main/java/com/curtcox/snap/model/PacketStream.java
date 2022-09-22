@@ -9,7 +9,7 @@ import static com.curtcox.snap.model.Packet.*;
  * For easily creating multiple readers of the same packets.
  */
 final class PacketStream
-    implements Packet.Sink
+    implements Packet.Sink // TODO FIXME Is this used?
 {
 
     private long at;

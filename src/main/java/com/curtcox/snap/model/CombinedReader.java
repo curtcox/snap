@@ -7,7 +7,7 @@ import static com.curtcox.snap.model.Packet.*;
  * For treating multiple readers as a single reader AKA a Y.
  * See also SplitReader.
  */
-final class CombinedReader implements Reader {
+final class CombinedReader implements Reader { // TODO FIXME Is this used?
 
     private final List<Reader> readers;
 

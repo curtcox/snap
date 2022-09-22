@@ -11,7 +11,7 @@ import com.curtcox.snap.model.Packet.*;
  * coordinated.
  * See also CombinedReader.
  */
-final class SplitReaderFactory implements Reader.Factory {
+final class SplitReaderFactory implements Reader.Factory { // TODO FIXME Is this used?
 
     private final Reader source;
     private final PacketStream stream = new PacketStream();
