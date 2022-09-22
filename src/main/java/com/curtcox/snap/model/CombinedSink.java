@@ -12,7 +12,7 @@ final class CombinedSink implements Sink {
     public boolean add(Packet packet) {
         boolean accepted = false;
         for (Sink sink : sinks) {
-            accepted = accepted || sink.add(packet);
+            accepted = sink.add(packet) || accepted;
         }
         return accepted;
     }
