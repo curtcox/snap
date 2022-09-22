@@ -17,6 +17,8 @@ public final class PacketReceiptList implements Packet.Sink, List<Packet.Receipt
     @Override public int size() { return receipts.size(); }
     @Override public boolean isEmpty() { return receipts.isEmpty(); }
     @Override public Iterator<Packet.Receipt> iterator() { return receipts.iterator(); }
+    @Override public Packet.Receipt get(int index) { return receipts.get(index); }
+
     @Override public String toString() { return receipts.toString(); }
 
     public PacketReceiptList filter(Packet.Filter filter) {
@@ -41,7 +43,6 @@ public final class PacketReceiptList implements Packet.Sink, List<Packet.Receipt
     @Override public boolean removeAll(Collection<?> c) { throw no(); }
     @Override public boolean retainAll(Collection<?> c) { throw no(); }
     @Override public void clear() { throw no(); }
-    @Override public Packet.Receipt get(int index) { throw no(); }
     @Override public Packet.Receipt set(int index, Packet.Receipt element) { throw no(); }
     @Override public void add(int index, Packet.Receipt element) { throw no(); }
     @Override public Packet.Receipt remove(int index) { throw no(); }
@@ -52,6 +53,7 @@ public final class PacketReceiptList implements Packet.Sink, List<Packet.Receipt
     @Override public List<Packet.Receipt> subList(int fromIndex, int toIndex) { throw no(); }
 
     private static UnsupportedOperationException no() {
+        System.out.println("???");
         return new UnsupportedOperationException("Implement if needed.");
     }
 }

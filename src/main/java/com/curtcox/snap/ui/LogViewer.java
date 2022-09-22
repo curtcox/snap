@@ -1,24 +1,21 @@
 package com.curtcox.snap.ui;
 
 import com.curtcox.snap.model.*;
-import com.curtcox.snap.model.Packet.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.*;
-import java.util.List;
 
 public final class LogViewer {
 
-    final List<Receipt> packets = new ArrayList<>();
+    final PacketReceiptList packets = new PacketReceiptList();
     final PacketTable packetTable = new PacketTable(packets);
     final JTable table = new JTable(packetTable);
     final JScrollPane scrollPane = new JScrollPane(table);
 
     private LogViewer(Snap snap) {
+        snap.on(packets);
         snap.on(packet -> {
-            EventQueue.invokeLater(() -> add(new Receipt(packet,Timestamp.now())));
+            EventQueue.invokeLater(() -> table.tableChanged(null));
             return true;
         });
     }
@@ -26,11 +23,6 @@ public final class LogViewer {
 
     public static void main(String... args) {
         UIFrame.main(factory,args);
-    }
-
-    private void add(Receipt packet) {
-        packets.add(packet);
-        table.tableChanged(null);
     }
 
 }
