@@ -19,6 +19,16 @@ public final class PacketReceiptList implements Packet.Sink, List<Packet.Receipt
     @Override public Iterator<Packet.Receipt> iterator() { return receipts.iterator(); }
     @Override public String toString() { return receipts.toString(); }
 
+    public PacketReceiptList filter(Packet.Filter filter) {
+        PacketReceiptList filtered = new PacketReceiptList();
+        for (Packet.Receipt receipt : receipts) {
+            if (filter.passes(receipt.packet)) {
+                filtered.receipts.add(receipt);
+            }
+        }
+        return filtered;
+    }
+
     // Things we don't do, but could if needed.
     @Override public boolean contains(Object o) { throw no(); }
     @Override public Object[] toArray() { throw no(); }

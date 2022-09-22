@@ -25,9 +25,15 @@ final class Node implements Reader.Factory, Sink.Acceptor {
             @Override public Packet read(Filter filter) {
                 return fromOther.take();
             }
+
+            UniquePacketFilter filter = new UniquePacketFilter();
             @Override public void write(Packet packet) {
-                fromNetwork.add(packet);
-                sinks.add(packet);
+                if (filter.passes(packet)) {
+                    fromNetwork.add(packet);
+                    sinks.add(packet);
+                } else {
+                    System.out.println("Discarded " + packet);
+                }
             }
         };
     }
