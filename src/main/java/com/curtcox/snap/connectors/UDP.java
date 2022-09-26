@@ -5,7 +5,8 @@ import com.curtcox.snap.model.Packet.*;
 
 import java.io.IOException;
 import java.net.*;
-import java.util.*;
+
+import static com.curtcox.snap.connectors.UDPSocket.newDatagramSocket;
 
 public final class UDP {
 
@@ -16,17 +17,17 @@ public final class UDP {
 
     public static final class Reader implements Packet.Reader {
         private final ConcurrentPacketList packets = new ConcurrentPacketList();
-        private final DatagramSocket socket;
+        private final UDPSocket socket;
 
-        private Reader(DatagramSocket socket) {
+        private Reader(UDPSocket socket) {
             this.socket  = socket;
         }
 
-        public static Reader from(DatagramSocket socket) {
+        public static Reader from(UDPSocket socket) {
             return from(socket,runner);
         }
 
-        static synchronized Reader from(DatagramSocket socket, Runner runner) {
+        static synchronized Reader from(UDPSocket socket, Runner runner) {
             Reader reader = new Reader(socket);
             runner.periodically(() -> reader.receiveDatagram());
             return reader;
@@ -41,10 +42,7 @@ public final class UDP {
         }
 
         private void receiveDatagram0() throws IOException {
-            byte[] buf    = new byte[Packet.MAX_SIZE];
-            DatagramPacket datagram = new DatagramPacket(buf, buf.length);
-            socket.receive(datagram);
-            process(datagram);
+            process(socket.receiveDatagram());
         }
 
         void process(DatagramPacket datagram) throws IOException {
@@ -62,10 +60,10 @@ public final class UDP {
     }
 
     public static final class Writer implements Packet.Writer {
-        private final DatagramSocket socket;
+        private final UDPSocket socket;
         private final InetSocketAddress address;
 
-        Writer(DatagramSocket socket, InetSocketAddress address) {
+        Writer(UDPSocket socket, InetSocketAddress address) {
             this.socket  = socket;
             this.address = address;
         }
@@ -104,36 +102,7 @@ public final class UDP {
                 new Writer(newDatagramSocket(),ADDRESS));
     }
 
-    private static Map<InetSocketAddress,DatagramSocket> sockets = Collections.synchronizedMap(new HashMap<>());
-    static DatagramSocket newDatagramSocket(InetSocketAddress address) throws IOException {
-        try {
-            if (sockets.containsKey(address)) {
-                return sockets.get(address);
-            }
-            DatagramSocket socket = rightSocketType(address);
-            sockets.put(address,socket);
-            return socket;
-        } catch (SocketException e) {
-            throw new IOException("Unable to create socket on address " + address,e);
-        }
-    }
 
-    private static DatagramSocket rightSocketType(InetSocketAddress address) throws IOException {
-        if (address.getAddress().isMulticastAddress()) {
-            MulticastSocket socket = new MulticastSocket(address.getPort());
-            socket.joinGroup(address.getAddress());
-            return socket;
-        }
-        return new DatagramSocket(address);
-    }
-
-     static DatagramSocket newDatagramSocket() throws IOException {
-        try {
-            return new DatagramSocket();
-        } catch (SocketException e) {
-            throw new IOException("Unable to create socket.",e);
-        }
-    }
 
     /**
      * This picks a suitable address type that doesn't seem reserved and should be easy to grab (<1024).

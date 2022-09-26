@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.net.*;
 import java.util.List;
 
+import static com.curtcox.snap.connectors.UDPSocket.address;
+import static com.curtcox.snap.connectors.UDPSocket.newDatagramSocket;
 import static com.curtcox.snap.connectors.UDPTestUtil.flush;
 import static com.curtcox.snap.model.TestClock.tick;
 import static org.junit.Assert.*;
@@ -39,7 +41,7 @@ public class UDPTest {
     @Test
     public void can_create_reader() throws IOException {
         Runner runner = Runner.of();
-        assertNotNull(UDP.Reader.from(UDP.newDatagramSocket(),runner));
+        assertNotNull(UDP.Reader.from(newDatagramSocket(),runner));
         runner.stop();
     }
 
@@ -51,7 +53,7 @@ public class UDPTest {
     @Test
     public void can_write_to_writer() throws IOException {
         Packet packet = Random.packet();
-        DatagramSocket socket = UDP.newDatagramSocket();
+        UDPSocket socket = newDatagramSocket();
         InetSocketAddress address = address(127,0,0,1,4242);
         Packet.Writer writer = new UDP.Writer(socket,address);
         writer.write(packet);
@@ -59,7 +61,7 @@ public class UDPTest {
 
     @Test
     public void read_is_empty_when_no_packet_to_read() throws IOException {
-        Packet.Reader reader = UDP.Reader.from(UDP.newDatagramSocket(),runner);
+        Packet.Reader reader = UDP.Reader.from(newDatagramSocket(),runner);
         Packet packet = reader.read(Packet.ANY);
         assertNull(packet);
     }
@@ -71,25 +73,19 @@ public class UDPTest {
 
     @Test
     public void can_create_reader_for_io() throws IOException {
-        assertNotNull(UDP.Reader.from(UDP.newDatagramSocket(UDP.ADDRESS),runner));
+        assertNotNull(UDP.Reader.from(newDatagramSocket(UDP.ADDRESS),runner));
     }
 
     @Test
     public void can_create_writer_for_io() throws IOException {
-        assertNotNull(new UDP.Writer(UDP.newDatagramSocket(),UDP.ADDRESS));
-    }
-
-    private static InetSocketAddress address(int a, int b, int c, int d, int port)
-            throws UnknownHostException {
-        return new InetSocketAddress(InetAddress.getByAddress(
-                new byte[]{(byte)a,(byte)b,(byte)c,(byte)d}),port);
+        assertNotNull(new UDP.Writer(newDatagramSocket(),UDP.ADDRESS));
     }
 
     @Test
     public void can_read_packet_written_to_writer_when_broadcast_address() throws IOException {
         Packet packet = Random.packet();
         InetSocketAddress address = address(224,0,0,222,2222);
-        DatagramSocket socket = UDP.newDatagramSocket(address);
+        UDPSocket socket = newDatagramSocket(address);
         Packet.Writer writer = new UDP.Writer(socket,address);
         UDP.Reader reader = UDP.Reader.from(socket,runner);
         flush(reader);
