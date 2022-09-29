@@ -1,5 +1,6 @@
 package com.curtcox.snap.connectors;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
@@ -43,7 +44,7 @@ public class UDPSocketTest {
         assertNotNull(packet);
     }
 
-    @Test
+    @Test @Ignore
     public void can_poll_socket() throws IOException {
         UDPSocket socket = newDatagramSocket(address(224,0,0,251,5353));
         for (int i=0; i<100; i++) {
