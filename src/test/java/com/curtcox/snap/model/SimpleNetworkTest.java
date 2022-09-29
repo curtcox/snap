@@ -1,5 +1,6 @@
 package com.curtcox.snap.model;
 
+import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
@@ -14,7 +15,8 @@ import static org.junit.Assert.*;
 
 public class SimpleNetworkTest {
 
-    SimpleNetwork network = SimpleNetwork.newPolling();
+    Runner runner = Runner.of();
+    SimpleNetwork network = SimpleNetwork.newPolling(runner);
     Node node1 = Node.on(network);
     Node node2 = Node.on(network);
 
@@ -29,10 +31,15 @@ public class SimpleNetworkTest {
         assertNotNull(SimpleNetwork.newPolling());
     }
 
+    @After
+    public void stop() {
+        runner.stop();
+    }
+
     @Test
     public void there_are_no_messages_to_listen_to_before_any_are_sent() throws IOException {
-        assertNull(node1.reader(ANY).read(ANY));
-        assertNull(node2.reader(ANY).read(ANY));
+        assertNull(consume(node1));
+        assertNull(consume(node2));
     }
 
     @Test
@@ -41,7 +48,7 @@ public class SimpleNetworkTest {
         node1.write(packet);
         tick(2);
 
-        Packet read = node2.reader(ANY).read(ANY);
+        Packet read = consume(node2);
         assertEquals(packet,read);
     }
 
@@ -71,17 +78,16 @@ public class SimpleNetworkTest {
         node1.write(packet("me","phone","ring"));
         tick(2);
 
-        Packet packet2 = node2.reader(ANY).read(ANY);
+        Packet packet2 = consume(node2);
         assertEquals("me",packet2.sender.value);
         assertEquals("phone",packet2.topic.value);
         assertEquals("ring",packet2.message);
 
-        Packet packet3 = node3.reader(ANY).read(ANY);
+        Packet packet3 = consume(node3);
         assertEquals("me",packet3.sender.value);
         assertEquals("phone",packet3.topic.value);
         assertEquals("ring",packet3.message);
     }
-
 
     @Test
     public void no_packets_are_written_to_IO_when_there_are_no_packets_to_read() {
@@ -119,7 +125,7 @@ public class SimpleNetworkTest {
     }
 
     @Test
-    public void messages_from_IO_are_delived_to_nodes() throws IOException {
+    public void messages_from_IO_are_delivered_to_nodes() throws IOException {
         Packet packet = packet("me","room","on");
         io1.add(packet);
 

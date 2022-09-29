@@ -1,11 +1,14 @@
 package com.curtcox.snap.model;
 
+import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.Timeout;
 
 import java.io.IOException;
 
-import static com.curtcox.snap.model.Packet.ANY;
+import static com.curtcox.snap.model.Packet.*;
 import static com.curtcox.snap.model.Random.random;
 import static com.curtcox.snap.model.TestClock.tick;
 import static com.curtcox.snap.model.TestUtil.consume;
@@ -15,11 +18,39 @@ public class NodeTest {
 
     Node node;
 
-    ReflectorNetwork network = new ReflectorNetwork();
+    Runner runner = Runner.of();
+
+    ReflectorNetwork network = new ReflectorNetwork(runner);
+
+    @Rule
+    public Timeout globalTimeout = Timeout.seconds(2);
 
     @Before
     public void setUp() {
         node = Node.on(network);
+    }
+
+    @After
+    public void stop() {
+        runner.stop();
+    }
+
+    @Test
+    public void node_on_network_should_return_a_node_added_to_the_network() {
+        FakeNetwork network = new FakeNetwork();
+        Node node = Node.on(network);
+        assertEquals(1,network.ios.size());
+    }
+
+    @Test
+    public void bridge_should_add_node_added_to_both_networks() {
+        FakeNetwork network1 = new FakeNetwork();
+        FakeNetwork network2 = new FakeNetwork();
+
+        Node.bridge(network1,network2);
+
+        assertEquals(1,network1.ios.size());
+        assertEquals(1,network2.ios.size());
     }
 
     @Test
@@ -176,6 +207,19 @@ public class NodeTest {
 
         assertNotNull(consume(node));
         assertNull(node.reader(ANY).read(ANY));
+    }
+
+    @Test
+    public void read_returns_null_when_no_packets_were_written() throws IOException {
+        assertNull(node.read(ANY));
+    }
+
+    @Test
+    public void read_returns_packet_after_packet_is_written() throws IOException {
+        Packet packet = Random.packet();
+        node.write(packet);
+        tick(2);
+        assertEquals(packet,consume(node));
     }
 
     private Packet packet(String sender,String topic,String message) {

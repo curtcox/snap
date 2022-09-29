@@ -8,7 +8,9 @@ import org.junit.rules.Timeout;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.List;
 
+import static com.curtcox.snap.model.Packet.ANY;
 import static com.curtcox.snap.model.TestClock.tick;
 import static com.curtcox.snap.model.Random.random;
 import static org.junit.Assert.*;
@@ -91,4 +93,32 @@ public class SimpleNetworkIntegrationTest {
         assertEquals(topic,packet.topic);
         assertEquals(message,packet.message);
     }
+
+    @Test
+    public void read_returns_packet_after_packet_is_written() throws IOException {
+        Packet packet = Random.packet();
+        FakeIO io = new FakeIO();
+
+        io.add(packet);
+        network.add(io);
+        tick(2);
+
+        Packet read = node1.read(ANY);
+        assertNotNull(read);
+        assertEquals(packet,read);
+    }
+
+    @Test
+    public void written_packet_can_be_read_from_network() {
+        Packet packet = Random.packet();
+        FakeIO io = new FakeIO();
+        network.add(io);
+        node1.write(packet);
+        tick(2);
+
+        List<Packet> written = io.written();
+        assertEquals(1,written.size());
+        assertEquals(packet,written.get(0));
+    }
+
 }
