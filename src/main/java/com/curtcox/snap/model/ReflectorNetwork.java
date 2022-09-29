@@ -21,17 +21,17 @@ final class ReflectorNetwork implements Network {
     }
 
     @Override
-    public void add(Packet.IO io) {
+    public void add(IO io) {
         scheduleNextReflection(io);
     }
 
-    private void scheduleNextReflection(final Packet.IO io) {
+    private void scheduleNextReflection(final IO io) {
          runner.periodically(() -> reflect(io));
     }
 
     void reflect(IO io) {
         try {
-            Packet packet = io.read(Packet.ANY);
+            Packet packet = io.read(ANY);
             if (packet!=null) {
                 io.write(packet);
             }
