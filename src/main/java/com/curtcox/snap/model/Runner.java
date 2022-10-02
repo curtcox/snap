@@ -23,6 +23,10 @@ public final class Runner {
         scheduler.scheduleAtFixedRate(command,clock.tick,clock.tick,TimeUnit.MILLISECONDS);
     }
 
+    public void periodically(Callable command) {
+        scheduler.scheduleAtFixedRate(new FutureTask<>(command),clock.tick,clock.tick,TimeUnit.MILLISECONDS);
+    }
+
     public void stop() {
         scheduler.shutdown();
     }
