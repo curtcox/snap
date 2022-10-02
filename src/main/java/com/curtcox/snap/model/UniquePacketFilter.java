@@ -7,7 +7,7 @@ import java.util.Set;
  * For eliminating duplicate packets.
  * This filter is stateful and only passes a given packet once.
  */
-public final class UniquePacketFilter implements Packet.Filter {
+final class UniquePacketFilter implements Packet.Filter {
 
     private final Set<Packet> passed = new HashSet<>();
 
