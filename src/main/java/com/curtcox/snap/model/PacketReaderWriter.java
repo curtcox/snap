@@ -1,8 +1,8 @@
 package com.curtcox.snap.model;
 
+import com.curtcox.snap.connectors.StreamIO;
+
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 
 import static com.curtcox.snap.util.Check.notNull;
 import static com.curtcox.snap.model.Packet.*;
@@ -17,8 +17,8 @@ public final class PacketReaderWriter implements IO {
         this.output = notNull(output);
     }
 
-    public static PacketReaderWriter from(InputStream in, OutputStream out) {
-        return new PacketReaderWriter(new InputStreamPacketReader(in),new OutputStreamPacketWriter(out));
+    public static PacketReaderWriter from(StreamIO io) {
+        return new PacketReaderWriter(new InputStreamPacketReader(io.in),new OutputStreamPacketWriter(io.out));
     }
 
     @Override

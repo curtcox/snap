@@ -1,5 +1,6 @@
 package com.curtcox.snap.model;
 
+import com.curtcox.snap.connectors.StreamIO;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
@@ -64,7 +65,7 @@ public class SimpleNetworkIntegrationTest {
     @Test
     public void messages_can_be_read_from_a_reader_writer_thru_a_network() throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        PacketReaderWriter readerWriter = PacketReaderWriter.from(new ByteArrayInputStream(new byte[0]),out);
+        PacketReaderWriter readerWriter = PacketReaderWriter.from(new StreamIO(new ByteArrayInputStream(new byte[0]),out));
         network.add(readerWriter);
         write_a_packet_to_reader_writer();
 
@@ -78,7 +79,9 @@ public class SimpleNetworkIntegrationTest {
 
     private void write_a_packet_to_reader_writer() {
         Bytes bytes = packet.asBytes();
-        PacketReaderWriter readerWriter = PacketReaderWriter.from(new ByteArrayInputStream(bytes.value()),new ByteArrayOutputStream());
+        PacketReaderWriter readerWriter = PacketReaderWriter.from(
+                new StreamIO(new ByteArrayInputStream(bytes.value()),new ByteArrayOutputStream())
+        );
         network.add(readerWriter);
         tick(3);
     }

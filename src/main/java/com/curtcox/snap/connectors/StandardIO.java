@@ -22,7 +22,7 @@ public final class StandardIO {
     }
 
     static PacketReaderWriter io() {
-        return PacketReaderWriter.from(System.in,System.out);
+        return PacketReaderWriter.from(new StreamIO(System.in,System.out));
     }
 
 }
