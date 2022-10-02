@@ -94,6 +94,9 @@ public final class Packet {
             return b.matches(this);
         }
 
+        /**
+         * A spec that matches some topics and not others.
+         */
         public static final class Spec {
             public final String value;
 
@@ -214,6 +217,8 @@ public final class Packet {
     /**
      * Something that accepts packets -- although not necessarily all packets.
      * Perhaps this should be the same interface as Writer.
+     * FIXME TODO Should this also be a Consumer of Packet
+     * https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html
      */
     public interface Sink {
         /**

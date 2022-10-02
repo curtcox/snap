@@ -2,6 +2,9 @@ package com.curtcox.snap.model;
 
 import java.io.IOException;
 
+/**
+ * For concisely waiting until something happens.
+ */
 public final class Await {
 
     public static Packet packet(Packet.Reader reader) throws IOException {
