@@ -1,5 +1,6 @@
 package com.curtcox.snap.connectors;
 
+import com.curtcox.snap.Running;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
@@ -11,6 +12,7 @@ import java.net.DatagramPacket;
 import static com.curtcox.snap.connectors.UDPSocket.address;
 import static com.curtcox.snap.connectors.UDPSocket.newDatagramSocket;
 import static org.junit.Assert.*;
+import static org.junit.Assume.*;
 
 public class UDPSocketTest {
 
@@ -39,6 +41,7 @@ public class UDPSocketTest {
 
     @Test
     public void can_read_socket() throws IOException {
+        assumeTrue(!Running.inTheCloud());
         UDPSocket socket = newDatagramSocket(address(224,0,0,251,5353));
         DatagramPacket packet = socket.receiveDatagram();
         assertNotNull(packet);
@@ -46,6 +49,7 @@ public class UDPSocketTest {
 
     @Test @Ignore
     public void can_poll_socket() throws IOException {
+        assumeTrue(!Running.inTheCloud());
         UDPSocket socket = newDatagramSocket(address(224,0,0,251,5353));
         for (int i=0; i<100; i++) {
             DatagramPacket packet = socket.receiveDatagram();
