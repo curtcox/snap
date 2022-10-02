@@ -1,5 +1,6 @@
-# snap
-Simple Network Announcement Protocol
+# snap ![CI](https://github.com/curtcox/snap/actions/workflows/maven.yml/badge.svg)
+**S**imple **N**etwork **A**nnouncement **P**rotocol
+
 
 ## Usage
 
