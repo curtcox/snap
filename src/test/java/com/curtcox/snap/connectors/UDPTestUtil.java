@@ -8,7 +8,7 @@ import java.util.List;
 
 import static com.curtcox.snap.model.TestClock.tick;
 
-public class UDPTestUtil {
+final class UDPTestUtil {
 
     public static List<Packet> flush(Packet.Reader reader) throws IOException {
         return flush(reader,5);

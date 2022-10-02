@@ -117,6 +117,7 @@ public class OutputStreamPacketWriterTest {
         ExecutorService service = Executors.newSingleThreadExecutor();
         Future<Packet> submitted = service.submit(() -> reader.read(ANY));
         writer.write(packet);
+        tick(2);
         Packet read = submitted.get();
 
         assertEquals(packet.sender,read.sender);

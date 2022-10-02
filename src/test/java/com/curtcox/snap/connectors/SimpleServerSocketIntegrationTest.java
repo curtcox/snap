@@ -1,21 +1,22 @@
 package com.curtcox.snap.connectors;
 
 import com.curtcox.snap.model.*;
-import com.curtcox.snap.model.Packet.*;
-import com.curtcox.snap.model.Random;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
 
 import java.io.IOException;
+import java.net.ServerSocket;
 
+import com.curtcox.snap.model.Packet.*;
 import static com.curtcox.snap.connectors.IntegrationTestUtil.*;
+import static com.curtcox.snap.connectors.IntegrationTestUtil.assertResponseFrom;
 import static com.curtcox.snap.connectors.UDPTestUtil.flush;
 import static com.curtcox.snap.model.TestClock.tick;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
-public class UDPIntegrationTest {
+public class SimpleServerSocketIntegrationTest {
 
     @Rule
     public Timeout globalTimeout = Timeout.seconds(2);
@@ -30,7 +31,7 @@ public class UDPIntegrationTest {
     }
 
     @Test
-    public void network_with_no_UDP_will_respond_to_ping_request() {
+    public void network_with_no_TCP_will_respond_to_ping_request() {
         PacketReceiptList packets = new PacketReceiptList();
         Snap.on(network).on(packets);
         addPingSound(network);
@@ -44,10 +45,13 @@ public class UDPIntegrationTest {
     }
 
     @Test
-    public void network_with_UDP_will_respond_to_ping_request() throws IOException {
+    public void network_with_TCP_will_respond_to_ping_request() throws IOException {
         PacketReceiptList packets = new PacketReceiptList();
-        IO io = UDP.io(runner);
-        network.add(io);
+        PacketStreamBridge streams = new PacketStreamBridge();
+        ServerSocket socket = new ServerSocket();
+        SimpleServerSocket serverSocket = SimpleServerSocket.forTCP(socket,streams);
+        serverSocket.start(runner);
+        network.add(streams);
         Snap snap1 = Snap.on(network);
         snap1.on(packets);
         Snap snap2 = addPingSound(network);
@@ -63,7 +67,7 @@ public class UDPIntegrationTest {
         assertResponseFrom(packets,snap1);
         assertResponseFrom(packets,snap2);
         assertResponseFrom(packets,snap3);
-        flush(io);
+        flush(streams);
     }
 
 }
