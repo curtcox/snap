@@ -1,7 +1,6 @@
 package com.curtcox.snap.connectors;
 
 import com.curtcox.snap.model.Await;
-import com.curtcox.snap.model.PacketReaderWriter;
 import com.curtcox.snap.model.Random;
 import org.junit.Rule;
 import org.junit.Test;
@@ -65,15 +64,59 @@ public class PacketStreamBridgeTest {
         bridge.accept(stream.asStreamIO());
         Packet packet = Random.packet();
         bridge.write(packet);
+
+        assertEquals(1,stream.written.size());
+        assertEquals(packet,stream.written.get(0));
     }
 
     @Test
-    public void write_sends_packet_to_2_streams() {
-        fail();
+    public void write_sends_packet_to_2_streams() throws IOException {
+        BufferStreamIO stream1 = BufferStreamIO.with();
+        bridge.accept(stream1.asStreamIO());
+        BufferStreamIO stream2 = BufferStreamIO.with();
+        bridge.accept(stream2.asStreamIO());
+
+        Packet packet = Random.packet();
+        bridge.write(packet);
+
+        assertEquals(1,stream1.written.size());
+        assertEquals(packet,stream1.written.get(0));
+        assertEquals(2,stream1.written.size());
+        assertEquals(packet,stream2.written.get(0));
     }
 
     @Test
-    public void closed_streams_are_discarded() {
-        fail();
+    public void closed_streams_are_not_written_to() throws IOException {
+        BufferStreamIO buffer = BufferStreamIO.with();
+        StreamIO streamIO = buffer.asStreamIO();
+        bridge.accept(streamIO);
+        streamIO.out.close();
+
+        bridge.write(Random.packet());
+
+        assertEquals(0,buffer.written.size());
     }
+
+    @Test
+    public void closed_streams_are_not_read_from() throws IOException {
+        BufferStreamIO buffer = BufferStreamIO.with();
+        StreamIO streamIO = buffer.asStreamIO();
+        bridge.accept(streamIO);
+        streamIO.in.close();
+
+        assertNull(bridge.read(ANY));
+    }
+
+    @Test
+    public void streams_are_not_written_to_after_their_input_is_closed() throws IOException {
+        BufferStreamIO buffer = BufferStreamIO.with();
+        StreamIO streamIO = buffer.asStreamIO();
+        bridge.accept(streamIO);
+        streamIO.in.close();
+        assertNull(bridge.read(ANY));
+
+        bridge.write(Random.packet());
+        assertEquals(0,buffer.written.size());
+    }
+
 }

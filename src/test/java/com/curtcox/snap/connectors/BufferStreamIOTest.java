@@ -53,4 +53,16 @@ public class BufferStreamIOTest {
         assertEquals(packet,io.written.get(0));
     }
 
+    @Test
+    public void written_has_2_packets_when_2_packets_are_written() throws IOException {
+        Packet packet1 = Random.packet();
+        Packet packet2 = Random.packet();
+        BufferStreamIO io = BufferStreamIO.with();
+        io.write(packet1);
+        io.write(packet2);
+        assertEquals(2,io.written.size());
+        assertEquals(packet1,io.written.get(0));
+        assertEquals(packet2,io.written.get(1));
+    }
+
 }
