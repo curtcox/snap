@@ -8,7 +8,7 @@ import com.curtcox.snap.model.Snap;
 import java.util.List;
 import java.util.function.Predicate;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 final class IntegrationTestUtil {
 
@@ -32,6 +32,10 @@ final class IntegrationTestUtil {
             }
         }
         return false;
+    }
+
+    static void assertContains(List<Packet> packets, Packet packet) {
+        assertTrue("No " + packet + " in " + packets,packets.contains(packet));
     }
 
     static void assertResponseFrom(PacketReceiptList packets, Snap snap) {
