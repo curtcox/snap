@@ -52,6 +52,14 @@ public final class Bytes {
         return new Bytes(bytes);
     }
 
+    public static Bytes from(Packet... packets) {
+        byte[][] arrays = new byte[packets.length][];
+        for (int i=0; i<packets.length; i++) {
+            arrays[i] = packets[i].asBytes().value();
+        }
+        return from(arrays);
+    }
+
     static Bytes from(byte[]... arrays) {
         int size = 0;
         for (byte[] a : arrays) {

@@ -34,7 +34,7 @@ public class PacketStreamBridgeTest {
     @Test
     public void read_returns_packet_from_1_stream() throws IOException {
         Packet packet = Random.packet();
-        bridge.accept(BufferStreamIO.with(packet).asStreamIO());
+        bridge.accept(ByteStreamIO.with(packet).asStreamIO());
 
         Packet read = bridge.read(ANY);
         assertEquals(packet,read);
@@ -45,8 +45,8 @@ public class PacketStreamBridgeTest {
     public void read_returns_packets_from_2_streams() throws IOException {
         Packet packet1 = Random.packet();
         Packet packet2 = Random.packet();
-        bridge.accept(BufferStreamIO.with(packet1).asStreamIO());
-        bridge.accept(BufferStreamIO.with(packet2).asStreamIO());
+        bridge.accept(ByteStreamIO.with(packet1).asStreamIO());
+        bridge.accept(ByteStreamIO.with(packet2).asStreamIO());
 
         List<Packet> read = Await.packets(bridge);
         assertContains(read,packet1);
@@ -60,46 +60,51 @@ public class PacketStreamBridgeTest {
 
     @Test
     public void write_sends_packet_to_1_stream() throws IOException {
-        BufferStreamIO stream = BufferStreamIO.with();
+        ByteStreamIO stream = ByteStreamIO.with();
         bridge.accept(stream.asStreamIO());
         Packet packet = Random.packet();
         bridge.write(packet);
 
-        assertEquals(1,stream.written.size());
-        assertEquals(packet,stream.written.get(0));
+        List<Packet> written = stream.getWrittenTo();
+        assertEquals(1,written.size());
+        assertEquals(packet,written.get(0));
     }
 
     @Test
     public void write_sends_packet_to_2_streams() throws IOException {
-        BufferStreamIO stream1 = BufferStreamIO.with();
+        ByteStreamIO stream1 = ByteStreamIO.with();
         bridge.accept(stream1.asStreamIO());
-        BufferStreamIO stream2 = BufferStreamIO.with();
+        ByteStreamIO stream2 = ByteStreamIO.with();
         bridge.accept(stream2.asStreamIO());
 
         Packet packet = Random.packet();
         bridge.write(packet);
 
-        assertEquals(1,stream1.written.size());
-        assertEquals(packet,stream1.written.get(0));
-        assertEquals(2,stream1.written.size());
-        assertEquals(packet,stream2.written.get(0));
+        List<Packet> written1 = stream1.getWrittenTo();
+        assertEquals(1,written1.size());
+        assertEquals(packet,written1.get(0));
+
+        List<Packet> written2 = stream2.getWrittenTo();
+        assertEquals(2,written2.size());
+        assertEquals(packet,written2.get(0));
     }
 
     @Test
     public void closed_streams_are_not_written_to() throws IOException {
-        BufferStreamIO buffer = BufferStreamIO.with();
+        ByteStreamIO buffer = ByteStreamIO.with();
         StreamIO streamIO = buffer.asStreamIO();
         bridge.accept(streamIO);
         streamIO.out.close();
 
         bridge.write(Random.packet());
 
-        assertEquals(0,buffer.written.size());
+        List<Packet> written = buffer.getWrittenTo();
+        assertEquals(0,written.size());
     }
 
     @Test
     public void closed_streams_are_not_read_from() throws IOException {
-        BufferStreamIO buffer = BufferStreamIO.with();
+        ByteStreamIO buffer = ByteStreamIO.with();
         StreamIO streamIO = buffer.asStreamIO();
         bridge.accept(streamIO);
         streamIO.in.close();
@@ -109,14 +114,16 @@ public class PacketStreamBridgeTest {
 
     @Test
     public void streams_are_not_written_to_after_their_input_is_closed() throws IOException {
-        BufferStreamIO buffer = BufferStreamIO.with();
+        ByteStreamIO buffer = ByteStreamIO.with();
         StreamIO streamIO = buffer.asStreamIO();
         bridge.accept(streamIO);
         streamIO.in.close();
         assertNull(bridge.read(ANY));
 
         bridge.write(Random.packet());
-        assertEquals(0,buffer.written.size());
+
+        List<Packet> written = buffer.getWrittenTo();
+        assertEquals(0,written.size());
     }
 
 }

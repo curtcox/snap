@@ -8,11 +8,14 @@ import static com.curtcox.snap.model.Bytes.*;
 import static com.curtcox.snap.util.Check.notNull;
 import static com.curtcox.snap.model.Packet.*;
 
-final class OutputStreamPacketWriter implements Writer {
+/**
+ * A Packet.Writer that writes to an OutputStream.
+ */
+public final class OutputStreamPacketWriter implements Writer {
 
     private final OutputStream output;
 
-    OutputStreamPacketWriter(OutputStream output) {
+    public OutputStreamPacketWriter(OutputStream output) {
         this.output = notNull(output);
     }
 
@@ -45,4 +48,12 @@ final class OutputStreamPacketWriter implements Writer {
         }
         return result;
     }
+
+    public static void writeTo(OutputStream out, Packet... packets) throws IOException {
+        OutputStreamPacketWriter writer = new OutputStreamPacketWriter(out);
+        for (Packet packet : packets) {
+            writer.write(packet);
+        }
+    }
+
 }

@@ -2,17 +2,20 @@ package com.curtcox.snap.model;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
+import java.util.*;
 
-import static com.curtcox.snap.util.Check.notNull;
+import static com.curtcox.snap.util.Check.*;
 import static com.curtcox.snap.model.Packet.*;
 
-final class InputStreamPacketReader implements Reader {
+/**
+ * A Packet.Reader that reads from an InputStream.
+ */
+public final class InputStreamPacketReader implements Reader {
 
     final InputStream input;
     final byte[] buffer = new byte[Packet.MAX_SIZE];
 
-    InputStreamPacketReader(InputStream input) {
+    public InputStreamPacketReader(InputStream input) {
         this.input = notNull(input);
     }
 
@@ -29,4 +32,12 @@ final class InputStreamPacketReader implements Reader {
         return Packet.from(bytes);
     }
 
+    public static List<Packet> readWaiting(InputStream in) throws IOException {
+        List<Packet> packets = new ArrayList<>();
+        InputStreamPacketReader reader = new InputStreamPacketReader(in);
+        for (Packet packet = reader.read(ANY); packet!=null; packet=reader.read(ANY)) {
+            packets.add(packet);
+        }
+        return packets;
+    }
 }
