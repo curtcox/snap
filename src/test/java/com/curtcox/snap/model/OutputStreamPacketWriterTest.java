@@ -4,12 +4,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
+import java.util.*;
 import java.util.concurrent.*;
 
 import static com.curtcox.snap.model.TestClock.tick;
@@ -160,4 +157,50 @@ public class OutputStreamPacketWriterTest {
                 .build();
         return packet;
     }
+
+    @Test
+    public void can_read_1_packet_written_to_bytes() throws IOException {
+        Packet packet = Random.packet();
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        OutputStreamPacketWriter.writeTo(out,packet);
+        List<Packet> packets = InputStreamPacketReader.readWaiting(new ByteArrayInputStream(out.toByteArray()));
+
+        assertEquals(1,packets.size());
+        assertEquals(packet,packets.get(0));
+    }
+
+    @Test
+    public void can_read_2_packets_written_to_bytes() throws IOException {
+        Packet packet1 = Random.packet();
+        Packet packet2 = Random.packet();
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        OutputStreamPacketWriter.writeTo(out,packet1,packet2);
+        List<Packet> packets = InputStreamPacketReader.readWaiting(new ByteArrayInputStream(out.toByteArray()));
+
+        assertEquals(2,packets.size());
+        assertEquals(packet1,packets.get(0));
+        assertEquals(packet2,packets.get(1));
+    }
+
+    @Test
+    public void can_read_9_packets_written_to_bytes() throws IOException {
+        can_read_x_packets_written_to_bytes(9);
+    }
+
+    public void can_read_x_packets_written_to_bytes(int size) throws IOException {
+        List<Packet> packets = new ArrayList<>();
+        for (int i=0; i<size; i++) {
+            packets.add(Random.packet());
+        }
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        OutputStreamPacketWriter.writeTo(out,packets.toArray(new Packet[0]));
+        List<Packet> read = InputStreamPacketReader.readWaiting(new ByteArrayInputStream(out.toByteArray()));
+
+        assertEquals(size,read.size());
+        assertEquals(packets,read);
+    }
+
 }

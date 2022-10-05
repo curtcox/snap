@@ -1,7 +1,6 @@
 package com.curtcox.snap.model;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.*;
 
 import static com.curtcox.snap.util.Check.*;
@@ -10,16 +9,17 @@ import static com.curtcox.snap.model.Packet.*;
 /**
  * A Packet.Reader that reads from an InputStream.
  */
-public final class InputStreamPacketReader implements Reader {
+public final class InputStreamPacketReader implements Packet.Reader {
 
-    final InputStream input;
-    final byte[] buffer = new byte[Packet.MAX_SIZE];
+    final BufferedInputStream input;
+    final byte[] buffer = new byte[MAX_SIZE];
 
     public InputStreamPacketReader(InputStream input) {
-        this.input = notNull(input);
+        this.input = new BufferedInputStream(notNull(input));
     }
 
     public Packet read(Filter filter) throws IOException {
+        input.mark(MAX_SIZE);
         if (input.available()<1) {
             return null;
         }
@@ -29,7 +29,10 @@ public final class InputStreamPacketReader implements Reader {
         }
         byte[] raw = Arrays.copyOf(buffer,count);
         Bytes bytes = new Bytes(raw);
-        return Packet.from(bytes);
+        Packet packet = Packet.from(bytes);
+        input.reset();
+        input.skip(packet.asBytes().length);
+        return packet;
     }
 
     public static List<Packet> readWaiting(InputStream in) throws IOException {

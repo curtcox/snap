@@ -85,7 +85,7 @@ public class PacketStreamBridgeTest {
         assertEquals(packet,written1.get(0));
 
         List<Packet> written2 = stream2.getWrittenTo();
-        assertEquals(2,written2.size());
+        assertEquals(1,written2.size());
         assertEquals(packet,written2.get(0));
     }
 

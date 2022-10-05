@@ -388,7 +388,7 @@ public final class Packet {
     }
 
     private static String stringAt(byte[] raw, int offset) {
-        int hi = raw[offset] & 0xFF;
+        int hi = raw[offset]     & 0xFF;
         int lo = raw[offset + 1] & 0xFF;
         int length = hi * 255 + lo;
         return new String(raw, offset + 2, length, StandardCharsets.UTF_8);

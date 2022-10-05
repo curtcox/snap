@@ -5,6 +5,8 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import com.curtcox.snap.model.Packet.*;
 
+import java.io.*;
+
 public class PacketTest {
 
     Trigger t0 = Trigger.from(0);
@@ -61,4 +63,21 @@ public class PacketTest {
                 .build();
     }
 
+    @Test
+    public void packets_are_equivalent_after_being_converted_to_and_from_bytes() throws IOException {
+        for (int i=0; i<10; i++) {
+            Packet packet = Random.packet();
+            Packet copy = Packet.from(packet.asBytes());
+            assertEquals(packet,copy);
+            assertEquals(copy,packet);
+        }
+    }
+
+    @Test
+    public void packets_are_always_converted_to_the_same_bytes() {
+        for (int i=0; i<10; i++) {
+            Packet packet = Random.packet();
+            assertEquals(packet.asBytes(),packet.asBytes());
+        }
+    }
 }
