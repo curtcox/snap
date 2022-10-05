@@ -19,6 +19,11 @@ public class TopicSpecTest {
     }
 
     @Test
+    public void Duplicate_Sender_Notification() {
+        assertMatch(new Topic.Spec(Topic.Duplicate_Sender_Notification),Topic.Duplicate_Sender_Notification);
+    }
+
+    @Test
     public void matches_when_tag_specified_is_one_of_the_tags_provided() {
         assertMatch(new Topic.Spec("a"),new Topic("a b c"));
         assertMatch(new Topic.Spec("b"),new Topic("a b c"));

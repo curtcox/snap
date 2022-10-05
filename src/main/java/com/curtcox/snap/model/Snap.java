@@ -40,15 +40,34 @@ public final class Snap implements Reader.Factory, Sink.Acceptor {
         counter++;
         Snap snap = new Snap(node,counter);
         node.on(packet -> {
-            if (Ping.isRequest.test(packet)) {
-                System.out.println(snap.name + " responding to " + packet);
-                snap.sendPingResponse(packet);
-            } else {
-                System.out.println(snap.name + " ignoring " + packet);
-            }
+            snap.sendAutomaticResponses(packet);
             return true;
         });
         return snap;
+    }
+
+    private void sendAutomaticResponses(Packet packet) {
+        automaticPingResponse(packet);
+        automaticDuplicateSenderNotification(packet);
+    }
+
+    private void automaticPingResponse(Packet packet) {
+        if (Ping.isRequest.test(packet)) {
+            System.out.println(name + " responding to " + packet);
+            sendPingResponse(packet);
+        } else {
+            //System.out.println(name + " ignoring " + packet);
+        }
+    }
+
+    private static boolean isDupNotice(Packet packet) {
+        return new Topic.Spec(Topic.Duplicate_Sender_Notification).matches(packet.topic);
+    }
+
+    private void automaticDuplicateSenderNotification(Packet packet) {
+        if (packet.sender.value.equals(name) && !isDupNotice(packet)) {
+            reportDuplicateSender(packet);
+        }
     }
 
     public void send(Topic topic, String message) {
@@ -120,6 +139,16 @@ public final class Snap implements Reader.Factory, Sink.Acceptor {
                 .sender(new Packet.Sender(whoami()))
                 .topic(packet.topic)
                 .message(Ping.RESPONSE)
+                .trigger(Trigger.from(packet))
+                .build()
+        );
+    }
+
+    private void reportDuplicateSender(Packet packet) {
+        node.write(Packet.builder()
+                .sender(new Packet.Sender(whoami()))
+                .topic(Topic.Duplicate_Sender_Notification)
+                .message("Duplicate sender named : " + packet.sender)
                 .trigger(Trigger.from(packet))
                 .build()
         );

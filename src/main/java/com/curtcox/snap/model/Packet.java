@@ -81,6 +81,8 @@ public final class Packet {
      */
     public static final class Topic {
         final String value;
+
+        public static final Topic Duplicate_Sender_Notification = new Topic("duplicate sender notification");
         public Topic(String value) {
             this.value = value;
         }
@@ -109,8 +111,10 @@ public final class Packet {
                 this(topic.value);
             }
 
-            public boolean matches(Topic b) {
-                return value.isEmpty() || Arrays.asList(b.value.split(" ")).contains(value);
+            public boolean matches(Topic t) {
+                return  value.isEmpty() ||
+                        value.equals(t.value) ||
+                        Arrays.asList(t.value.split(" ")).contains(value);
             }
             @Override public String toString() { return value; }
         }

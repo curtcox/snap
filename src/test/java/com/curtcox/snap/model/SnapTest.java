@@ -240,7 +240,7 @@ public class SnapTest {
     }
 
     @Test
-    public void snap_reports_receiving_messages_by_the_same_sender_it_is() throws IOException {
+    public void ping_responses_from_listening_to_just_ping_are_the_same_as_ping_responses_from_snap() throws IOException {
         SimpleNetwork network = SimpleNetwork.newPolling();
         String name = "Master";
         Snap pinger = Snap.on(network);
@@ -248,35 +248,20 @@ public class SnapTest {
         Snap pingee = Snap.on(network);
         pingee.setName(name);
         PacketReceiptList pingerGot = PacketReceiptList.on(pinger);
-        PacketReceiptList pingeeGot = PacketReceiptList.on(pingee);
 
         Topic topic = Random.topic();
         SinkReader responses = new SinkReader();
         pinger.ping(topic,responses);
         tick(3);
 
-        assertEquals(2,pingeeGot.size());
-        Packet pingRequest = pingeeGot.get(0).packet;
-        assertEquals(name,pingRequest.sender.value);
-        assertEquals(name,pingRequest.sender.value);
-
-        Packet dupeNote1 = pingeeGot.get(1).packet;
-        assertEquals(new Topic("duplicate sender notification"),dupeNote1.topic);
-
-        assertEquals(2,pingerGot.size());
-        Packet pingResponse = pingerGot.get(0).packet;
-        assertEquals(name,pingResponse.sender.value);
-        assertEquals(topic,pingResponse.topic);
-        Packet dupeNote2 = pingerGot.get(1).packet;
-        assertEquals(name,dupeNote2.sender.value);
-        assertEquals(new Topic("duplicate sender notification"),dupeNote2.topic);
-
         List<Packet> responsePackets = InputStreamPacketReader.readWaiting(responses);
-        assertEquals(1,responsePackets.size());
+        assertEquals(2,responsePackets.size());
+        assertEquals(pingerGot.get(0).packet,responsePackets.get(0));
+        assertEquals(pingerGot.get(1).packet,responsePackets.get(1));
     }
 
     @Test
-    public void triggers_are_right_when_snap_reports_receiving_messages_by_the_same_sender() throws IOException {
+    public void snap_reports_receiving_messages_by_the_same_sender() throws IOException {
         SimpleNetwork network = SimpleNetwork.newPolling();
         String name = "Master";
         Snap pinger = Snap.on(network);
@@ -306,7 +291,7 @@ public class SnapTest {
         assertEquals(Trigger.from(pingResponse),dupeNote2.trigger);
 
         // topics
-        Topic dupes = new Topic("duplicate sender notification");
+        Topic dupes = Topic.Duplicate_Sender_Notification;
         assertEquals(topic,pingRequest.topic);
         assertEquals(topic,pingResponse.topic);
         assertEquals(dupes,dupeNote1.topic);
