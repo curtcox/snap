@@ -29,8 +29,11 @@ public final class Snap implements Reader.Factory, Sink.Acceptor {
         return SimpleNetwork.newPolling();
     }
 
-    public static Snap on(Network network) {
-        return Snap.of(Node.on(network));
+    public static Snap on(Network network) { return Snap.of(Node.on(network)); }
+    public static Snap namedOn(String name, Network network) {
+        Snap snap = Snap.of(Node.on(network));
+        snap.setName(name+"@"+snap.whoami());
+        return snap;
     }
 
     public static Snap of(final Node node) {
@@ -38,9 +41,12 @@ public final class Snap implements Reader.Factory, Sink.Acceptor {
         Snap snap = new Snap(node,counter);
         node.on(packet -> {
             if (Ping.isRequest.test(packet)) {
+                System.out.println(snap.name + " responding to " + packet);
                 snap.sendPingResponse(packet);
+            } else {
+                System.out.println(snap.name + " ignoring " + packet);
             }
-            return false;
+            return true;
         });
         return snap;
     }

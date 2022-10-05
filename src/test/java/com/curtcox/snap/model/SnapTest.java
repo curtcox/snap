@@ -7,8 +7,7 @@ import org.junit.Test;
 import org.junit.rules.Timeout;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import static com.curtcox.snap.model.TestClock.tick;
 import static com.curtcox.snap.model.Random.random;
@@ -26,14 +25,14 @@ public class SnapTest {
 
     Runner runner = Runner.of();
 
-    ReflectorNetwork network = new ReflectorNetwork(runner);
+    ReflectorNetwork reflectorNetwork = new ReflectorNetwork(runner);
 
     @Rule
     public Timeout globalTimeout = Timeout.seconds(3);
 
     @Before
     public void setUp() {
-        node = Node.on(network);
+        node = Node.on(reflectorNetwork);
         snap = Snap.of(node);
     }
 
@@ -154,7 +153,7 @@ public class SnapTest {
 
     @Test
     public void messages_are_delivered_in_order_when_on_network() throws IOException {
-        Node.on(network);
+        Node.on(reflectorNetwork);
         Topic topic = new Topic("call");
 
         snap.send(topic,"1");
@@ -173,7 +172,7 @@ public class SnapTest {
 
     @Test
     public void snap_returns_ping_response_on_reflector_network() throws Exception {
-        Node.on(network);
+        Node.on(reflectorNetwork);
 
         Topic topic = Random.topic();
         SinkReader reader = new SinkReader();
@@ -224,7 +223,7 @@ public class SnapTest {
 
     @Test
     public void default_snap_name() {
-        Snap snap = Snap.on(network);
+        Snap snap = Snap.on(reflectorNetwork);
         String name = snap.whoami();
         assertContains(name,snap.host());
         assertContains(name,snap.user());
@@ -235,9 +234,97 @@ public class SnapTest {
         Set<String> names = new HashSet<>();
         int count = 100;
         for (int i=0; i<count; i++) {
-            names.add(Snap.on(network).whoami());
+            names.add(Snap.on(reflectorNetwork).whoami());
         }
         assertEquals(count,names.size());
+    }
+
+    @Test
+    public void snap_reports_receiving_messages_by_the_same_sender_it_is() throws IOException {
+        SimpleNetwork network = SimpleNetwork.newPolling();
+        String name = "Master";
+        Snap pinger = Snap.on(network);
+        pinger.setName(name);
+        Snap pingee = Snap.on(network);
+        pingee.setName(name);
+        PacketReceiptList pingerGot = PacketReceiptList.on(pinger);
+        PacketReceiptList pingeeGot = PacketReceiptList.on(pingee);
+
+        Topic topic = Random.topic();
+        SinkReader responses = new SinkReader();
+        pinger.ping(topic,responses);
+        tick(3);
+
+        assertEquals(2,pingeeGot.size());
+        Packet pingRequest = pingeeGot.get(0).packet;
+        assertEquals(name,pingRequest.sender.value);
+        assertEquals(name,pingRequest.sender.value);
+
+        Packet dupeNote1 = pingeeGot.get(1).packet;
+        assertEquals(new Topic("duplicate sender notification"),dupeNote1.topic);
+
+        assertEquals(2,pingerGot.size());
+        Packet pingResponse = pingerGot.get(0).packet;
+        assertEquals(name,pingResponse.sender.value);
+        assertEquals(topic,pingResponse.topic);
+        Packet dupeNote2 = pingerGot.get(1).packet;
+        assertEquals(name,dupeNote2.sender.value);
+        assertEquals(new Topic("duplicate sender notification"),dupeNote2.topic);
+
+        List<Packet> responsePackets = InputStreamPacketReader.readWaiting(responses);
+        assertEquals(1,responsePackets.size());
+    }
+
+    @Test
+    public void triggers_are_right_when_snap_reports_receiving_messages_by_the_same_sender() throws IOException {
+        SimpleNetwork network = SimpleNetwork.newPolling();
+        String name = "Master";
+        Snap pinger = Snap.on(network);
+        pinger.setName(name);
+        Snap pingee = Snap.on(network);
+        pingee.setName(name);
+        PacketReceiptList pingerGot = PacketReceiptList.on(pinger);
+        PacketReceiptList pingeeGot = PacketReceiptList.on(pingee);
+
+        Topic topic = Random.topic();
+        SinkReader responses = new SinkReader();
+        pinger.ping(topic,responses);
+        tick(3);
+
+        assertEquals(2,pingerGot.size());
+        assertEquals(2,pingeeGot.size());
+
+        Packet pingRequest = pingeeGot.get(0).packet;
+        Packet pingResponse = pingerGot.get(0).packet;
+        Packet dupeNote1 = pingerGot.get(1).packet;
+        Packet dupeNote2 = pingeeGot.get(1).packet;
+
+        // triggers
+        assertEquals(Trigger.NONE,pingRequest.trigger);
+        assertEquals(Trigger.from(pingRequest),pingResponse.trigger);
+        assertEquals(Trigger.from(pingRequest),dupeNote1.trigger);
+        assertEquals(Trigger.from(pingResponse),dupeNote2.trigger);
+
+        // topics
+        Topic dupes = new Topic("duplicate sender notification");
+        assertEquals(topic,pingRequest.topic);
+        assertEquals(topic,pingResponse.topic);
+        assertEquals(dupes,dupeNote1.topic);
+        assertEquals(dupes,dupeNote2.topic);
+
+        // names
+        Sender sender = new Sender(name);
+        assertEquals(sender,pingRequest.sender);
+        assertEquals(sender,pingResponse.sender);
+        assertEquals(sender,dupeNote1.sender);
+        assertEquals(sender,dupeNote2.sender);
+
+        // messages
+        assertEquals(Ping.REQUEST,pingRequest.message);
+        assertEquals(Ping.RESPONSE,pingResponse.message);
+        String dupMessage = "Duplicate sender named : Master";
+        assertEquals(dupMessage,dupeNote1.message);
+        assertEquals(dupMessage,dupeNote2.message);
     }
 
 }

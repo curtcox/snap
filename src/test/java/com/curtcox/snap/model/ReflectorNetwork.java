@@ -7,14 +7,11 @@ import static com.curtcox.snap.model.Packet.*;
 
 /**
  * A network that reflects every packet written back to the writer.
+ * This is only useful for writing unit tests.
  */
 final class ReflectorNetwork implements Network {
 
     private final Runner runner;
-
-    ReflectorNetwork() {
-        this(Runner.of());
-    }
 
     ReflectorNetwork(Runner runner) {
         this.runner = notNull(runner);

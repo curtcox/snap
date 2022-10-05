@@ -9,6 +9,15 @@ public final class PacketReceiptList implements Packet.Sink, List<Packet.Receipt
 
     private final List<Packet.Receipt> receipts = new ArrayList<>();
 
+    /**
+     * Packets received. Does not include packets sent.
+     */
+    public static PacketReceiptList on(Snap snap) {
+        PacketReceiptList packets = new PacketReceiptList();
+        snap.on(packets);
+        return packets;
+    }
+
     @Override public boolean add(Packet packet) {
         receipts.add(new Packet.Receipt(packet));
         return true;

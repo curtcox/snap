@@ -54,6 +54,7 @@ public final class Packet {
 
     /**
      * A packet and when it was received.
+     * TODO FIXME This should probably be Event instead of Receipt and support types of Sent/Received/Created
      */
     public static class Receipt {
 

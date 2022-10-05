@@ -11,7 +11,7 @@ import java.util.List;
 
 import com.curtcox.snap.model.Packet;
 
-import static com.curtcox.snap.connectors.IntegrationTestUtil.assertContains;
+import static com.curtcox.snap.model.IntegrationTestUtil.assertContains;
 import static com.curtcox.snap.model.Packet.*;
 import static org.junit.Assert.*;
 

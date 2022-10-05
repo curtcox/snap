@@ -15,8 +15,8 @@ public final class SimpleNetwork implements Network {
 
     private final Runner runner;
 
-    private SimpleNetwork(Runner executor) {
-        this.runner = notNull(executor);
+    private SimpleNetwork(Runner runner) {
+        this.runner = notNull(runner);
     }
 
     public static SimpleNetwork newPolling() {

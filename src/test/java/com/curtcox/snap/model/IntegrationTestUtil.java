@@ -1,22 +1,17 @@
-package com.curtcox.snap.connectors;
-
-import com.curtcox.snap.model.Packet;
-import com.curtcox.snap.model.PacketReceiptList;
-import com.curtcox.snap.model.Ping;
-import com.curtcox.snap.model.Snap;
+package com.curtcox.snap.model;
 
 import java.util.List;
 import java.util.function.Predicate;
 
 import static org.junit.Assert.*;
 
-final class IntegrationTestUtil {
+public final class IntegrationTestUtil {
 
-    static void assertContainsPingResponse(List<Packet.Receipt> receipts) {
+    public static void assertContainsPingResponse(List<Packet.Receipt> receipts) {
         assertContains(receipts, receipt -> Ping.isResponse.test(receipt.packet),"ping response");
     }
 
-    static void assertContainsPingRequest(List<Packet.Receipt> receipts) {
+    public static void assertContainsPingRequest(List<Packet.Receipt> receipts) {
         assertContains(receipts, receipt -> Ping.isRequest.test(receipt.packet),"ping requests");
     }
 
@@ -34,19 +29,19 @@ final class IntegrationTestUtil {
         return false;
     }
 
-    static void assertContains(List<Packet> packets, Packet packet) {
+    public static void assertContains(List<Packet> packets, Packet packet) {
         assertTrue("No " + packet + " in " + packets,packets.contains(packet));
     }
 
-    static void assertResponseFrom(PacketReceiptList packets, Snap snap) {
+    public static void assertResponseFrom(PacketReceiptList packets, Snap snap) {
         assertContains(packets, receipt -> {
             Packet packet = receipt.packet;
             return Ping.isResponse.test(packet) && packet.sender.toString().equals(snap.whoami());
         },"ping response from " + snap.whoami());
     }
 
-    static Snap addPingSound(Packet.Network network) {
-        Snap snap = Snap.on(network);
+    public static Snap addPingSound(Packet.Network network) {
+        Snap snap = Snap.namedOn("pingSound",network);
         com.curtcox.snap.ui.Ping.on(snap);
         return snap;
     }

@@ -36,11 +36,15 @@ public final class InputStreamPacketReader implements Packet.Reader {
     }
 
     public static List<Packet> readWaiting(InputStream in) throws IOException {
+        return readWaiting(new InputStreamPacketReader(in));
+    }
+
+    public static List<Packet> readWaiting(Packet.Reader reader) throws IOException {
         List<Packet> packets = new ArrayList<>();
-        InputStreamPacketReader reader = new InputStreamPacketReader(in);
         for (Packet packet = reader.read(ANY); packet!=null; packet=reader.read(ANY)) {
             packets.add(packet);
         }
         return packets;
     }
+
 }

@@ -6,7 +6,7 @@ import java.util.*;
 
 final class CombinedSink implements Sink {
 
-    final List<Sink> sinks = new ArrayList<>();
+    private final List<Sink> sinks = new ArrayList<>();
 
     @Override
     public boolean add(Packet packet) {
@@ -18,6 +18,10 @@ final class CombinedSink implements Sink {
     }
 
     void add(Sink sink) {
-         sinks.add(sink);
+        if (sinks.contains(sink)) {
+            String message = "This sink has already been added. Adding it again would produce duplicate deliveries.";
+            throw new IllegalArgumentException(message);
+        }
+        sinks.add(sink);
     }
 }

@@ -59,4 +59,17 @@ public class CombinedSinkTest {
         assertEquals(packet2,sink2.get(1).packet);
     }
 
+    @Test
+    public void prevent_adding_the_same_sink_twice() {
+        PacketReceiptList sink = new PacketReceiptList();
+        CombinedSink combined = new CombinedSink();
+        combined.add(sink);
+        try {
+            combined.add(sink);
+            fail();
+        } catch (IllegalArgumentException e) {
+            String expected = "This sink has already been added. Adding it again would produce duplicate deliveries.";
+            assertEquals(expected,e.getMessage());
+        }
+    }
 }

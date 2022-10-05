@@ -10,8 +10,8 @@ import java.io.IOException;
 import java.net.ServerSocket;
 
 import com.curtcox.snap.model.Packet.*;
-import static com.curtcox.snap.connectors.IntegrationTestUtil.*;
-import static com.curtcox.snap.connectors.IntegrationTestUtil.assertResponseFrom;
+import static com.curtcox.snap.model.IntegrationTestUtil.*;
+import static com.curtcox.snap.model.IntegrationTestUtil.assertResponseFrom;
 import static com.curtcox.snap.connectors.UDPTestUtil.flush;
 import static com.curtcox.snap.model.TestClock.tick;
 import static org.junit.Assert.assertEquals;
@@ -46,27 +46,29 @@ public class SimpleServerSocketIntegrationTest {
 
     @Test
     public void network_with_TCP_will_respond_to_ping_request() throws IOException {
-        PacketReceiptList packets = new PacketReceiptList();
-        PacketStreamBridge streams = new PacketStreamBridge();
         ServerSocket socket = new ServerSocket();
+        PacketStreamBridge streams = new PacketStreamBridge();
         SimpleServerSocket serverSocket = SimpleServerSocket.forTCP(socket,streams);
         serverSocket.start(runner);
-        network.add(streams);
-        Snap snap1 = Snap.on(network);
-        snap1.on(packets);
-        Snap snap2 = addPingSound(network);
+//        network.add(streams);
 
-        Snap snap3 = Snap.on(network);
-        snap3.send(Random.topic(),Ping.REQUEST);
+        Snap receipts = Snap.namedOn("receipts",network);
+        PacketReceiptList packets = new PacketReceiptList();
+        receipts.on(packets);
+        Snap pingSound = addPingSound(network);
+
+        Snap pinger = Snap.namedOn("pinger",network);
+        pinger.send(Random.topic(),Ping.REQUEST);
         tick(5);
-        packets = packets.filter(packet -> packet.sender.toString().contains(snap1.host()));
+        //packets = packets.filter(packet -> packet.sender.toString().contains(receipts.host()));
 
+        assertEquals(4,packets);
         assertEquals(4,packets.size());
         assertContainsPingRequest(packets);
         assertContainsPingResponse(packets);
-        assertResponseFrom(packets,snap1);
-        assertResponseFrom(packets,snap2);
-        assertResponseFrom(packets,snap3);
+        assertResponseFrom(packets,receipts);
+        assertResponseFrom(packets,pingSound);
+        assertResponseFrom(packets,pinger);
         flush(streams);
     }
 

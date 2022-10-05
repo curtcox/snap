@@ -1,26 +1,18 @@
-package com.curtcox.snap.connectors;
+package com.curtcox.snap.model;
 
-import com.curtcox.snap.model.*;
-import com.curtcox.snap.model.Packet.*;
-import com.curtcox.snap.model.Random;
-import org.junit.After;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.rules.Timeout;
 
-import java.io.IOException;
-
 import static com.curtcox.snap.model.IntegrationTestUtil.*;
-import static com.curtcox.snap.connectors.UDPTestUtil.flush;
 import static com.curtcox.snap.model.TestClock.tick;
 import static org.junit.Assert.*;
 
-public class UDPIntegrationTest {
+public class SimpleNetworkPingTest {
 
     @Rule
-    public Timeout globalTimeout = Timeout.seconds(5);
+    public Timeout globalTimeout = Timeout.seconds(2);
 
-    final Network network = Snap.newNetwork(Network.Type.memory);
+    final Packet.Network network = Snap.newNetwork(Packet.Network.Type.memory);
 
     Runner runner = Runner.of();
 
@@ -30,7 +22,7 @@ public class UDPIntegrationTest {
     }
 
     @Test
-    public void network_with_no_UDP_will_respond_to_ping_request() {
+    public void network_will_respond_to_ping_request() {
         PacketReceiptList packets = new PacketReceiptList();
         Snap.on(network).on(packets);
         addPingSound(network);
@@ -44,10 +36,7 @@ public class UDPIntegrationTest {
     }
 
     @Test
-    public void network_with_UDP_will_respond_to_ping_request() throws IOException {
-        IO io = UDP.io(runner);
-        flush(io);
-        network.add(io);
+    public void network_with_ping_sound_will_respond_to_ping_request() {
         Snap recorder = Snap.namedOn("recorder",network);
         PacketReceiptList receipts = PacketReceiptList.on(recorder);
         Snap pingSound = addPingSound(network);
@@ -55,16 +44,11 @@ public class UDPIntegrationTest {
         Snap pinger = Snap.namedOn("pinger",network);
         pinger.send(Random.topic(),Ping.REQUEST);
         tick(5);
-        receipts = receipts.filter(packet -> packet.sender.toString().contains(recorder.host()));
 
-        assertEquals(4,receipts);
-        assertEquals(4,receipts.size());
+        assertEquals(2,receipts.size());
         assertContainsPingRequest(receipts);
         assertContainsPingResponse(receipts);
-        assertResponseFrom(receipts,recorder);
         assertResponseFrom(receipts,pingSound);
-        assertResponseFrom(receipts,pinger);
-        flush(io);
     }
 
 }

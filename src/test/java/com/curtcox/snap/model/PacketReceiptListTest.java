@@ -55,9 +55,18 @@ public class PacketReceiptListTest {
         assertEquals(count,all2.size());
     }
 
+    @Test
+    public void on_snap_includes_packets_received_by_snap() {
+        fail();
+    }
+
+    @Test
+    public void on_snap_ignores_packets_sent_by_snap() {
+        fail();
+    }
+
     private void assertContains(String whole, String part) {
         assertTrue(whole + " should contain " + part, whole.contains(part));
     }
-
 
 }

@@ -5,6 +5,7 @@ import static com.curtcox.snap.model.Packet.*;
 /**
  * A mutable list of packets that can be accessed by multiple threads concurrently.
  */
+// TODO FIXME Probably should combine and rename SinkReader/ConcurrentPacketList into new PacketList class that implements or exposes a List.
 public final class ConcurrentPacketList
         implements Reader, Sink
 {
