@@ -8,7 +8,7 @@ import com.curtcox.snap.model.Packet.*;
 // Potential future API
 public final class Snap implements Reader.Factory, Sink.Acceptor {
 
-    final Node node;
+    private final Node node;
 
     private String name;
 
@@ -71,7 +71,7 @@ public final class Snap implements Reader.Factory, Sink.Acceptor {
     }
 
     public void send(Topic topic, String message) {
-        node.write(Packet.builder()
+        send(Packet.builder()
                 .sender(new Packet.Sender(whoami()))
                 .topic(topic)
                 .message(message)
@@ -80,13 +80,17 @@ public final class Snap implements Reader.Factory, Sink.Acceptor {
     }
 
     public void send(Topic topic, String message,Trigger trigger) {
-        node.write(Packet.builder()
+        send(Packet.builder()
                 .sender(new Packet.Sender(whoami()))
                 .topic(topic)
                 .message(message)
                 .trigger(trigger)
                 .build()
         );
+    }
+
+    void send(Packet packet) {
+        node.write(packet);
     }
 
     public Reader reader(Topic topic) {
@@ -135,7 +139,7 @@ public final class Snap implements Reader.Factory, Sink.Acceptor {
     }
 
     private void sendPingResponse(Packet packet) {
-        node.write(Packet.builder()
+        send(Packet.builder()
                 .sender(new Packet.Sender(whoami()))
                 .topic(packet.topic)
                 .message(Ping.RESPONSE)
@@ -145,7 +149,7 @@ public final class Snap implements Reader.Factory, Sink.Acceptor {
     }
 
     private void reportDuplicateSender(Packet packet) {
-        node.write(Packet.builder()
+        send(Packet.builder()
                 .sender(new Packet.Sender(whoami()))
                 .topic(Topic.Duplicate_Sender_Notification)
                 .message("Duplicate sender named : " + packet.sender)

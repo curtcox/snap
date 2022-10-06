@@ -12,7 +12,6 @@ import java.net.ServerSocket;
 import com.curtcox.snap.model.Packet.*;
 import static com.curtcox.snap.model.IntegrationTestUtil.*;
 import static com.curtcox.snap.model.IntegrationTestUtil.assertResponseFrom;
-import static com.curtcox.snap.connectors.UDPTestUtil.flush;
 import static com.curtcox.snap.model.TestClock.tick;
 import static org.junit.Assert.assertEquals;
 
@@ -47,26 +46,23 @@ public class SimpleServerSocketIntegrationTest {
     @Test
     public void network_with_TCP_will_respond_to_ping_request() throws IOException {
         ServerSocket socket = new ServerSocket();
+
         PacketStreamBridge streams = new PacketStreamBridge();
         SimpleServerSocket serverSocket = SimpleServerSocket.forTCP(socket,streams);
         serverSocket.start(runner);
-
-        Snap receipts = Snap.namedOn("receipts",network);
-        PacketReceiptList packets = new PacketReceiptList();
-        receipts.on(packets);
+        Snap recorder = Snap.namedOn("recorder",network);
+        PacketReceiptList receipts = PacketReceiptList.on(recorder);
         Snap pingSound = addPingSound(network);
 
         Snap pinger = Snap.namedOn("pinger",network);
         pinger.send(Random.topic(),Ping.REQUEST);
         tick(5);
+        receipts = receipts.filter(packet -> packet.sender.toString().contains(recorder.host()));
 
-        assertEquals(2,packets.size());
-        assertContainsPingRequest(packets);
-        assertContainsPingResponse(packets);
-        assertResponseFrom(packets,receipts);
-        assertResponseFrom(packets,pingSound);
-        assertResponseFrom(packets,pinger);
-        flush(streams);
+        assertEquals(2,receipts.size());
+        assertContainsPingRequest(receipts);
+        assertContainsPingResponse(receipts);
+        assertResponseFrom(receipts,pingSound);
     }
 
 }

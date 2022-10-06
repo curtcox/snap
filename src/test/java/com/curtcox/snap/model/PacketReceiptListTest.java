@@ -2,8 +2,9 @@ package com.curtcox.snap.model;
 
 import org.junit.Test;
 
-import java.util.Iterator;
+import java.util.*;
 
+import static com.curtcox.snap.model.TestClock.tick;
 import static org.junit.Assert.*;
 
 public class PacketReceiptListTest {
@@ -57,12 +58,40 @@ public class PacketReceiptListTest {
 
     @Test
     public void on_snap_includes_packets_received_by_snap() {
-        fail();
+        Runner runner = Runner.of();
+        SimpleNetwork network = SimpleNetwork.newPolling(runner);
+        Snap receiver = Snap.on(network);
+        Snap sender = Snap.on(network);
+        PacketReceiptList receipts = PacketReceiptList.on(receiver);
+        List<Packet> packets = new ArrayList<>();
+        int count = 5;
+        for (int i=0; i<count; i++) {
+            Packet packet = Random.packet();
+            packets.add(packet);
+            sender.send(packet);
+        }
+        tick(count);
+        assertEquals(count,receipts.size());
+        for (int i=0; i<count; i++) {
+            assertEquals(packets.get(i),receipts.get(i).packet);
+        }
+        runner.stop();
     }
 
     @Test
     public void on_snap_ignores_packets_sent_by_snap() {
-        fail();
+        Runner runner = Runner.of();
+        SimpleNetwork network = SimpleNetwork.newPolling(runner);
+        Snap.on(network);
+        Snap sender = Snap.on(network);
+        PacketReceiptList receipts = PacketReceiptList.on(sender);
+        int count = 5;
+        for (int i=0; i<count; i++) {
+            sender.send(Random.packet());
+        }
+        tick(count);
+        assertEquals(0,receipts.size());
+        runner.stop();
     }
 
     private void assertContains(String whole, String part) {
