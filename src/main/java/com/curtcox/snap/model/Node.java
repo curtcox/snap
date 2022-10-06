@@ -43,7 +43,7 @@ final class Node implements Reader.Factory, Sink.Acceptor, IO {
                     fromNetwork.add(packet);
                     sinks.add(packet);
                 } else {
-                    System.out.println("Discarded " + packet);
+//                    System.out.println("Discarded " + packet);
                 }
             }
         };

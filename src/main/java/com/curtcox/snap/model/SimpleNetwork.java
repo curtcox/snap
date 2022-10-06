@@ -11,7 +11,8 @@ import static com.curtcox.snap.model.Packet.*;
  */
 public final class SimpleNetwork implements Network {
 
-    private final List<Packet.IO> ios = new ArrayList<>();
+    private final List<IO> ios = new ArrayList<>();
+    private final Map<Packet,IO> sources = new HashMap<>();
 
     private final Runner runner;
 
@@ -48,7 +49,7 @@ public final class SimpleNetwork implements Network {
 
     private void writeOutgoing(Map<IO,Packet> ins, IO out) throws IOException {
         for (Packet packet : combineWithout(ins,out)) {
-            if (packet!=null) {
+            if (packet!=null && !sources.get(packet).equals(out)) {
                 out.write(packet);
             }
         }
@@ -64,10 +65,16 @@ public final class SimpleNetwork implements Network {
         return packets;
     }
 
-    synchronized private Map<Packet.IO,Packet> readIncoming() throws IOException {
+    synchronized private Map<IO,Packet> readIncoming() throws IOException {
         Map<IO,Packet> in = new HashMap<>();
         for (IO input : ios) {
-            in.put(input,input.read(Packet.ANY));
+            Packet packet = input.read(ANY);
+            if (packet!=null) {
+                in.put(input,packet);
+                if (!sources.containsKey(packet)) {
+                    sources.put(packet,input);
+                }
+            }
         }
         return in;
     }

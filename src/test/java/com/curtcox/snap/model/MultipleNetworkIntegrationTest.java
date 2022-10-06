@@ -49,4 +49,15 @@ public class MultipleNetworkIntegrationTest {
     private void stall() {
         tick(3);
     }
+
+    @Test
+    public void packet_will_not_be_sent_back_to_network_it_came_from() throws IOException {
+        Node.bridge(lan,internet);
+        outside.write(packet);
+        stall();
+
+        Packet read = outside.read(ANY);
+        assertNull(read);
+    }
+
 }

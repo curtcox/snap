@@ -64,6 +64,23 @@ public class NodeTest {
     }
 
     @Test
+    public void packet_will_not_be_sent_back_to_network_it_came_from() throws IOException {
+        SimpleNetwork network1 = SimpleNetwork.newPolling(runner);
+        SimpleNetwork network2 = SimpleNetwork.newPolling(runner);
+        Snap snap1 = Snap.on(network1);
+        Snap.on(network2);
+        Node.bridge(network1,network2);
+        SinkReader pingResponses = new SinkReader();
+        SinkReader allResponses = new SinkReader();
+        snap1.on(allResponses);
+        snap1.ping(Random.topic(),pingResponses);
+        tick(5);
+
+        assertEquals(1,InputStreamPacketReader.readWaiting(pingResponses).size());
+        assertEquals(1,InputStreamPacketReader.readWaiting(allResponses).size());
+    }
+
+    @Test
     public void read_should_return_the_message_sent() throws IOException {
         Packet packet = Random.packet();
 

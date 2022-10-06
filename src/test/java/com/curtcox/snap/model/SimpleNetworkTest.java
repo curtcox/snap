@@ -153,7 +153,36 @@ public class SimpleNetworkTest {
     }
 
     @Test
-    public void packet_will_not_be_sent_back_to_network_it_came_from() {
-        fail();
+    public void packet_will_not_be_sent_back_to_node_it_came_from() throws IOException {
+        SinkReader responses = new SinkReader();
+        node1.on(responses);
+        node1.write(Random.packet());
+        tick(5);
+
+        assertNull(responses.read(ANY));
     }
+
+    @Test
+    public void packet_will_not_be_sent_back_to_node_it_came_from_even_when_IO_reflector_on_network() throws IOException {
+        SinkReader responses = new SinkReader();
+        node1.on(responses);
+        node1.write(Random.packet());
+        network.add(new Packet.IO() {
+
+            Packet packet;
+            @Override
+            public Packet read(Packet.Filter filter) {
+                return packet;
+            }
+
+            @Override
+            public void write(Packet packet) {
+                this.packet = packet;
+            }
+        });
+        tick(5);
+
+        assertNull(responses.read(ANY));
+    }
+
 }

@@ -57,13 +57,10 @@ public class UDPIntegrationTest {
         tick(5);
         receipts = receipts.filter(packet -> packet.sender.toString().contains(recorder.host()));
 
-        assertEquals(4,receipts);
-        assertEquals(4,receipts.size());
+        assertEquals(2,receipts.size());
         assertContainsPingRequest(receipts);
         assertContainsPingResponse(receipts);
-        assertResponseFrom(receipts,recorder);
         assertResponseFrom(receipts,pingSound);
-        assertResponseFrom(receipts,pinger);
         flush(io);
     }
 

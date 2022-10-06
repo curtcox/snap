@@ -50,7 +50,6 @@ public class SimpleServerSocketIntegrationTest {
         PacketStreamBridge streams = new PacketStreamBridge();
         SimpleServerSocket serverSocket = SimpleServerSocket.forTCP(socket,streams);
         serverSocket.start(runner);
-//        network.add(streams);
 
         Snap receipts = Snap.namedOn("receipts",network);
         PacketReceiptList packets = new PacketReceiptList();
@@ -60,10 +59,8 @@ public class SimpleServerSocketIntegrationTest {
         Snap pinger = Snap.namedOn("pinger",network);
         pinger.send(Random.topic(),Ping.REQUEST);
         tick(5);
-        //packets = packets.filter(packet -> packet.sender.toString().contains(receipts.host()));
 
-        assertEquals(4,packets);
-        assertEquals(4,packets.size());
+        assertEquals(2,packets.size());
         assertContainsPingRequest(packets);
         assertContainsPingResponse(packets);
         assertResponseFrom(packets,receipts);
