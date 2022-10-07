@@ -106,10 +106,9 @@ public class OutputStreamPacketWriterTest {
 
     @Test
     public void can_write_packet() throws Exception {
-        PipedOutputStream externalInput = new PipedOutputStream();
-        PipedInputStream externalOutput = new PipedInputStream(externalInput,Packet.MAX_SIZE);
-        OutputStreamPacketWriter writer = new OutputStreamPacketWriter(externalInput);
-        InputStreamPacketReader reader = new InputStreamPacketReader(externalOutput);
+        Pipe.Half pipe = new Pipe.Half();
+        OutputStreamPacketWriter writer = new OutputStreamPacketWriter(pipe.out);
+        InputStreamPacketReader reader = new InputStreamPacketReader(pipe.in);
 
         ExecutorService service = Executors.newSingleThreadExecutor();
         Future<Packet> submitted = service.submit(() -> reader.read(ANY));
@@ -124,10 +123,9 @@ public class OutputStreamPacketWriterTest {
 
     @Test
     public void can_write_packet_with_long_topic_and_message() throws Exception {
-        PipedOutputStream externalInput = new PipedOutputStream();
-        PipedInputStream externalOutput = new PipedInputStream(externalInput,Packet.MAX_SIZE);
-        OutputStreamPacketWriter writer = new OutputStreamPacketWriter(externalInput);
-        InputStreamPacketReader reader = new InputStreamPacketReader(externalOutput);
+        Pipe.Half pipe = new Pipe.Half();
+        OutputStreamPacketWriter writer = new OutputStreamPacketWriter(pipe.out);
+        InputStreamPacketReader reader = new InputStreamPacketReader(pipe.in);
 
         Packet packet = packetWithLongTopicAndMessage();
 

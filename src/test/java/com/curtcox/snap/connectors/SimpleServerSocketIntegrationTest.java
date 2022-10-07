@@ -7,7 +7,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
 
-import java.io.IOException;
+import java.io.*;
 import java.net.ServerSocket;
 import java.util.*;
 
@@ -46,7 +46,7 @@ public class SimpleServerSocketIntegrationTest {
         assertContainsPingResponse(packets);
     }
 
-    private PacketStreamBridge streams(ServerSocket socket) throws IOException {
+    private PacketStreamBridge tcpSocketBridge(ServerSocket socket) {
         PacketStreamBridge streams = new PacketStreamBridge();
         SimpleServerSocket serverSocket = SimpleServerSocket.forTCP(socket,streams);
         serverSocket.start(runner);
@@ -55,7 +55,7 @@ public class SimpleServerSocketIntegrationTest {
 
     @Test
     public void network_with_TCP_will_respond_to_ping_request() throws IOException {
-        network.add(streams(new ServerSocket()));
+        network.add(tcpSocketBridge(new ServerSocket()));
 
         Snap recorder = Snap.namedOn("recorder",network);
         PacketReceiptList receipts = PacketReceiptList.on(recorder);
@@ -75,7 +75,7 @@ public class SimpleServerSocketIntegrationTest {
     public void can_ping_from_TCP_to_network() throws IOException {
         Packet ping = ping();
         ByteStreamIO io = ByteStreamIO.with(ping);
-        network.add(streams(new FakeServerSocket(io.asStreamIO())));
+        network.add(tcpSocketBridge(new FakeServerSocket(io.asStreamIO())));
 
         Snap recorder = Snap.namedOn("recorder",network);
         PacketReceiptList receipts = PacketReceiptList.on(recorder);
@@ -97,6 +97,26 @@ public class SimpleServerSocketIntegrationTest {
         assertEquals(Ping.RESPONSE,pong2.message);
         assertEquals(Trigger.from(ping),pong2.trigger);
         assertEquals(ping.topic,pong2.topic);
+    }
+
+    @Test
+    public void can_ping_from_TCP_to_network_using_snap() throws IOException {
+        Network outside = SimpleNetwork.newPolling(runner);
+        Pipe pipe = new Pipe();
+        outside.add(PacketReaderWriter.from(pipe.left));
+        network.add(tcpSocketBridge(new FakeServerSocket(pipe.right)));
+
+        Snap recorder = Snap.namedOn("recorder",network);
+        PacketReceiptList receipts = PacketReceiptList.on(recorder);
+        Snap pingSound = addPingSound(network);
+        Snap pinger = Snap.namedOn("pinger",outside);
+        pinger.send(Random.topic(),Ping.REQUEST);
+        tick(55);
+
+        assertEquals(2,receipts.size());
+        assertContainsPingRequest(receipts);
+        assertContainsPingResponse(receipts);
+        assertResponseFrom(receipts,pingSound);
     }
 
     private Packet ping() {

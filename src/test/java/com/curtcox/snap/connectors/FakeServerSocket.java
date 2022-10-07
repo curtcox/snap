@@ -4,6 +4,9 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+/**
+ * For testing server sockets without really touching the network.
+ */
 final class FakeServerSocket extends ServerSocket {
 
     final StreamIO io;

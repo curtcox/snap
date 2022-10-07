@@ -32,9 +32,8 @@ public class InputStreamPacketReaderTest {
 
     @Test
     public void returns_null_when_there_are_no_packets_to_read() throws IOException {
-        PipedOutputStream externalInput = new PipedOutputStream();
-        PipedInputStream externalOutput = new PipedInputStream(externalInput);
-        InputStreamPacketReader reader = new InputStreamPacketReader(externalOutput);
+        Pipe.Half pipe = new Pipe.Half();
+        InputStreamPacketReader reader = new InputStreamPacketReader(pipe.in);
 
         assertNull(reader.read(ANY));
     }
@@ -44,10 +43,9 @@ public class InputStreamPacketReaderTest {
         Packet packet = Packet.builder()
                 .sender(sender).topic(topic).message(message).timestamp(timestamp).trigger(trigger)
                 .build();
-        PipedOutputStream externalInput = new PipedOutputStream();
-        PipedInputStream externalOutput = new PipedInputStream(externalInput);
-        OutputStreamPacketWriter writer = new OutputStreamPacketWriter(externalInput);
-        InputStreamPacketReader reader = new InputStreamPacketReader(externalOutput);
+        Pipe.Half pipe = new Pipe.Half();
+        OutputStreamPacketWriter writer = new OutputStreamPacketWriter(pipe.out);
+        InputStreamPacketReader reader = new InputStreamPacketReader(pipe.in);
 
         writer.write(packet);
         Packet read = reader.read(ANY);
@@ -65,10 +63,9 @@ public class InputStreamPacketReaderTest {
         Packet packet1 = Random.packet();
         Packet packet2 = Random.packet();
 
-        PipedOutputStream externalInput = new PipedOutputStream();
-        PipedInputStream externalOutput = new PipedInputStream(externalInput);
-        OutputStreamPacketWriter writer = new OutputStreamPacketWriter(externalInput);
-        InputStreamPacketReader reader = new InputStreamPacketReader(externalOutput);
+        Pipe.Half pipe = new Pipe.Half();
+        OutputStreamPacketWriter writer = new OutputStreamPacketWriter(pipe.out);
+        InputStreamPacketReader reader = new InputStreamPacketReader(pipe.in);
 
         writer.write(packet1);
         assertEquals(packet1,reader.read(ANY));
@@ -83,10 +80,9 @@ public class InputStreamPacketReaderTest {
         Packet packet2 = Random.packet();
         Packet packet3 = Random.packet();
 
-        PipedOutputStream externalInput = new PipedOutputStream();
-        PipedInputStream externalOutput = new PipedInputStream(externalInput);
-        OutputStreamPacketWriter writer = new OutputStreamPacketWriter(externalInput);
-        InputStreamPacketReader reader = new InputStreamPacketReader(externalOutput);
+        Pipe.Half pipe = new Pipe.Half();
+        OutputStreamPacketWriter writer = new OutputStreamPacketWriter(pipe.out);
+        InputStreamPacketReader reader = new InputStreamPacketReader(pipe.in);
 
         writer.write(packet1);
         assertEquals(packet1,reader.read(ANY));
