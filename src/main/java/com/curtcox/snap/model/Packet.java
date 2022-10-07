@@ -147,7 +147,7 @@ public final class Packet {
      */
     public static final class Sender {
         final String value;
-        Sender(String value) {
+        public Sender(String value) {
             this.value = value;
         }
 
@@ -288,37 +288,37 @@ public final class Packet {
         checkSize();
     }
 
-    static Builder builder() {
+    public static Builder builder() {
         return new Builder();
     }
 
-    static class Builder {
+    public static class Builder {
         private Sender sender;
         private Topic topic;
         private String message;
         private Trigger trigger;
         private Timestamp timestamp;
-        Builder sender(Sender sender) {
+        public Builder sender(Sender sender) {
             this.sender = sender;
             return this;
         }
-        Builder topic(Topic topic) {
+        public Builder topic(Topic topic) {
             this.topic = topic;
             return this;
         }
-        Builder message(String message) {
+        public Builder message(String message) {
             this.message = message;
             return this;
         }
-        Builder timestamp(Timestamp timestamp) {
+        public Builder timestamp(Timestamp timestamp) {
             this.timestamp = timestamp;
             return this;
         }
-        Builder trigger(Trigger trigger) {
+        public Builder trigger(Trigger trigger) {
             this.trigger = trigger;
             return this;
         }
-        Packet build() {
+        public Packet build() {
             return new Packet(sender,topic,message,timestamp,trigger);
         }
     }

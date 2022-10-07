@@ -24,7 +24,7 @@ public final class SimpleNetwork implements Network {
         return newPolling(Runner.of());
     }
 
-    static SimpleNetwork newPolling(Runner runner) {
+    public static SimpleNetwork newPolling(Runner runner) {
         SimpleNetwork network = new SimpleNetwork(runner);
         network.queuePoll();
         return network;
