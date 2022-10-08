@@ -46,16 +46,13 @@ public class SimpleServerSocketIntegrationTest {
         assertContainsPingResponse(packets);
     }
 
-    private PacketStreamBridge tcpSocketBridge(ServerSocket socket) {
-        PacketStreamBridge streams = new PacketStreamBridge();
-        SimpleServerSocket serverSocket = SimpleServerSocket.forTCP(socket,streams);
-        serverSocket.start(runner);
-        return streams;
+    private PacketStreamBridge fromServerSocket(ServerSocket socket) {
+        return PacketStreamBridge.fromServerSocket(socket,runner);
     }
 
     @Test
     public void network_with_TCP_will_respond_to_ping_request() throws IOException {
-        network.add(tcpSocketBridge(new ServerSocket()));
+        network.add(fromServerSocket(new ServerSocket()));
 
         Snap recorder = Snap.namedOn("recorder",network);
         PacketReceiptList receipts = PacketReceiptList.on(recorder);
@@ -75,7 +72,7 @@ public class SimpleServerSocketIntegrationTest {
     public void can_ping_from_TCP_to_network() throws IOException {
         Packet ping = ping();
         ByteStreamIO io = ByteStreamIO.with(ping);
-        network.add(tcpSocketBridge(new FakeServerSocket(io.asStreamIO())));
+        network.add(fromServerSocket(new FakeServerSocket(io.asStreamIO())));
 
         Snap recorder = Snap.namedOn("recorder",network);
         PacketReceiptList receipts = PacketReceiptList.on(recorder);
@@ -104,7 +101,7 @@ public class SimpleServerSocketIntegrationTest {
         Network outside = SimpleNetwork.newPolling(runner);
         Pipe pipe = new Pipe();
         outside.add(PacketReaderWriter.from(pipe.left));
-        network.add(tcpSocketBridge(new FakeServerSocket(pipe.right)));
+        network.add(fromServerSocket(new FakeServerSocket(pipe.right)));
 
         Snap recorder = Snap.namedOn("recorder",network);
         PacketReceiptList receipts = PacketReceiptList.on(recorder);

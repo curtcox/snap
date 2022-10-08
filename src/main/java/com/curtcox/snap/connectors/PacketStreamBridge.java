@@ -1,10 +1,9 @@
 package com.curtcox.snap.connectors;
 
-import com.curtcox.snap.model.InputStreamPacketReader;
-import com.curtcox.snap.model.OutputStreamPacketWriter;
-import com.curtcox.snap.model.Packet;
+import com.curtcox.snap.model.*;
 
 import java.io.IOException;
+import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -16,6 +15,13 @@ import java.util.function.Consumer;
 final class PacketStreamBridge implements Consumer<StreamIO>, Packet.IO {
 
     final List<StreamIO> streams = new ArrayList<>();
+
+    static PacketStreamBridge fromServerSocket(ServerSocket socket, Runner runner) {
+        PacketStreamBridge streams = new PacketStreamBridge();
+        SimpleServerSocket serverSocket = SimpleServerSocket.forTCP(socket,streams);
+        serverSocket.start(runner);
+        return streams;
+    }
 
     @Override
     public void accept(StreamIO streamIO) {

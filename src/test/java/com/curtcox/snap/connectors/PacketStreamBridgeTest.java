@@ -1,24 +1,29 @@
 package com.curtcox.snap.connectors;
 
-import com.curtcox.snap.model.Await;
-import com.curtcox.snap.model.Random;
-import org.junit.Rule;
-import org.junit.Test;
+import com.curtcox.snap.model.*;
+import org.junit.*;
 import org.junit.rules.Timeout;
 
 import java.io.*;
+import java.net.ServerSocket;
 import java.util.List;
-
-import com.curtcox.snap.model.Packet;
 
 import static com.curtcox.snap.model.IntegrationTestUtil.assertContains;
 import static com.curtcox.snap.model.Packet.*;
+import static com.curtcox.snap.model.TestClock.tick;
 import static org.junit.Assert.*;
 
 public class PacketStreamBridgeTest {
 
     @Rule
     public Timeout globalTimeout = Timeout.seconds(2);
+
+    Runner runner = Runner.of();
+
+    @After
+    public void stop() {
+        runner.stop();
+    }
 
     PacketStreamBridge bridge = new PacketStreamBridge();
     @Test
@@ -126,4 +131,14 @@ public class PacketStreamBridgeTest {
         assertEquals(0,written.size());
     }
 
+    @Test
+    public void fromServerSocket() throws IOException {
+        Packet packet = Random.packet();
+        ServerSocket serverSocket = new FakeServerSocket(ByteStreamIO.with(packet).asStreamIO());
+        PacketStreamBridge bridge = PacketStreamBridge.fromServerSocket(serverSocket, runner);
+
+        tick(5);
+        Packet read = bridge.read(ANY);
+        assertEquals(packet,read);
+    }
 }

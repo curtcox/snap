@@ -21,6 +21,13 @@ public class ByteStreamIOTest {
     }
 
     @Test
+    public void with_no_packets_read() throws IOException {
+        StreamIO io = ByteStreamIO.with().asStreamIO();
+
+        assertEquals(-1,io.in.read());
+    }
+
+    @Test
     public void with_a_packets_has_some_bytes_available_to_read() throws IOException {
         StreamIO io = ByteStreamIO.with(Random.packet()).asStreamIO();
 
