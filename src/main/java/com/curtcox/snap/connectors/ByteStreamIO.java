@@ -11,14 +11,19 @@ import java.util.*;
 public final class ByteStreamIO {
 
     private final ByteArrayInputStream withPacketsToBeReadFromThisStream;
-    private final ByteArrayOutputStream withPacketsThatWereWrittenToThisStream = new ByteArrayOutputStream();
+    private final ByteArrayOutputStream withPacketsThatWereWrittenToThisStream;
 
-    private ByteStreamIO(ByteArrayInputStream toBeReadFromThisStream) {
+    private ByteStreamIO(ByteArrayInputStream toBeReadFromThisStream, ByteArrayOutputStream toBeWrittenHere) {
         this.withPacketsToBeReadFromThisStream = toBeReadFromThisStream;
+        this.withPacketsThatWereWrittenToThisStream = toBeWrittenHere;
     }
 
     static ByteStreamIO with(Packet... packets) {
-        return new ByteStreamIO(new ByteArrayInputStream(Bytes.from(packets).value()));
+        return new ByteStreamIO(new ByteArrayInputStream(Bytes.from(packets).value()),new ByteArrayOutputStream());
+    }
+
+    static ByteStreamIO debug(Packet... packets) {
+        return new ByteStreamIO(new ByteArrayInputStream(Bytes.from(packets).value()),new DebugByteArrayOutputStream());
     }
 
     StreamIO asStreamIO() {
@@ -28,5 +33,11 @@ public final class ByteStreamIO {
     List<Packet> getWrittenTo() throws IOException {
         return InputStreamPacketReader.readWaiting(
                 new ByteArrayInputStream(withPacketsThatWereWrittenToThisStream.toByteArray()));
+    }
+
+    @Override
+    public String toString() {
+        return  "Remaining unread : " + withPacketsToBeReadFromThisStream +
+                " Previously written :" + withPacketsThatWereWrittenToThisStream;
     }
 }

@@ -11,6 +11,7 @@ import static com.curtcox.snap.model.Packet.*;
  */
 public final class SimpleNetwork implements Network {
 
+    private static final boolean debug = Debug.on;
     private final List<IO> ios = new ArrayList<>();
     private final Map<Packet,IO> sources = new HashMap<>();
 
@@ -50,11 +51,14 @@ public final class SimpleNetwork implements Network {
     private void writeOutgoing(Map<IO,Packet> ins, IO out) throws IOException {
         for (Packet packet : combineWithout(ins,out)) {
             if (packet!=null && !sources.get(packet).equals(out)) {
-                out.write(packet);
+                write(out,packet);
             }
         }
     }
 
+    /**
+     * So that packets aren't sent right back to their sources.
+     */
     private List<Packet> combineWithout(Map<IO,Packet> ins, IO excluded) {
         List<Packet> packets = new ArrayList<>();
         for (IO in : ins.keySet()) {
@@ -68,7 +72,7 @@ public final class SimpleNetwork implements Network {
     synchronized private Map<IO,Packet> readIncoming() throws IOException {
         Map<IO,Packet> in = new HashMap<>();
         for (IO input : ios) {
-            Packet packet = input.read(ANY);
+            Packet packet = read(input);
             if (packet!=null) {
                 in.put(input,packet);
                 if (!sources.containsKey(packet)) {
@@ -77,6 +81,21 @@ public final class SimpleNetwork implements Network {
             }
         }
         return in;
+    }
+
+    private static Packet read(IO input) throws IOException {
+        Packet packet = input.read(ANY);
+        if (debug) {
+            System.out.println("Network read " + packet + " from " + input);
+        }
+        return packet;
+    }
+
+    private static void write(IO out, Packet packet) throws IOException {
+        if (debug) {
+            System.out.println("Network writing " + packet + " to " + out);
+        }
+        out.write(packet);
     }
 
     synchronized public void add(IO io) {

@@ -1,10 +1,9 @@
 package com.curtcox.snap.connectors;
 
-import com.curtcox.snap.model.Packet;
+import com.curtcox.snap.model.*;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Socket;
+import java.net.*;
 
 public final class TCP {
 
@@ -22,9 +21,19 @@ public final class TCP {
     }
 
     static Packet.IO newServer(java.net.ServerSocket serverSocket) {
-        PacketStreamBridge bridge = new PacketStreamBridge();
-        SimpleServerSocket.forTCP(serverSocket, bridge);
-        return bridge;
+        return PacketStreamBridge.fromServerSocket(serverSocket,Runner.of());
+    }
+
+    public static Packet.IO newClient(int a1, int a2, int a3, int a4) throws IOException {
+        return newClient(Sockets.address(a1,a2,a3,a4),PORT);
+    }
+
+    public static Packet.IO newClient(InetAddress address, int port) throws IOException {
+        Socket socket = new Socket(address,port);
+        return new PacketReaderWriter(
+                new InputStreamPacketReader(socket.getInputStream()),
+                new OutputStreamPacketWriter(socket.getOutputStream())
+        );
     }
 
     interface ClientSocket {

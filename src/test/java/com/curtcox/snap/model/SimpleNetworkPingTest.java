@@ -10,7 +10,7 @@ import static org.junit.Assert.*;
 public class SimpleNetworkPingTest {
 
     @Rule
-    public Timeout globalTimeout = Timeout.seconds(2);
+    public Timeout globalTimeout = Timeout.seconds(5);
 
     final Packet.Network network = Snap.newNetwork(Packet.Network.Type.memory);
 

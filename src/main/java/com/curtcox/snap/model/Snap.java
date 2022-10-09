@@ -2,7 +2,7 @@ package com.curtcox.snap.model;
 
 import java.net.*;
 
-import static com.curtcox.snap.util.Check.notNull;
+import static com.curtcox.snap.util.Check.*;
 import com.curtcox.snap.model.Packet.*;
 
 // Potential future API
@@ -15,6 +15,8 @@ public final class Snap implements Reader.Factory, Sink.Acceptor {
     private final int id;
 
     private static int counter;
+
+    private static final boolean debug = Debug.on;
 
     private Snap(Node node,int id) {
         this.node = notNull(node);
@@ -53,10 +55,10 @@ public final class Snap implements Reader.Factory, Sink.Acceptor {
 
     private void automaticPingResponse(Packet packet) {
         if (Ping.isRequest.test(packet)) {
-            System.out.println(name + " responding to " + packet);
+            if (debug) debug(name + " responding to " + packet);
             sendPingResponse(packet);
         } else {
-            //System.out.println(name + " ignoring " + packet);
+            //debug(name + " ignoring " + packet);
         }
     }
 
@@ -161,6 +163,10 @@ public final class Snap implements Reader.Factory, Sink.Acceptor {
     @Override
     public Reader reader(Packet.Filter filter) {
         return node.reader(filter);
+    }
+
+    private static void debug(String message) {
+        System.out.println("Snap " + message);
     }
 
 }

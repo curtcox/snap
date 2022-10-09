@@ -36,7 +36,7 @@ public final class Bytes {
         return new Bytes(result);
     }
 
-    static Bytes bytes(int... values) {
+    public static Bytes bytes(int... values) {
         byte[] bytes = new byte[values.length];
         for (int i=0; i<values.length; i++) {
             bytes[i] = (byte) values[i];

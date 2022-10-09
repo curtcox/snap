@@ -1,6 +1,7 @@
 package com.curtcox.snap.connectors;
 
 import com.curtcox.snap.model.Runner;
+import com.curtcox.snap.model.TestRunner;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -18,6 +19,16 @@ import static com.curtcox.snap.model.TestClock.tick;
 import static org.junit.Assert.*;
 
 public class SimpleServerSocketTest {
+
+    @Rule
+    public Timeout globalTimeout = Timeout.seconds(2);
+
+    Runner runner = Runner.of();
+
+    @After
+    public void stop() {
+        runner.stop();
+    }
 
     InputStream inputStream = new ByteArrayInputStream(new byte[0]);
     OutputStream outputStream = new ByteArrayOutputStream();
@@ -37,11 +48,6 @@ public class SimpleServerSocketTest {
         streams.add(streamIO);
     };
 
-    @Rule
-    public Timeout globalTimeout = Timeout.seconds(2);
-
-    Runner runner = Runner.of();
-
     @Before
     public void setUp() throws IOException {
         serverSocket = new ServerSocket() {
@@ -51,21 +57,17 @@ public class SimpleServerSocketTest {
         };
     }
 
-    @After
-    public void stop() {
-        runner.stop();
-    }
     @Test
     public void can_create_for_TCP() {
-        assertNotNull(SimpleServerSocket.forTCP(null,null));
+        assertNotNull(SimpleServerSocket.forTCP(null,null,runner));
     }
 
     @Test
     public void bridge_streams_starts_empty() {
-        tcpServer();
-        tick();
-
+        Runner runner = TestRunner.once();
         assertEquals(0,streams.size());
+        SimpleServerSocket.forTCP(serverSocket,bridge,runner);
+        assertEquals(1,streams.size());
     }
 
     @Test
@@ -81,13 +83,13 @@ public class SimpleServerSocketTest {
         tcpServer().start(runner);
         tick(3);
 
-        assertEquals(1,streams.size());
+        assertTrue(streams.size()>0);
         StreamIO streamIO = streams.get(0);
         assertEquals(inputStream,streamIO.in);
         assertEquals(outputStream,streamIO.out);
     }
 
     private SimpleServerSocket tcpServer() {
-        return SimpleServerSocket.forTCP(serverSocket,bridge);
+        return SimpleServerSocket.forTCP(serverSocket,bridge,runner);
     }
 }

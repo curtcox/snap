@@ -10,7 +10,7 @@ public final class Runner {
     private final ScheduledExecutorService scheduler;
     private final Clock clock;
 
-    Runner(ScheduledExecutorService scheduler, Clock clock) {
+    public Runner(ScheduledExecutorService scheduler, Clock clock) {
         this.scheduler = scheduler;
         this.clock = clock;
     }

@@ -19,13 +19,14 @@ import static org.junit.Assert.assertEquals;
 
 public class SimpleServerSocketIntegrationTest {
 
+    static final int timeout = 10;
+    static final int ticks = 2;
     @Rule
-    public Timeout globalTimeout = Timeout.seconds(5);
+    public Timeout globalTimeout = Timeout.seconds(timeout);
 
     Runner runner = Runner.of();
 
     final Network network = SimpleNetwork.newPolling(runner);
-
 
     @After
     public void stop() {
@@ -46,13 +47,13 @@ public class SimpleServerSocketIntegrationTest {
         assertContainsPingResponse(packets);
     }
 
-    private PacketStreamBridge fromServerSocket(ServerSocket socket) {
+    private static PacketStreamBridge fromServerSocket(ServerSocket socket, Runner runner) {
         return PacketStreamBridge.fromServerSocket(socket,runner);
     }
 
     @Test
     public void network_with_TCP_will_respond_to_ping_request() throws IOException {
-        network.add(fromServerSocket(new ServerSocket()));
+        network.add(fromServerSocket(new ServerSocket(),TestRunner.once()));
 
         Snap recorder = Snap.namedOn("recorder",network);
         PacketReceiptList receipts = PacketReceiptList.on(recorder);
@@ -71,20 +72,23 @@ public class SimpleServerSocketIntegrationTest {
     @Test
     public void can_ping_from_TCP_to_network() throws IOException {
         Packet ping = ping();
-        ByteStreamIO io = ByteStreamIO.with(ping);
-        network.add(fromServerSocket(new FakeServerSocket(io.asStreamIO())));
+        ByteStreamIO io = ByteStreamIO.debug(ping);
+        PacketStreamBridge bridge = fromServerSocket(new FakeServerSocket(io.asStreamIO()), TestRunner.once());
+        network.add(bridge);
 
         Snap recorder = Snap.namedOn("recorder",network);
         PacketReceiptList receipts = PacketReceiptList.on(recorder);
         Snap pingSound = addPingSound(network);
-        tick(55);
+        tick(timeout * ticks);
 
+        assertEquals(1,bridge.streams.size());
         assertEquals(2,receipts.size());
         assertContainsPingRequest(receipts);
         assertContainsPingResponse(receipts);
         assertResponseFrom(receipts,pingSound);
 
         List<Packet> packets = io.getWrittenTo();
+        //assertEquals(2,io);
         assertEquals(2,packets.size());
         Packet pong1 = packets.get(0);
         assertEquals(Ping.RESPONSE,pong1.message);
@@ -101,14 +105,14 @@ public class SimpleServerSocketIntegrationTest {
         Network outside = SimpleNetwork.newPolling(runner);
         Pipe pipe = new Pipe();
         outside.add(PacketReaderWriter.from(pipe.left));
-        network.add(fromServerSocket(new FakeServerSocket(pipe.right)));
+        network.add(fromServerSocket(new FakeServerSocket(pipe.right),runner));
 
         Snap recorder = Snap.namedOn("recorder",network);
         PacketReceiptList receipts = PacketReceiptList.on(recorder);
         Snap pingSound = addPingSound(network);
         Snap pinger = Snap.namedOn("pinger",outside);
         pinger.send(Random.topic(),Ping.REQUEST);
-        tick(55);
+        tick(timeout * ticks);
 
         assertEquals(2,receipts.size());
         assertContainsPingRequest(receipts);

@@ -23,7 +23,7 @@ public class NodeTest {
     ReflectorNetwork network = new ReflectorNetwork(runner);
 
     @Rule
-    public Timeout globalTimeout = Timeout.seconds(2);
+    public Timeout globalTimeout = Timeout.seconds(5);
 
     @Before
     public void setUp() {
