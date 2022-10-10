@@ -20,8 +20,7 @@ final class PacketStreamBridge implements Consumer<StreamIO>, Packet.IO {
 
     static PacketStreamBridge fromServerSocket(ServerSocket socket, Runner runner) {
         PacketStreamBridge streams = new PacketStreamBridge();
-        SimpleServerSocket serverSocket = SimpleServerSocket.forTCP(socket,streams,runner);
-//        serverSocket.start(runner); // TODO FIXME <-- Directly test this hard-to-find bug
+        SimpleServerSocket.forTCP(socket,streams,runner);
         return streams;
     }
 

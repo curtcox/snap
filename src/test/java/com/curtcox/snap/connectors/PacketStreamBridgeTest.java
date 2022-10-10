@@ -10,7 +10,6 @@ import java.util.List;
 
 import static com.curtcox.snap.model.IntegrationTestUtil.assertContains;
 import static com.curtcox.snap.model.Packet.*;
-import static com.curtcox.snap.model.TestClock.tick;
 import static org.junit.Assert.*;
 
 public class PacketStreamBridgeTest {
@@ -136,13 +135,21 @@ public class PacketStreamBridgeTest {
     }
 
     @Test
-    public void fromServerSocket() throws IOException {
+    public void can_read_packet_over_bridge_fromServerSocket() throws IOException {
         Packet packet = Random.packet();
         ServerSocket serverSocket = new FakeServerSocket(ByteStreamIO.with(packet).asStreamIO());
-        PacketStreamBridge bridge = PacketStreamBridge.fromServerSocket(serverSocket, runner);
+        PacketStreamBridge bridge = PacketStreamBridge.fromServerSocket(serverSocket, TestRunner.once());
 
-        tick(5);
         Packet read = bridge.read(ANY);
         assertEquals(packet,read);
     }
+
+    @Test
+    public void bridge_has_one_stream_after_accepting_socket() throws IOException {
+        ServerSocket serverSocket = new FakeServerSocket(ByteStreamIO.with(Random.packet()).asStreamIO());
+        PacketStreamBridge bridge = PacketStreamBridge.fromServerSocket(serverSocket, TestRunner.once());
+
+        assertEquals(1,bridge.streams.size());
+    }
+
 }
